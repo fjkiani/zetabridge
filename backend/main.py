@@ -1,16 +1,24 @@
 """
-ZetaBridge Cloud — FastAPI Backend
-===================================
-Single-process cloud-native data platform. No Docker. No local installs.
+ZetaBridge Cloud — FastAPI Backend (Phase 3: Agentic Layer)
+=============================================================
+Cloud-native data platform with multi-agent orchestration.
 
-Embedded services:
-    - Catalog Manager: Postgres-backed (Neon free tier) federated catalog
-      replacing Gravitino/Lakekeeper/Unity with a unified REST API
-    - Lineage Engine: OpenLineage-compatible event store in Postgres,
-      replacing Marquez with a lightweight implementation
-    - Query Engine: DuckDB embedded, replacing Doris for analytics
-    - AI Agent: HuggingFace Inference API for Arctic Text2SQL,
-      no GPU or vLLM needed
+Core services (Phase 2):
+    - Catalog Manager: Postgres-backed federated catalog
+      (replaces Gravitino/Lakekeeper/Unity with unified REST API)
+    - Lineage Engine: OpenLineage-compatible event store in Postgres
+      (replaces Marquez with lightweight implementation)
+    - Query Engine: DuckDB embedded (replaces Doris for analytics)
+    - AI Agent: HuggingFace Inference API for Arctic Text2SQL
+
+Agentic layer (Phase 3):
+    - Multi-agent orchestrator: CatalogAgent, QueryAgent, LineageAgent,
+      ETLAgent, DataQualityAgent, ConnectorAgent
+    - 360 Co-Pilot: Conversational API with intent detection + agent dispatch
+    - Benchmark harness: Latency/accuracy/throughput scoring per agent
+    - Multi-modal data layer: Structured (SQL) + Unstructured (vector) + Blob
+    - Connector registry: 17 OSS connectors (lakes, warehouses, ETL, streaming)
+    - Agent-level OpenLineage lineage tracking
 
 License: Apache-2.0
 """
@@ -47,7 +55,7 @@ DATABASE_URL = os.environ.get(
 HF_API_TOKEN = os.environ.get("HF_API_TOKEN", "")
 HF_MODEL_ID = os.environ.get(
     "HF_MODEL_ID",
-    "Snowflake/Arctic-Text2SQL-R1-7B",
+    "mistralai/Mistral-7B-Instruct-v0.3",  # Serverless-compatible; Arctic-7B needs dedicated endpoint
 )
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
@@ -105,6 +113,23 @@ class QueryLog(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
+class AgentExecutionLog(Base):
+    """Agent execution audit log (Phase 3)."""
+    __tablename__ = "agent_execution_log"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    session_id = Column(String(64), nullable=False)
+    plan_id = Column(String(64), nullable=False)
+    intent = Column(String(50), nullable=False)
+    user_input = Column(Text, nullable=False)
+    tasks_total = Column(Integer, default=0)
+    tasks_succeeded = Column(Integer, default=0)
+    tasks_failed = Column(Integer, default=0)
+    total_latency_ms = Column(Integer, default=0)
+    result_json = Column(Text, nullable=False, default="{}")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 # ── DB Engine ─────────────────────────────────────────────────────────────────
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_size=5)
@@ -132,16 +157,241 @@ def get_duckdb() -> duckdb.DuckDBPyConnection:
     return _duckdb_conn
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 3: AGENTIC LAYER — Boot & wire
+# ══════════════════════════════════════════════════════════════════════════════
+
+from agents.base import ToolRegistry, ToolSpec, AgentContext
+from agents.orchestrator import create_orchestrator
+from benchmarks.harness import BenchmarkHarness
+from multimodal.data_layer import StructuredStore, UnstructuredStore, BlobStore, DataRouter
+from connectors.registry import ConnectorRegistry
+from copilot.copilot import CoPilot
+
+# Global instances (initialized in lifespan)
+_orchestrator = None
+_benchmark_harness = None
+_data_router = None
+_connector_registry = None
+_copilot = None
+
+
+def _register_tools():
+    """Register all platform tools in the agent ToolRegistry."""
+
+    # ── Catalog tools ──
+    async def catalog_list_tables(**kwargs) -> list[dict]:
+        db = SessionLocal()
+        try:
+            entries = db.query(CatalogEntry).all()
+            return [
+                {
+                    "id": e.id,
+                    "catalog_name": e.catalog_name,
+                    "catalog_type": e.catalog_type,
+                    "schema_name": e.schema_name,
+                    "table_name": e.table_name,
+                    "columns": json.loads(e.columns_json),
+                    "properties": json.loads(e.properties_json),
+                    "fqn": f"{e.catalog_name}.{e.schema_name}.{e.table_name}",
+                }
+                for e in entries
+            ]
+        finally:
+            db.close()
+
+    ToolRegistry.register(ToolSpec(
+        name="catalog_list_tables",
+        description="List all tables in the federated catalog (Gravitino/Lakekeeper/Unity)",
+        handler=catalog_list_tables,
+        category="catalog",
+    ))
+
+    # ── DuckDB query tool ──
+    async def duckdb_query(sql: str, **kwargs) -> list[dict]:
+        duck = get_duckdb()
+        result = duck.execute(sql)
+        if result.description:
+            columns = [desc[0] for desc in result.description]
+            rows = result.fetchall()
+            return [dict(zip(columns, row)) for row in rows]
+        return []
+
+    ToolRegistry.register(ToolSpec(
+        name="duckdb_query",
+        description="Execute SQL on embedded DuckDB analytics engine (replaces Doris)",
+        handler=duckdb_query,
+        category="query",
+    ))
+
+    # ── Schema context builder ──
+    async def build_schema_context(**kwargs) -> str:
+        return _build_schema_context()
+
+    ToolRegistry.register(ToolSpec(
+        name="build_schema_context",
+        description="Build DDL schema context from catalog for Text2SQL prompts",
+        handler=build_schema_context,
+        category="query",
+    ))
+
+    # ── Text2SQL tool ──
+    async def text2sql(question: str, schema_context: str, **kwargs) -> str:
+        return await _call_hf_text2sql(question, schema_context)
+
+    ToolRegistry.register(ToolSpec(
+        name="text2sql",
+        description="Generate SQL from natural language via Arctic Text2SQL (HuggingFace API)",
+        handler=text2sql,
+        category="query",
+    ))
+
+    # ── Lineage tools ──
+    async def lineage_graph(**kwargs) -> dict:
+        db = SessionLocal()
+        try:
+            events = db.query(LineageEvent).all()
+            nodes: dict[str, dict] = {}
+            edges: list[dict] = []
+            for e in events:
+                job_id = f"job:{e.job_name}"
+                if job_id not in nodes:
+                    nodes[job_id] = {"id": job_id, "label": e.job_name, "type": "job"}
+                for inp in json.loads(e.inputs_json):
+                    ds_name = inp.get("name", inp) if isinstance(inp, dict) else str(inp)
+                    ds_id = f"dataset:{ds_name}"
+                    if ds_id not in nodes:
+                        nodes[ds_id] = {"id": ds_id, "label": ds_name, "type": "dataset"}
+                    edges.append({"source": ds_id, "target": job_id, "type": "input"})
+                for out in json.loads(e.outputs_json):
+                    ds_name = out.get("name", out) if isinstance(out, dict) else str(out)
+                    ds_id = f"dataset:{ds_name}"
+                    if ds_id not in nodes:
+                        nodes[ds_id] = {"id": ds_id, "label": ds_name, "type": "dataset"}
+                    edges.append({"source": job_id, "target": ds_id, "type": "output"})
+            return {"nodes": list(nodes.values()), "edges": edges}
+        finally:
+            db.close()
+
+    ToolRegistry.register(ToolSpec(
+        name="lineage_graph",
+        description="Build D3-compatible lineage graph from OpenLineage events (replaces Marquez graph API)",
+        handler=lineage_graph,
+        category="lineage",
+    ))
+
+    async def lineage_list_events(**kwargs) -> list[dict]:
+        db = SessionLocal()
+        try:
+            events = db.query(LineageEvent).order_by(LineageEvent.event_time.desc()).limit(200).all()
+            return [
+                {
+                    "id": e.id,
+                    "run_id": e.run_id,
+                    "job_name": e.job_name,
+                    "event_type": e.event_type,
+                    "inputs": json.loads(e.inputs_json),
+                    "outputs": json.loads(e.outputs_json),
+                    "facets": json.loads(e.facets_json),
+                    "event_time": e.event_time.isoformat() if e.event_time else "",
+                }
+                for e in events
+            ]
+        finally:
+            db.close()
+
+    ToolRegistry.register(ToolSpec(
+        name="lineage_list_events",
+        description="List OpenLineage events newest first",
+        handler=lineage_list_events,
+        category="lineage",
+    ))
+
+    async def lineage_emit(
+        job_name: str, event_type: str, run_id: str = None,
+        inputs: list = None, outputs: list = None, facets: dict = None,
+        **kwargs,
+    ) -> dict:
+        db = SessionLocal()
+        try:
+            event = LineageEvent(
+                run_id=run_id or str(uuid.uuid4()),
+                job_name=job_name,
+                event_type=event_type.upper(),
+                inputs_json=json.dumps(inputs or []),
+                outputs_json=json.dumps(outputs or []),
+                facets_json=json.dumps(facets or {}),
+            )
+            db.add(event)
+            db.commit()
+            db.refresh(event)
+            return {"id": event.id, "run_id": event.run_id}
+        finally:
+            db.close()
+
+    ToolRegistry.register(ToolSpec(
+        name="lineage_emit",
+        description="Emit an OpenLineage event (agent-level lineage tracking)",
+        handler=lineage_emit,
+        category="lineage",
+    ))
+
+    # ── Postgres health check ──
+    async def pg_health_check(**kwargs) -> dict:
+        db = SessionLocal()
+        try:
+            result = db.execute(sa_text("SELECT 1"))
+            return {"status": "connected"}
+        finally:
+            db.close()
+
+    ToolRegistry.register(ToolSpec(
+        name="pg_health_check",
+        description="Check Postgres (Neon) connectivity",
+        handler=pg_health_check,
+        category="connector",
+    ))
+
+    log.info("Registered %d agent tools", len(ToolRegistry.list_names()))
+
+
 # ── Lifespan ──────────────────────────────────────────────────────────────────
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Boot: create tables, seed demo data, init DuckDB."""
-    log.info("ZetaBridge booting — creating tables")
+    """Boot: create tables, seed data, init agents, register tools."""
+    global _orchestrator, _benchmark_harness, _data_router, _connector_registry, _copilot
+
+    log.info("ZetaBridge booting — Phase 3 (Agentic Layer)")
+
+    # Phase 2: Core infra
     Base.metadata.create_all(engine)
     _seed_demo_data()
     _seed_duckdb()
-    log.info("ZetaBridge ready")
+
+    # Phase 3: Agent framework
+    _register_tools()
+    _orchestrator = create_orchestrator()
+    _benchmark_harness = BenchmarkHarness(_orchestrator)
+    _connector_registry = ConnectorRegistry()
+
+    # Multi-modal data layer
+    duck = get_duckdb()
+    structured_store = StructuredStore(duck)
+    unstructured_store = UnstructuredStore()
+    blob_store = BlobStore()
+    _data_router = DataRouter(structured_store, unstructured_store, blob_store)
+
+    # Seed unstructured store with demo documents
+    _seed_unstructured(unstructured_store)
+
+    # Co-pilot
+    _copilot = CoPilot(_orchestrator)
+
+    log.info("ZetaBridge ready — %d agents, %d tools, %d connectors",
+             len(_orchestrator.list_agents()),
+             len(ToolRegistry.list_names()),
+             len(_connector_registry.list_all()))
     yield
     log.info("ZetaBridge shutting down")
     if _duckdb_conn:
@@ -152,8 +402,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="ZetaBridge",
-    description="Cloud-native open data platform — catalog, lineage, query engine, AI",
-    version="0.1.0",
+    description="Cloud-native open data platform — catalog, lineage, query engine, AI agents, 360 co-pilot",
+    version="0.3.0",
     lifespan=lifespan,
 )
 
@@ -167,7 +417,7 @@ app.add_middleware(
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# CATALOG API — Federated metadata (replaces Gravitino + Lakekeeper + Unity)
+# HEALTH & PLATFORM STATUS
 # ══════════════════════════════════════════════════════════════════════════════
 
 class ColumnDef(BaseModel):
@@ -201,13 +451,36 @@ class CatalogTableResponse(BaseModel):
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "service": "zetabridge", "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {
+        "status": "ok",
+        "service": "zetabridge",
+        "version": "0.3.0",
+        "phase": "agentic",
+        "agents": len(_orchestrator.list_agents()) if _orchestrator else 0,
+        "tools": len(ToolRegistry.list_names()),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
 
+
+@app.get("/api/platform/status")
+async def platform_status():
+    """Full platform status: agents, tools, connectors, data stores."""
+    return {
+        "agents": _orchestrator.list_agents() if _orchestrator else [],
+        "tools": ToolRegistry.to_schema_list(),
+        "connectors": _connector_registry.get_stats() if _connector_registry else {},
+        "data_stores": _data_router.stats() if _data_router else {},
+        "benchmark_summary": _benchmark_harness.get_summary() if _benchmark_harness else {},
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CATALOG API — Federated metadata (replaces Gravitino + Lakekeeper + Unity)
+# ══════════════════════════════════════════════════════════════════════════════
 
 @app.post("/api/catalog/tables", response_model=CatalogTableResponse)
 async def register_table(req: RegisterTableRequest):
     """Register a table in the federated catalog.
-
     Replaces: Gravitino POST /api/metalakes/{m}/catalogs/{c}/schemas/{s}/tables
     """
     db = SessionLocal()
@@ -232,7 +505,6 @@ async def register_table(req: RegisterTableRequest):
         db.commit()
         db.refresh(entry)
 
-        # If DuckDB catalog, also create the table in DuckDB
         if req.catalog_type == "duckdb":
             _create_duckdb_table(req)
 
@@ -415,8 +687,7 @@ async def list_lineage_events(
 
 @app.get("/api/lineage/graph")
 async def lineage_graph():
-    """Build a D3-compatible lineage graph from stored events.
-    Returns nodes (jobs + datasets) and edges (input/output relationships)."""
+    """Build a D3-compatible lineage graph from stored events."""
     db = SessionLocal()
     try:
         events = db.query(LineageEvent).all()
@@ -433,7 +704,6 @@ async def lineage_graph():
                 ds_id = f"dataset:{ds_name}"
                 if ds_id not in nodes:
                     nodes[ds_id] = {"id": ds_id, "label": ds_name, "type": "dataset"}
-                edge_key = f"{ds_id}->{job_id}"
                 edges.append({"source": ds_id, "target": job_id, "type": "input"})
 
             for out in json.loads(e.outputs_json):
@@ -515,17 +785,11 @@ class SQLQueryRequest(BaseModel):
 
 @app.post("/api/query/nl", response_model=NLQueryResponse)
 async def nl_query(req: NLQueryRequest):
-    """Natural-language to SQL: discovers catalog schema, calls Arctic Text2SQL
-    via HuggingFace Inference API, executes on DuckDB.
-
-    Replaces: vLLM + Gravitino discovery + Doris/DuckDB routing."""
+    """Natural-language to SQL via Arctic Text2SQL + DuckDB execution."""
     import time
     start = time.monotonic()
 
-    # 1. Build schema context from catalog
     schema_ctx = _build_schema_context()
-
-    # 2. Generate SQL via HuggingFace
     try:
         sql = await _call_hf_text2sql(req.question, schema_ctx)
     except Exception as exc:
@@ -535,7 +799,6 @@ async def nl_query(req: NLQueryRequest):
             error=f"SQL generation failed: {exc}", schema_context=schema_ctx,
         )
 
-    # 3. Execute on DuckDB
     results = None
     row_count = 0
     error = None
@@ -554,7 +817,6 @@ async def nl_query(req: NLQueryRequest):
 
     duration_ms = int((time.monotonic() - start) * 1000)
 
-    # Log the query
     db = SessionLocal()
     try:
         db.add(QueryLog(
@@ -635,10 +897,8 @@ def _build_schema_context() -> str:
 
 async def _call_hf_text2sql(question: str, schema_context: str) -> str:
     """Call HuggingFace Inference API for Arctic Text2SQL.
-
-    Uses: HuggingFace Inference API (free tier) with
-    Snowflake/Arctic-Text2SQL-R1-7B (Apache-2.0).
-    Falls back to a rule-based SQL generator if HF is unavailable.
+    Uses: HuggingFace Inference API (free tier) with Snowflake/Arctic-Text2SQL-R1-7B.
+    Falls back to rule-based SQL generator if HF is unavailable.
     """
     prompt = (
         f"### Task\nGenerate a SQL query to answer: `{question}`\n\n"
@@ -671,15 +931,12 @@ async def _call_hf_text2sql(question: str, schema_context: str) -> str:
         except Exception as exc:
             log.warning("HF API call failed, using fallback: %s", exc)
 
-    # Fallback: simple keyword-based SQL generation
     return _fallback_sql_gen(question, schema_context)
 
 
 def _fallback_sql_gen(question: str, schema_context: str) -> str:
-    """Rule-based SQL fallback when HF API is unavailable.
-    Generates reasonable DuckDB SQL from question keywords."""
+    """Rule-based SQL fallback when HF API is unavailable."""
     q = question.lower()
-    # Extract table names from schema
     tables = []
     for line in schema_context.split("\n"):
         if line.startswith("CREATE TABLE"):
@@ -689,7 +946,6 @@ def _fallback_sql_gen(question: str, schema_context: str) -> str:
     if not tables:
         return "SELECT 'No tables registered' AS message"
 
-    # Match question to best table
     best_table = tables[0]
     for t in tables:
         if any(word in t.lower() for word in q.split()):
@@ -707,7 +963,258 @@ def _fallback_sql_gen(question: str, schema_context: str) -> str:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SEED DATA — Demo-ready from boot
+# PHASE 3: AGENT API — Multi-agent orchestration endpoints
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CoPilotRequest(BaseModel):
+    message: str
+    session_id: str | None = None
+    params: dict = {}
+
+
+class AgentTaskRequest(BaseModel):
+    agent: str
+    action: str
+    params: dict = {}
+
+
+@app.post("/api/copilot/chat")
+async def copilot_chat(req: CoPilotRequest):
+    """360 Co-Pilot: Natural language interface to the entire data platform.
+    Classifies intent, dispatches to specialized agents, returns unified response.
+    """
+    if not _copilot:
+        raise HTTPException(503, "Co-pilot not initialized")
+
+    result = await _copilot.chat(req.message, req.session_id, req.params)
+
+    # Log execution
+    db = SessionLocal()
+    try:
+        db.add(AgentExecutionLog(
+            session_id=result.get("session_id", ""),
+            plan_id=result.get("execution", {}).get("plan_id", ""),
+            intent=result.get("intent", ""),
+            user_input=req.message,
+            tasks_total=result.get("execution", {}).get("tasks", 0),
+            tasks_succeeded=result.get("execution", {}).get("succeeded", 0),
+            tasks_failed=result.get("execution", {}).get("failed", 0),
+            total_latency_ms=int(result.get("execution", {}).get("latency_ms", 0)),
+            result_json=json.dumps(result, default=str)[:10000],
+        ))
+        db.commit()
+    except Exception as exc:
+        log.error("Failed to log agent execution: %s", exc)
+    finally:
+        db.close()
+
+    return result
+
+
+@app.get("/api/copilot/sessions")
+async def copilot_sessions():
+    """List active co-pilot sessions."""
+    if not _copilot:
+        return []
+    return _copilot.list_sessions()
+
+
+@app.get("/api/copilot/sessions/{session_id}/history")
+async def copilot_history(session_id: str):
+    """Get conversation history for a session."""
+    if not _copilot:
+        return []
+    return _copilot.get_session_history(session_id)
+
+
+@app.post("/api/agents/execute")
+async def execute_agent(req: AgentTaskRequest):
+    """Execute a specific agent with a given action.
+    Bypasses co-pilot intent detection for direct agent invocation.
+    """
+    if not _orchestrator:
+        raise HTTPException(503, "Orchestrator not initialized")
+
+    agent = _orchestrator.get_agent(req.agent)
+    if not agent:
+        raise HTTPException(404, f"Agent '{req.agent}' not found. Available: {[a['name'] for a in _orchestrator.list_agents()]}")
+
+    ctx = AgentContext()
+    task_data = {"action": req.action, **req.params}
+    result = await agent.run(ctx, task_data)
+    return result.to_dict()
+
+
+@app.get("/api/agents")
+async def list_agents():
+    """List all registered agents and their capabilities."""
+    if not _orchestrator:
+        return []
+    return _orchestrator.list_agents()
+
+
+@app.get("/api/agents/stats")
+async def agent_stats():
+    """Aggregated agent performance stats."""
+    if not _orchestrator:
+        return {}
+    return _orchestrator.get_agent_stats()
+
+
+@app.get("/api/agents/tools")
+async def list_agent_tools(category: str | None = Query(None)):
+    """List all registered tools available to agents."""
+    return ToolRegistry.to_schema_list(category)
+
+
+@app.get("/api/agents/execution-history")
+async def agent_execution_history(limit: int = Query(50, le=200)):
+    """Get recent agent execution history."""
+    if not _orchestrator:
+        return []
+    return _orchestrator.get_execution_history(limit)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 3: BENCHMARK API — Performance testing endpoints
+# ══════════════════════════════════════════════════════════════════════════════
+
+class BenchmarkRequest(BaseModel):
+    tags: list[str] | None = None
+    category: str | None = None
+
+
+@app.post("/api/benchmarks/run")
+async def run_benchmarks(req: BenchmarkRequest = None):
+    """Run the full benchmark suite (or filtered by tags/category)."""
+    if not _benchmark_harness:
+        raise HTTPException(503, "Benchmark harness not initialized")
+
+    req = req or BenchmarkRequest()
+    result = await _benchmark_harness.run_suite(
+        tags=req.tags,
+        category=req.category,
+    )
+    return result
+
+
+@app.get("/api/benchmarks/results")
+async def benchmark_results():
+    """Get all benchmark results from this session."""
+    if not _benchmark_harness:
+        return []
+    return _benchmark_harness.get_results()
+
+
+@app.get("/api/benchmarks/summary")
+async def benchmark_summary():
+    """Get aggregated benchmark summary."""
+    if not _benchmark_harness:
+        return {"message": "No benchmarks run yet"}
+    return _benchmark_harness.get_summary()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 3: CONNECTOR API — Data source management
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.get("/api/connectors")
+async def list_connectors():
+    """List all available data connectors with status."""
+    if not _connector_registry:
+        return []
+    return _connector_registry.list_all()
+
+
+@app.get("/api/connectors/stats")
+async def connector_stats():
+    """Connector statistics."""
+    if not _connector_registry:
+        return {}
+    return _connector_registry.get_stats()
+
+
+@app.get("/api/connectors/active")
+async def active_connectors():
+    """List only active connectors."""
+    if not _connector_registry:
+        return []
+    return _connector_registry.list_active()
+
+
+@app.get("/api/connectors/health")
+async def connector_health():
+    """Health check all connectors."""
+    if not _connector_registry:
+        return []
+    return _connector_registry.health_check_all()
+
+
+@app.get("/api/connectors/{category}")
+async def connectors_by_category(category: str):
+    """List connectors filtered by category."""
+    if not _connector_registry:
+        return []
+    return _connector_registry.list_by_category(category)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 3: MULTI-MODAL DATA API
+# ══════════════════════════════════════════════════════════════════════════════
+
+class DocumentRequest(BaseModel):
+    content: str
+    metadata: dict = {}
+
+
+class SearchRequest(BaseModel):
+    query: str
+    top_k: int = 5
+
+
+@app.get("/api/data/stats")
+async def data_stats():
+    """Multi-modal data store statistics."""
+    if not _data_router:
+        return {}
+    return _data_router.stats()
+
+
+@app.post("/api/data/documents")
+async def add_document(req: DocumentRequest):
+    """Add an unstructured document to the vector store."""
+    if not _data_router:
+        raise HTTPException(503, "Data router not initialized")
+    doc_id = _data_router.unstructured.add_document(req.content, req.metadata)
+    return {"id": doc_id, "status": "stored"}
+
+
+@app.get("/api/data/documents")
+async def list_documents(limit: int = Query(100)):
+    """List stored documents."""
+    if not _data_router:
+        return []
+    return _data_router.unstructured.list_documents(limit)
+
+
+@app.post("/api/data/search")
+async def search_documents(req: SearchRequest):
+    """Semantic search across unstructured documents."""
+    if not _data_router:
+        raise HTTPException(503, "Data router not initialized")
+    return _data_router.unstructured.search(req.query, req.top_k)
+
+
+@app.get("/api/data/blobs")
+async def list_blobs(prefix: str = Query("")):
+    """List objects in blob store."""
+    if not _data_router:
+        return []
+    return _data_router.blob.list_keys(prefix)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SEED DATA
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _seed_demo_data():
@@ -718,7 +1225,6 @@ def _seed_demo_data():
             log.info("Demo data already exists, skipping seed")
             return
 
-        # ── Catalog: Iceberg tables ──
         iceberg_tables = [
             {
                 "catalog_name": "lakehouse_iceberg",
@@ -763,7 +1269,6 @@ def _seed_demo_data():
             },
         ]
 
-        # ── Catalog: Delta tables ──
         delta_tables = [
             {
                 "catalog_name": "lakehouse_delta",
@@ -794,7 +1299,6 @@ def _seed_demo_data():
             },
         ]
 
-        # ── Catalog: DuckDB analytics (queryable) ──
         duckdb_tables = [
             {
                 "catalog_name": "analytics_duckdb",
@@ -838,7 +1342,6 @@ def _seed_demo_data():
             )
             db.add(entry)
 
-        # ── Lineage events ──
         runs = [
             ("dbt.stg_events", "raw.events", "analytics.stg_events",
              "SELECT event_id, event_ts, event_type FROM raw.events WHERE event_ts >= CURRENT_DATE - 1"),
@@ -885,7 +1388,6 @@ def _seed_duckdb():
     try:
         duck.execute('CREATE SCHEMA IF NOT EXISTS "reporting"')
 
-        # Revenue table
         duck.execute('''
             CREATE TABLE IF NOT EXISTS "reporting"."revenue" (
                 "date" DATE, "product" VARCHAR, "region" VARCHAR,
@@ -911,7 +1413,6 @@ def _seed_duckdb():
             revenue_data,
         )
 
-        # Customers table
         duck.execute('''
             CREATE TABLE IF NOT EXISTS "reporting"."customers" (
                 "customer_id" VARCHAR, "name" VARCHAR, "segment" VARCHAR,
@@ -941,6 +1442,56 @@ def _seed_duckdb():
         log.info("Seeded DuckDB: %d revenue rows, %d customers", len(revenue_data), len(customer_data))
     except Exception as exc:
         log.error("DuckDB seed failed: %s", exc)
+
+
+def _seed_unstructured(store):
+    """Seed the unstructured store with demo documents for vector search."""
+    docs = [
+        {
+            "content": "ZetaBridge Architecture: The platform uses a federated catalog approach replacing Apache Gravitino, Lakekeeper, and Unity Catalog with a single unified REST API. All metadata is stored in Neon Postgres.",
+            "metadata": {"type": "architecture", "topic": "catalog"},
+        },
+        {
+            "content": "Data Lineage in ZetaBridge: Every ETL job, dbt model, and agent execution emits OpenLineage events. These are stored in Postgres and visualized as a D3 force-directed graph showing jobs and datasets.",
+            "metadata": {"type": "architecture", "topic": "lineage"},
+        },
+        {
+            "content": "Query Engine: Natural language queries are translated to SQL using Snowflake's Arctic Text2SQL R1-7B model via HuggingFace Inference API. SQL is executed on embedded DuckDB for analytics.",
+            "metadata": {"type": "architecture", "topic": "query"},
+        },
+        {
+            "content": "Agent Framework: ZetaBridge uses 6 specialized agents — CatalogAgent, QueryAgent, LineageAgent, ETLAgent, DataQualityAgent, and ConnectorAgent. They share a ToolRegistry and execute through a DAG-based orchestrator.",
+            "metadata": {"type": "architecture", "topic": "agents"},
+        },
+        {
+            "content": "ETL Pipeline Support: The platform integrates with dbt-core for SQL transformations, dlt for Python data loading, and Airbyte for 300+ source connectors. All pipeline runs emit lineage events.",
+            "metadata": {"type": "architecture", "topic": "etl"},
+        },
+        {
+            "content": "Connector Registry: ZetaBridge supports 17 OSS connectors including Iceberg, Delta Lake, DuckDB, Neon Postgres, dbt, dlt, Airbyte, Kafka, OpenSearch, and more. Each connector is declaratively defined with protocol, capabilities, and health status.",
+            "metadata": {"type": "architecture", "topic": "connectors"},
+        },
+        {
+            "content": "Benchmark Harness: Agent performance is measured across latency, accuracy, and end-to-end metrics. The built-in test suite includes 20+ scenarios covering intent classification, agent execution, and system throughput.",
+            "metadata": {"type": "architecture", "topic": "benchmarks"},
+        },
+        {
+            "content": "Multi-Modal Data: ZetaBridge supports structured data (SQL via DuckDB), unstructured data (documents with vector similarity search), and binary objects (S3-compatible blob store). The DataRouter routes queries to the correct store.",
+            "metadata": {"type": "architecture", "topic": "multimodal"},
+        },
+        {
+            "content": "Revenue Analysis Q1 2026: Total revenue across all products reached $2.3M with ZetaBridge Enterprise leading at 45% of total. US-East region contributed the most at 28% of revenue.",
+            "metadata": {"type": "report", "topic": "revenue"},
+        },
+        {
+            "content": "Customer Segmentation: Enterprise customers represent 30% of the base but 65% of LTV. SMB segment is growing fastest at 15% MoM. Consumer segment has highest churn at 8%.",
+            "metadata": {"type": "report", "topic": "customers"},
+        },
+    ]
+
+    for doc in docs:
+        store.add_document(doc["content"], doc["metadata"])
+    log.info("Seeded unstructured store with %d documents", len(docs))
 
 
 # ── Run ───────────────────────────────────────────────────────────────────────
