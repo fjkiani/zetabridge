@@ -96,7 +96,7 @@ export default function DashboardHome() {
         <KPICard icon={Database} label="Total Tables" value={String(platform?.data_stores?.tables ?? 7)} sub="3 catalogs" color={teal} />
         <KPICard icon={Bot} label="Active Agents" value={String(platform?.agents?.active ?? 6)} sub={`${platform?.tools?.total ?? 12} tools`} color="#a78bfa" />
         <KPICard icon={Plug} label="Connectors" value={String(platform?.connectors?.total ?? 17)} sub={`${platform?.connectors?.active ?? 15} active`} color="#34d399" />
-        <KPICard icon={ShieldCheck} label="Quality Score" value="A" sub={`${Math.round((platform?.benchmark_summary?.pass_rate ?? 0.88) * 100)}% pass rate`} color="#fbbf24" />
+        <KPICard icon={ShieldCheck} label="Quality Score" value="A" sub={`${Math.round((platform?.benchmark_summary?.pass_rate ?? 0.88) * 1)}% pass rate`} color="#fbbf24" />
       </div>
 
       {/* Agent Status Grid */}
