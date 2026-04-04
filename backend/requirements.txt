@@ -13,5 +13,5 @@ databricks-sdk==0.40.0
 openlineage-python==1.27.0
 huggingface-hub==0.27.1
 deltalake==0.24.0
-pyarrow==18.1.0
+pyarrow>=14.0.1,<17
 requests==2.32.3
