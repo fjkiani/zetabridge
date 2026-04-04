@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import {
   Database as DatabaseIcon,
   Activity,
   X,
+  Loader2,
 } from "lucide-react";
 
 interface GraphNode {
@@ -28,44 +29,105 @@ interface GraphEdge {
   target: string | GraphNode;
 }
 
+/** Backend legacy returns `label` not `name`; Marquez may use other shapes. */
+function normalizeLineageGraph(raw: unknown): { nodes: GraphNode[]; edges: GraphEdge[] } {
+  const empty = { nodes: [] as GraphNode[], edges: [] as GraphEdge[] };
+  if (!raw || typeof raw !== "object") return empty;
+
+  const r = raw as Record<string, unknown>;
+  let rawNodes: unknown[] = Array.isArray(r.nodes) ? (r.nodes as unknown[]) : [];
+  let rawEdges: unknown[] = Array.isArray(r.edges) ? (r.edges as unknown[]) : [];
+
+  if (rawNodes.length === 0 && Array.isArray(r.graph)) {
+    const g = r.graph as unknown[];
+    const maybeVertices = g.filter(
+      (x) => x && typeof x === "object" && (x as { id?: string }).id != null,
+    );
+    if (maybeVertices.length > 0) rawNodes = maybeVertices;
+  }
+
+  const nodes: GraphNode[] = rawNodes
+    .filter((n): n is Record<string, unknown> => !!n && typeof n === "object")
+    .map((n) => {
+      const id = String(n.id ?? "").trim();
+      if (!id) return null;
+      const type: "job" | "dataset" = n.type === "job" ? "job" : "dataset";
+      const name =
+        String(n.name ?? n.label ?? n.dataset ?? n.id ?? "unknown").trim() || id;
+      const namespace = String(n.namespace ?? n.jobNamespace ?? "");
+      return { id, type, name, namespace };
+    })
+    .filter((n): n is GraphNode => n !== null);
+
+  const idSet = new Set(nodes.map((n) => n.id));
+  const edges: GraphEdge[] = rawEdges
+    .filter((e): e is Record<string, unknown> => !!e && typeof e === "object")
+    .map((e) => {
+      const s = e.source;
+      const t = e.target;
+      const src = typeof s === "string" ? s : (s as GraphNode | undefined)?.id;
+      const tgt = typeof t === "string" ? t : (t as GraphNode | undefined)?.id;
+      return { source: String(src ?? ""), target: String(tgt ?? "") };
+    })
+    .filter((e) => e.source && e.target && idSet.has(e.source) && idSet.has(e.target));
+
+  return { nodes, edges };
+}
+
+function labelText(d: GraphNode): string {
+  const n = d?.name ?? "";
+  return n.length > 18 ? `${n.slice(0, 16)}…` : n;
+}
+
 export default function LineageGraph() {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
 
-  const { data: graph } = useQuery({
+  const { data: graphRaw, isPending: graphPending, isError: graphError } = useQuery({
     queryKey: ["/api/lineage/graph"],
-    queryFn: async () => { const r = await apiRequest("GET", "/api/lineage/graph"); return r.json(); },
+    queryFn: async () => {
+      const r = await apiRequest("GET", "/api/lineage/graph");
+      return r.json();
+    },
   });
 
   const { data: stats } = useQuery({
     queryKey: ["/api/lineage/stats"],
-    queryFn: async () => { const r = await apiRequest("GET", "/api/lineage/stats"); return r.json(); },
+    queryFn: async () => {
+      const r = await apiRequest("GET", "/api/lineage/stats");
+      return r.json();
+    },
   });
 
+  const graph = useMemo(() => normalizeLineageGraph(graphRaw), [graphRaw]);
+
   useEffect(() => {
-    if (!graph || !svgRef.current || !containerRef.current) return;
+    if (!svgRef.current || !containerRef.current) return;
 
     const container = containerRef.current;
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    // Clear previous
     d3.select(svgRef.current).selectAll("*").remove();
 
-    const svg = d3.select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height);
+    if (graph.nodes.length === 0) return;
 
-    // Zoom
+    const nodes = graph.nodes.map((n) => ({ ...n }));
+    const edges = graph.edges.map((e) => ({ ...e }));
+
+    const svg = d3.select(svgRef.current).attr("width", width).attr("height", height);
+
     const g = svg.append("g");
-    const zoom = d3.zoom<SVGSVGElement, unknown>()
+    const zoom = d3
+      .zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.3, 3])
       .on("zoom", (event) => g.attr("transform", event.transform));
     svg.call(zoom);
 
-    // Arrow marker
-    svg.append("defs").append("marker")
+    svg
+      .append("defs")
+      .append("marker")
       .attr("id", "arrowhead")
       .attr("viewBox", "0 -5 10 10")
       .attr("refX", 22)
@@ -77,17 +139,15 @@ export default function LineageGraph() {
       .attr("d", "M0,-5L10,0L0,5")
       .attr("fill", "hsl(220, 16%, 28%)");
 
-    const nodes: GraphNode[] = graph.nodes.map((n: any) => ({ ...n }));
-    const edges: GraphEdge[] = graph.edges.map((e: any) => ({ source: e.source, target: e.target }));
-
-    const simulation = d3.forceSimulation<GraphNode>(nodes)
-      .force("link", d3.forceLink<GraphNode, any>(edges).id(d => d.id).distance(120))
+    const simulation = d3
+      .forceSimulation<GraphNode>(nodes)
+      .force("link", d3.forceLink<GraphNode, GraphEdge>(edges).id((d) => d.id).distance(120))
       .force("charge", d3.forceManyBody().strength(-300))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("collision", d3.forceCollide().radius(35));
 
-    // Edges
-    const link = g.append("g")
+    const link = g
+      .append("g")
       .selectAll("line")
       .data(edges)
       .join("line")
@@ -96,70 +156,73 @@ export default function LineageGraph() {
       .attr("stroke-width", 1.5)
       .attr("marker-end", "url(#arrowhead)");
 
-    // Node groups
-    const node = g.append("g")
+    const node = g
+      .append("g")
       .selectAll<SVGGElement, GraphNode>("g")
       .data(nodes)
       .join("g")
       .attr("class", "lineage-node cursor-pointer")
-      .call(d3.drag<SVGGElement, GraphNode>()
-        .on("start", (event, d) => {
-          if (!event.active) simulation.alphaTarget(0.3).restart();
-          d.fx = d.x;
-          d.fy = d.y;
-        })
-        .on("drag", (event, d) => {
-          d.fx = event.x;
-          d.fy = event.y;
-        })
-        .on("end", (event, d) => {
-          if (!event.active) simulation.alphaTarget(0);
-          d.fx = null;
-          d.fy = null;
-        })
+      .call(
+        d3
+          .drag<SVGGElement, GraphNode>()
+          .on("start", (event, d) => {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+          })
+          .on("drag", (event, d) => {
+            d.fx = event.x;
+            d.fy = event.y;
+          })
+          .on("end", (event, d) => {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+          }),
       );
 
-    // Node circles
-    node.append("circle")
+    node
+      .append("circle")
       .attr("r", 16)
-      .attr("fill", d => d.type === "job" ? "hsl(193, 80%, 25%)" : "hsl(220, 20%, 18%)")
-      .attr("stroke", d => d.type === "job" ? "hsl(193, 100%, 50%)" : "hsl(220, 16%, 35%)")
+      .attr("fill", (d) => (d?.type === "job" ? "hsl(193, 80%, 25%)" : "hsl(220, 20%, 18%)"))
+      .attr("stroke", (d) => (d?.type === "job" ? "hsl(193, 100%, 50%)" : "hsl(220, 16%, 35%)"))
       .attr("stroke-width", 2);
 
-    // Node icons (text-based)
-    node.append("text")
+    node
+      .append("text")
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "central")
       .attr("font-size", "10px")
-      .attr("fill", d => d.type === "job" ? "hsl(193, 100%, 70%)" : "hsl(210, 20%, 70%)")
-      .text(d => d.type === "job" ? "⚙" : "▦");
+      .attr("fill", (d) => (d?.type === "job" ? "hsl(193, 100%, 70%)" : "hsl(210, 20%, 70%)"))
+      .text((d) => (d?.type === "job" ? "⚙" : "▦"));
 
-    // Labels
-    node.append("text")
+    node
+      .append("text")
       .attr("dy", 28)
       .attr("text-anchor", "middle")
       .attr("font-size", "10px")
       .attr("fill", "hsl(210, 20%, 70%)")
       .attr("font-family", "'DM Sans', sans-serif")
-      .text(d => d.name.length > 18 ? d.name.slice(0, 16) + "…" : d.name);
+      .text((d) => labelText(d));
 
-    node.on("click", (_event: any, d: GraphNode) => {
+    node.on("click", (_event: unknown, d: GraphNode) => {
       setSelectedNode(d);
     });
 
     simulation.on("tick", () => {
       link
-        .attr("x1", (d: any) => d.source.x)
-        .attr("y1", (d: any) => d.source.y)
-        .attr("x2", (d: any) => d.target.x)
-        .attr("y2", (d: any) => d.target.y);
-      node.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
+        .attr("x1", (d: GraphEdge & { source: GraphNode; target: GraphNode }) => d.source?.x ?? 0)
+        .attr("y1", (d: GraphEdge & { source: GraphNode; target: GraphNode }) => d.source?.y ?? 0)
+        .attr("x2", (d: GraphEdge & { source: GraphNode; target: GraphNode }) => d.target?.x ?? 0)
+        .attr("y2", (d: GraphEdge & { source: GraphNode; target: GraphNode }) => d.target?.y ?? 0);
+      node.attr("transform", (d: GraphNode) => `translate(${d.x ?? 0},${d.y ?? 0})`);
     });
 
-    // Initial zoom
     svg.call(zoom.transform, d3.zoomIdentity.translate(width * 0.1, height * 0.1).scale(0.8));
 
-    return () => { simulation.stop(); };
+    return () => {
+      simulation.stop();
+    };
   }, [graph]);
 
   return (
@@ -193,8 +256,36 @@ export default function LineageGraph() {
       </div>
 
       {/* Graph */}
-      <div className="flex-1 relative" ref={containerRef}>
+      <div className="flex-1 relative min-h-[280px]" ref={containerRef}>
         <svg ref={svgRef} className="w-full h-full bg-background" data-testid="lineage-svg" />
+
+        {graphPending && (
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/85 text-muted-foreground text-sm"
+            data-testid="lineage-loading"
+          >
+            <Loader2 className="w-5 h-5 animate-spin text-primary" />
+            <p>Loading lineage graph…</p>
+          </div>
+        )}
+
+        {!graphPending && graphError && (
+          <div
+            className="absolute inset-0 flex items-center justify-center px-6 text-center text-sm text-destructive"
+            data-testid="lineage-error"
+          >
+            Could not load lineage graph. Check the API and try again.
+          </div>
+        )}
+
+        {!graphPending && !graphError && graph.nodes.length === 0 && (
+          <div
+            className="absolute inset-0 flex items-center justify-center px-6 text-center text-sm text-muted-foreground"
+            data-testid="lineage-empty"
+          >
+            No lineage data yet. Run a query first so jobs and datasets appear here.
+          </div>
+        )}
 
         {/* Selected node detail */}
         {selectedNode && (
