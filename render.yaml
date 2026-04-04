@@ -1,7 +1,5 @@
-# Render Blueprint — validate against https://render.com/docs/blueprint-spec before deploy.
-# - Gravitino: listens on Render's PORT via scripts/gravitino-render-entrypoint.sh (maps to gravitino.server.webserver.httpPort).
-# - Marquez: official image env vars differ by version — confirm MARQUEZ_* names in the image you run.
-# - Static UI: set VITE_API_BASE at build time to the public zetabridge-api URL (e.g. https://zetabridge-api.onrender.com).
+# Render Blueprint for ZetaBridge
+# API + Postgres + Static Dashboard
 
 databases:
   - name: zetabridge-pg
@@ -17,6 +15,7 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
+    plan: free
     envVars:
       - key: USE_LEGACY_STORE
         value: "1"
@@ -54,54 +53,14 @@ services:
         sync: false
       - key: MARQUEZ_URL
         sync: false
+      - key: PYTHON_VERSION
+        value: "3.11.0"
 
-  - type: web
-    name: zetabridge-gravitino
-    runtime: docker
-    dockerfilePath: ./Dockerfile.gravitino
-    dockerContext: .
-    plan: free
-    healthCheckPath: /api/metalakes
-    envVars:
-      - key: GRAVITINO_SERVER_SHUTDOWN_TIMEOUT
-        value: "3000"
-
-  - type: web
-    name: zetabridge-marquez
-    runtime: docker
-    image:
-      url: docker.io/marquezproject/marquez:latest
-    plan: free
-    healthCheckPath: /api/v1/namespaces
-    envVars:
-      - key: MARQUEZ_DB_HOST
-        fromDatabase:
-          name: zetabridge-pg
-          property: host
-      - key: MARQUEZ_DB_PORT
-        fromDatabase:
-          name: zetabridge-pg
-          property: port
-      - key: MARQUEZ_DB_USER
-        fromDatabase:
-          name: zetabridge-pg
-          property: user
-      - key: MARQUEZ_DB_PASSWORD
-        fromDatabase:
-          name: zetabridge-pg
-          property: password
-      - key: MARQUEZ_DB
-        value: marquez
-
-  - type: static
-    name: zetabridge-ui
+staticSites:
+  - name: zetabridge-ui
     rootDir: artifacts/zetabridge
     buildCommand: npm install && npm run build
     staticPublishPath: dist/public
     envVars:
-      - key: PORT
-        value: "5173"
-      - key: BASE_PATH
-        value: /
       - key: VITE_API_BASE
         sync: false
