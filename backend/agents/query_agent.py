@@ -1,5 +1,4 @@
-"""NL→SQL via Hugging Face InferenceClient (Arctic Text2SQL) with HTTP fallbacks."""
-
+"""NL->SQL via Groq (Llama 3.1 8B) with HuggingFace fallback."""
 from __future__ import annotations
 
 import logging
@@ -7,7 +6,11 @@ import re
 from typing import Any
 
 import httpx
-from huggingface_hub import InferenceClient
+
+try:
+    from huggingface_hub import InferenceClient
+except ImportError:
+    InferenceClient = None  # type: ignore[assignment,misc]
 
 from catalog.gravitino_client import GravitinoClient
 from config import cfg
@@ -17,16 +20,50 @@ from connectors.snowflake_connector import SnowflakeConnector
 
 log = logging.getLogger("zetabridge.query_agent")
 
-_client: InferenceClient | None = None
+_hf_client: InferenceClient | None = None
+
+GROQ_MODEL = "llama-3.1-8b-instant"
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
-def get_inference_client() -> InferenceClient | None:
-    global _client
-    if not cfg.HF_API_TOKEN:
+def _groq_text2sql(prompt: str) -> str:
+    """Call Groq chat completions API for SQL generation."""
+    if not cfg.GROQ_API_KEY:
+        return ""
+    with httpx.Client(timeout=60.0) as client:
+        resp = client.post(
+            GROQ_URL,
+            headers={
+                "Authorization": f"Bearer {cfg.GROQ_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": GROQ_MODEL,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a SQL expert. Given a question and database schema, generate ONLY the SQL query. No explanation, no markdown fences, just raw SQL.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                "temperature": 0.1,
+                "max_tokens": 300,
+            },
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        content = data["choices"][0]["message"]["content"]
+        return content.strip()
+
+
+def get_inference_client():
+    """Lazy-init HuggingFace InferenceClient (fallback path)."""
+    global _hf_client
+    if InferenceClient is None or not cfg.HF_API_TOKEN:
         return None
-    if _client is None:
-        _client = InferenceClient(token=cfg.HF_API_TOKEN)
-    return _client
+    if _hf_client is None:
+        _hf_client = InferenceClient(token=cfg.HF_API_TOKEN)
+    return _hf_client
 
 
 def _parse_generated_sql(raw: str) -> str:
@@ -42,7 +79,7 @@ def _parse_generated_sql(raw: str) -> str:
 
 
 def _hf_text_generation_api(prompt: str) -> str:
-    """Direct Inference API (same contract as legacy httpx path)."""
+    """Direct HF Inference API (HTTP fallback)."""
     model = cfg.HF_TEXT2SQL_MODEL
     url = "https://api-inference.huggingface.co/models/" + model
     with httpx.Client(timeout=120.0) as client:
@@ -60,40 +97,37 @@ def _hf_text_generation_api(prompt: str) -> str:
         )
         resp.raise_for_status()
         data = resp.json()
-    if isinstance(data, list) and data:
-        item = data[0]
-        if isinstance(item, dict):
-            return str(item.get("generated_text", ""))
-        return str(item)
-    if isinstance(data, dict):
-        return str(data.get("generated_text", ""))
-    return ""
+        if isinstance(data, list) and data:
+            item = data[0]
+            if isinstance(item, dict):
+                return str(item.get("generated_text", ""))
+            return str(item)
+        if isinstance(data, dict):
+            return str(data.get("generated_text", ""))
+        return ""
 
 
 def generate_sql_from_prompt(prompt: str) -> str:
-    """Try InferenceClient.text_generation, then same call with model= kwarg, then HTTP API."""
-    if not cfg.HF_API_TOKEN:
-        return ""
+    """Groq first, then HF InferenceClient, then HF HTTP API."""
+    # --- Primary: Groq Llama 3.1 8B ---
+    try:
+        raw = _groq_text2sql(prompt)
+        sql = _parse_generated_sql(raw)
+        if sql and sql != ";":
+            log.info("Groq generated SQL successfully")
+            return sql
+    except Exception as exc:
+        log.warning("Groq inference failed: %s", exc)
 
-    model_id = cfg.HF_TEXT2SQL_MODEL
-    client = get_inference_client()
-
-    if client is not None:
-        try:
-            raw = client.text_generation(
-                prompt,
-                model=model_id,
-                max_new_tokens=300,
-                temperature=0.1,
-                stop_sequences=[";", "\n\n"],
-            )
-            sql = _parse_generated_sql(str(raw))
-            if sql and sql != ";":
-                return sql
-        except TypeError:
+    # --- Fallback 1: HF InferenceClient ---
+    if cfg.HF_API_TOKEN:
+        model_id = cfg.HF_TEXT2SQL_MODEL
+        client = get_inference_client()
+        if client is not None:
             try:
                 raw = client.text_generation(
                     prompt,
+                    model=model_id,
                     max_new_tokens=300,
                     temperature=0.1,
                     stop_sequences=[";", "\n\n"],
@@ -101,18 +135,30 @@ def generate_sql_from_prompt(prompt: str) -> str:
                 sql = _parse_generated_sql(str(raw))
                 if sql and sql != ";":
                     return sql
+            except TypeError:
+                try:
+                    raw = client.text_generation(
+                        prompt,
+                        max_new_tokens=300,
+                        temperature=0.1,
+                        stop_sequences=[";", "\n\n"],
+                    )
+                    sql = _parse_generated_sql(str(raw))
+                    if sql and sql != ";":
+                        return sql
+                except Exception as exc:
+                    log.warning("HF InferenceClient (no model kwarg) failed: %s", exc)
             except Exception as exc:
-                log.warning("InferenceClient text_generation (no model kwarg) failed: %s", exc)
-        except Exception as exc:
-            log.warning("InferenceClient text_generation failed: %s", exc)
+                log.warning("HF InferenceClient failed: %s", exc)
 
-    try:
-        raw = _hf_text_generation_api(prompt)
-        sql = _parse_generated_sql(raw)
-        if sql and sql != ";":
-            return sql
-    except Exception as exc:
-        log.warning("HF inference HTTP fallback failed: %s", exc)
+        # --- Fallback 2: HF HTTP API ---
+        try:
+            raw = _hf_text_generation_api(prompt)
+            sql = _parse_generated_sql(raw)
+            if sql and sql != ";":
+                return sql
+        except Exception as exc:
+            log.warning("HF HTTP fallback failed: %s", exc)
 
     return ""
 
@@ -131,7 +177,6 @@ def get_schema_context(source: str) -> str:
     except Exception as exc:
         log.warning("get_schema_context failed for %s: %s", source, exc)
         tables = []
-
     for t in tables[:30]:
         ts = t.get("TABLE_SCHEMA")
         tn = t.get("TABLE_NAME") or t.get("name")
@@ -159,7 +204,7 @@ def nl_to_sql(question: str, source: str = "duckdb") -> dict[str, Any]:
 
 
 def _heuristic_sql(question: str, schema_context: str) -> str:
-    """Last-resort SQL when HF is unavailable (DuckDB-friendly quoted identifiers)."""
+    """Last-resort SQL when all inference is unavailable."""
     q = question.lower()
     tables: list[str] = []
     for line in schema_context.split("\n"):
@@ -204,5 +249,5 @@ def execute_nl_query(question: str, source: str = "duckdb") -> dict[str, Any]:
 
 
 def extract_input_tables(sql: str) -> list[str]:
-    found = re.findall(r"(?i)FROM\s+([`\w.]+)", sql)
+    found = re.findall(r"(?i)FROM\s+[`\w.]+", sql)
     return list({t.strip("`") for t in found})
