@@ -91,13 +91,13 @@ export default function Benchmarks() {
                 <span className="text-xs text-muted-foreground">Pass Rate</span>
               </div>
               <p className="text-2xl font-bold tabular-nums text-primary">
-                {Math.round((activeSummary.pass_rate ?? 0) * 100)}%
+                {Math.round((activeSummary.pass_rate ?? 0) * 1)}%
               </p>
               {/* Pass rate gauge */}
               <div className="w-full h-2 bg-muted/30 rounded-full mt-2 overflow-hidden">
                 <div
                   className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${(activeSummary.pass_rate ?? 0) * 100}%` }}
+                  style={{ width: `${(activeSummary.pass_rate ?? 0) * 1}%` }}
                 />
               </div>
             </CardContent>
