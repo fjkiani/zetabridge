@@ -74,10 +74,11 @@ if cfg.USE_LEGACY_STORE:
 
     app.include_router(query_router.router)
 else:
-    from routers import catalog, connectors, copilot, lineage, query
+    from routers import catalog, connectors, copilot, lineage, query, federation
 
     app.include_router(query.router)
     app.include_router(catalog.router)
     app.include_router(lineage.router)
     app.include_router(connectors.router)
     app.include_router(copilot.router)
+    app.include_router(federation.router)
