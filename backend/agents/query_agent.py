@@ -42,7 +42,7 @@ def _groq_text2sql(prompt: str) -> str:
                 "messages": [
                     {
                         "role": "system",
-                        "content": "You are a SQL expert. Given a question and database schema, generate ONLY the SQL query. No explanation, no markdown fences, just raw SQL.",
+                        "content": "You are a SQL expert. Given a question and database schema with column details, generate ONLY the SQL query. Use the exact table and column names from the schema. No explanation, no markdown fences, just raw SQL.",
                     },
                     {"role": "user", "content": prompt},
                 ],
@@ -151,32 +151,47 @@ def generate_sql_from_prompt(prompt: str) -> str:
             except Exception as exc:
                 log.warning("HF InferenceClient failed: %s", exc)
 
-        # --- Fallback 2: HF HTTP API ---
-        try:
-            raw = _hf_text_generation_api(prompt)
-            sql = _parse_generated_sql(raw)
-            if sql and sql != ";":
-                return sql
-        except Exception as exc:
-            log.warning("HF HTTP fallback failed: %s", exc)
+    # --- Fallback 2: HF HTTP API ---
+    try:
+        raw = _hf_text_generation_api(prompt)
+        sql = _parse_generated_sql(raw)
+        if sql and sql != ";":
+            return sql
+    except Exception as exc:
+        log.warning("HF HTTP fallback failed: %s", exc)
 
     return ""
 
 
+def _get_connector(source: str):
+    """Return the appropriate connector for the source."""
+    if source == "snowflake":
+        return SnowflakeConnector()
+    elif source == "databricks":
+        return DatabricksConnector()
+    return DuckDBConnector()
+
+
 def get_schema_context(source: str) -> str:
+    """Build rich schema context with table names AND column details."""
     lines: list[str] = []
+    connector = None
     try:
         if source == "snowflake":
-            tables = SnowflakeConnector().list_tables()
+            connector = SnowflakeConnector()
+            tables = connector.list_tables()
         elif source == "databricks":
-            tables = DatabricksConnector().list_unity_catalog_tables()
+            connector = DatabricksConnector()
+            tables = connector.list_unity_catalog_tables()
         elif source == "unified":
             tables = GravitinoClient().list_all_tables()
         else:
-            tables = DuckDBConnector().list_tables()
+            connector = DuckDBConnector()
+            tables = connector.list_tables()
     except Exception as exc:
         log.warning("get_schema_context failed for %s: %s", source, exc)
         tables = []
+
     for t in tables[:30]:
         ts = t.get("TABLE_SCHEMA")
         tn = t.get("TABLE_NAME") or t.get("name")
@@ -184,7 +199,24 @@ def get_schema_context(source: str) -> str:
             name = str(ts) + "." + str(tn)
         else:
             name = str(tn or t.get("name", "unknown"))
-        lines.append("- " + name)
+        # Fetch column details for each table
+        col_info = ""
+        if connector and hasattr(connector, "get_schema"):
+            try:
+                cols = connector.get_schema(name)
+                if cols:
+                    col_names = []
+                    for c in cols[:20]:
+                        cname = c.get("name") or c.get("COLUMN_NAME") or c.get("column_name", "")
+                        ctype = c.get("type") or c.get("DATA_TYPE") or c.get("data_type", "")
+                        if cname:
+                            col_names.append(f"{cname} ({ctype})" if ctype else str(cname))
+                    if col_names:
+                        col_info = " | columns: " + ", ".join(col_names)
+            except Exception as exc:
+                log.debug("Column fetch failed for %s: %s", name, exc)
+        lines.append("- " + name + col_info)
+
     return "Available tables:\n" + "\n".join(lines)
 
 
@@ -195,6 +227,9 @@ def nl_to_sql(question: str, source: str = "duckdb") -> dict[str, Any]:
         + question
         + "`\n\n### Database schema\n"
         + schema_ctx
+        + "\n\nIMPORTANT: Use the exact table and column names shown above. "
+        + "For aggregations use SUM/AVG/COUNT as appropriate. "
+        + "Always include GROUP BY when selecting non-aggregated columns with aggregates."
         + "\n\n### Answer\n```sql\n"
     )
     sql = generate_sql_from_prompt(prompt)
@@ -209,7 +244,7 @@ def _heuristic_sql(question: str, schema_context: str) -> str:
     tables: list[str] = []
     for line in schema_context.split("\n"):
         if line.strip().startswith("-"):
-            name = line.strip().lstrip("-").strip()
+            name = line.strip().lstrip("-").strip().split("|")[0].strip()
             if name:
                 tables.append(name)
     if not tables:
@@ -225,7 +260,7 @@ def _heuristic_sql(question: str, schema_context: str) -> str:
         fq = '"' + parts[0] + '"."' + parts[1] + '"'
     else:
         fq = '"' + parts[0] + '"'
-    if any(w in q for w in ["count", "how many", "total"]):
+    if any(w in q for w in ["count", "how many"]):
         return "SELECT COUNT(*) AS total FROM " + fq + ";"
     return "SELECT * FROM " + fq + " LIMIT 20;"
 
