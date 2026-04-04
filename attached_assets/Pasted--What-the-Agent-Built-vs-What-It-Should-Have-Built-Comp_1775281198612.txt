@@ -1,0 +1,57 @@
+🟡 What the Agent Built vs. What It Should Have Built
+Component	What exists	What's needed
+React dashboard	✅ Running, all 8 pages render	Wire to FastAPI not Express mock
+Express API server	✅ Running on 8080 with mock data	Should be a proxy to FastAPI, not the data source
+Python FastAPI	✅ Running on 8000, seeded DuckDB	Should be the actual API the dashboard calls
+Co-Pilot NL→SQL	⚠️ Running but keyword fallback only	Needs HF_API_TOKEN wired to the actual model
+Catalog data	⚠️ Mock constants in Express	Should call GET /api/catalog on FastAPI
+Lineage graph	⚠️ Mock D3 data	Should call FastAPI lineage endpoints
+Connectors	⚠️ 17 static config objects	Should call FastAPI /connectors which has real registry
+Benchmarks	⚠️ Hardcoded 94% pass rate	Should call FastAPI /benchmarks/run
+🎯 The One Prompt to Fix All of This
+Send this to the Replit agent right now:
+
+text
+The Python FastAPI backend is running on port 8000 but the React 
+dashboard is still calling the Express mock server on port 8080. 
+I need you to wire them together properly. Here is the exact plan:
+
+1. PROXY MODE: Update the Express server (port 8080) to act as a 
+proxy to the FastAPI backend (port 8000) for all /api routes. 
+Use http-proxy-middleware or axios to forward requests. 
+Express becomes a thin pass-through, not a data source.
+
+2. WIRE THESE ENDPOINTS specifically:
+   - GET /api/agents → proxy to FastAPI GET /agents
+   - GET /api/agents/:name/stats → proxy to FastAPI GET /agents/{name}/stats
+   - GET /api/catalog → proxy to FastAPI GET /catalog/tables
+   - POST /api/catalog → proxy to FastAPI POST /catalog/tables
+   - GET /api/lineage → proxy to FastAPI GET /lineage
+   - GET /api/connectors → proxy to FastAPI GET /connectors
+   - POST /api/copilot/chat → proxy to FastAPI POST /copilot/chat
+   - GET /api/benchmarks → proxy to FastAPI GET /benchmarks
+   - POST /api/query → proxy to FastAPI POST /query
+
+3. For any FastAPI endpoint that doesn't exist yet, add it to 
+backend/main.py using the existing agent/tool architecture — 
+do NOT fall back to mock data.
+
+4. Test the Co-Pilot page end-to-end: send a real message, 
+confirm it hits FastAPI, confirm the NL→SQL agent processes it, 
+confirm the response renders in the UI.
+
+5. Take a screenshot of the Co-Pilot page with a real response 
+from FastAPI (not mock data) to confirm the wire is complete.
+
+Do not keep the Express mock data layer. Replace it with 
+real FastAPI calls.
+The Bigger Issue — Architecture Smell
+There's a structural problem worth flagging. The agent chose to keep two separate servers (Express + FastAPI) instead of having the React app call FastAPI directly. This adds unnecessary complexity. The right architecture for ZetaBridge is:
+
+text
+React (Vite, port 5173)
+    ↓  direct API calls
+Python FastAPI (port 8000)
+    ↓
+DuckDB + agent framework
+Express shouldn't exist in this stack at all — it was only there because your original repo had a JS-based dashboard with its own Express backend. The agent should have ripped out Express and replaced it with FastAPI as the single backend. That's the refactor worth asking for after the proxy wire is confirmed working. 🎯

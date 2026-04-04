@@ -66,6 +66,14 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+    proxy: {
+      [`${basePath.replace(/\/$/, "")}/api`]: {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+        rewrite: (path: string) =>
+          path.replace(new RegExp(`^${basePath.replace(/\/$/, "")}`), ""),
+      },
+    },
   },
   preview: {
     port,
