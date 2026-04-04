@@ -40,6 +40,13 @@ async def lifespan(app: FastAPI):
     if cfg.USE_LEGACY_STORE:
         from legacy_app import legacy_shutdown
 
+                # Seed biotech research data into DuckDB
+        try:
+            from data.biotech.seed_biotech import seed_biotech_tables
+            seed_biotech_tables()
+        except Exception as exc:
+            import logging
+            logging.getLogger("zetabridge").warning("Biotech seed skipped: %s", exc)
         await legacy_shutdown()
 
 
