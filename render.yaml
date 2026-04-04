@@ -1,0 +1,107 @@
+# Render Blueprint — validate against https://render.com/docs/blueprint-spec before deploy.
+# - Gravitino: listens on Render's PORT via scripts/gravitino-render-entrypoint.sh (maps to gravitino.server.webserver.httpPort).
+# - Marquez: official image env vars differ by version — confirm MARQUEZ_* names in the image you run.
+# - Static UI: set VITE_API_BASE at build time to the public zetabridge-api URL (e.g. https://zetabridge-api.onrender.com).
+
+databases:
+  - name: zetabridge-pg
+    databaseName: zetabridge
+    user: zetabridge
+    plan: free
+
+services:
+  - type: web
+    name: zetabridge-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: USE_LEGACY_STORE
+        value: "1"
+      - key: HF_TEXT2SQL_MODEL
+        value: Snowflake/Arctic-Text2SQL-R1-7B
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zetabridge-pg
+          property: connectionString
+      - key: SNOWFLAKE_ACCOUNT
+        sync: false
+      - key: SNOWFLAKE_USER
+        sync: false
+      - key: SNOWFLAKE_PASSWORD
+        sync: false
+      - key: SNOWFLAKE_WAREHOUSE
+        sync: false
+      - key: SNOWFLAKE_DATABASE
+        sync: false
+      - key: SNOWFLAKE_SCHEMA
+        sync: false
+      - key: DATABRICKS_HOST
+        sync: false
+      - key: DATABRICKS_HTTP_PATH
+        sync: false
+      - key: DATABRICKS_TOKEN
+        sync: false
+      - key: DATABRICKS_CATALOG
+        sync: false
+      - key: DATABRICKS_SCHEMA
+        sync: false
+      - key: HF_API_TOKEN
+        sync: false
+      - key: GRAVITINO_URL
+        sync: false
+      - key: MARQUEZ_URL
+        sync: false
+
+  - type: web
+    name: zetabridge-gravitino
+    runtime: docker
+    dockerfilePath: ./Dockerfile.gravitino
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/metalakes
+    envVars:
+      - key: GRAVITINO_SERVER_SHUTDOWN_TIMEOUT
+        value: "3000"
+
+  - type: web
+    name: zetabridge-marquez
+    runtime: docker
+    image:
+      url: docker.io/marquezproject/marquez:latest
+    plan: free
+    healthCheckPath: /api/v1/namespaces
+    envVars:
+      - key: MARQUEZ_DB_HOST
+        fromDatabase:
+          name: zetabridge-pg
+          property: host
+      - key: MARQUEZ_DB_PORT
+        fromDatabase:
+          name: zetabridge-pg
+          property: port
+      - key: MARQUEZ_DB_USER
+        fromDatabase:
+          name: zetabridge-pg
+          property: user
+      - key: MARQUEZ_DB_PASSWORD
+        fromDatabase:
+          name: zetabridge-pg
+          property: password
+      - key: MARQUEZ_DB
+        value: marquez
+
+  - type: static
+    name: zetabridge-ui
+    rootDir: artifacts/zetabridge
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist/public
+    envVars:
+      - key: PORT
+        value: "5173"
+      - key: BASE_PATH
+        value: /
+      - key: VITE_API_BASE
+        sync: false

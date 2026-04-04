@@ -66,6 +66,7 @@ function ResultsTable({ results }: { results: any[] }) {
 
 export default function QueryWorkbench() {
   const [question, setQuestion] = useState("");
+  const [track2Source, setTrack2Source] = useState("duckdb");
   const [result, setResult] = useState<any>(null);
 
   const { data: history } = useQuery({
@@ -84,9 +85,31 @@ export default function QueryWorkbench() {
     },
   });
 
+  const track2Mutation = useMutation({
+    mutationFn: async (payload: { question: string; source: string }) => {
+      const r = await apiRequest("POST", "/api/query", payload);
+      return r.json();
+    },
+    onSuccess: (data) => {
+      setResult({
+        sql: data.sql,
+        engine: data.source || track2Source,
+        results: data.rows ?? [],
+        row_count: (data.rows ?? []).length,
+        duration_ms: 0,
+        error: data.error,
+      });
+    },
+  });
+
   const handleSubmit = () => {
     if (!question.trim()) return;
     nlMutation.mutate(question.trim());
+  };
+
+  const handleTrack2Submit = () => {
+    if (!question.trim()) return;
+    track2Mutation.mutate({ question: question.trim(), source: track2Source });
   };
 
   return (
@@ -118,6 +141,27 @@ export default function QueryWorkbench() {
               {nlMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               Query
             </Button>
+            <select
+              value={track2Source}
+              onChange={(e) => setTrack2Source(e.target.value)}
+              className="text-xs bg-background border border-border/50 rounded-md px-2 py-2 text-foreground"
+              aria-label="Engine for Track 2 API"
+            >
+              <option value="duckdb">duckdb</option>
+              <option value="snowflake">snowflake</option>
+              <option value="databricks">databricks</option>
+              <option value="unified">unified</option>
+            </select>
+            <Button
+              variant="outline"
+              onClick={handleTrack2Submit}
+              disabled={track2Mutation.isPending || !question.trim()}
+              className="gap-2 shrink-0 text-xs"
+              data-testid="query-track2-submit"
+            >
+              {track2Mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+              POST /api/query
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -125,6 +169,9 @@ export default function QueryWorkbench() {
       {/* Results */}
       {result && (
         <div className="space-y-3" data-testid="query-result">
+          {result.error ? (
+            <p className="text-sm text-destructive" data-testid="query-error">{String(result.error)}</p>
+          ) : null}
           <div className="flex items-center gap-3">
             <Badge variant="outline" className="text-[10px]">{result.engine}</Badge>
             <span className="text-xs text-muted-foreground flex items-center gap-1">

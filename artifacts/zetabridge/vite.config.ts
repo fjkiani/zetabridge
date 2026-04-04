@@ -68,7 +68,7 @@ export default defineConfig({
     },
     proxy: {
       [`${basePath.replace(/\/$/, "")}/api`]: {
-        target: "http://localhost:8000",
+        target: process.env.VITE_API_BASE || "http://localhost:8000",
         changeOrigin: true,
         rewrite: (path: string) =>
           path.replace(new RegExp(`^${basePath.replace(/\/$/, "")}`), ""),

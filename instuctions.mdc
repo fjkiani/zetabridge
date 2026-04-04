@@ -1,0 +1,547 @@
+Here's the exact sequence. No scaffolding commentary — just the work, in order.
+
+## Repo implementation notes (Track 2)
+
+- **HF Text2SQL:** Default model `Snowflake/Arctic-Text2SQL-R1-7B` via `huggingface_hub.InferenceClient` (`HF_TEXT2SQL_MODEL` in `.env.example`). R1.5 is not on serverless Inference; use a dedicated endpoint or vLLM on GPU if you need it. Implementation tries `text_generation(..., model=HF_TEXT2SQL_MODEL)`, then the same call without `model=`, then direct `POST https://api-inference.huggingface.co/models/<model>` (same JSON as the legacy path). Heuristic SQL is used only if all HF paths fail.
+- **Backend entry:** From `backend/`: `uvicorn main:app --host 0.0.0.0 --port 8000`. Render uses `rootDir: backend` in `render.yaml`. If Postgres is down locally, legacy mode falls back to SQLite under `backend/data/legacy_local.db`.
+- **Routers:** With `USE_LEGACY_STORE=1` (default), the legacy monolith plus `POST /api/query` (instructions shape) are both mounted. Set `USE_LEGACY_STORE=0` for Track‑2‑only routes (Gravitino lifespan, no legacy dashboard until frontend is pointed at new paths).
+- **Marquez emit:** `POST {MARQUEZ_URL}/api/v1/lineage` sends a minimal OpenLineage RunEvent (`eventType`, `eventTime` with `Z` suffix, `run.runId`, `job`, `inputs`, `outputs`, `producer` URL). Empty `FROM` tables become a single synthetic input dataset so the payload is never `inputs: []`. Non-2xx responses log status and body (truncated).
+- **Gravitino on Render:** `Dockerfile.gravitino` uses `scripts/gravitino-render-entrypoint.sh` to set `gravitino.server.webserver.httpPort` from Render’s `PORT` before `start-gravitino.sh` runs. If your image layout differs from `/root/gravitino` or `/opt/gravitino`, adjust the script paths.
+- **Deploy (`render.yaml`):** Includes `zetabridge-api`, `zetabridge-gravitino` (custom Dockerfile), `zetabridge-marquez` (upstream image; confirm `MARQUEZ_DB*` env names match that image), `zetabridge-ui` (static), and Postgres. After push: confirm API `/health`, set dashboard secrets, smoke `POST /api/query`, `GET /api/catalog/tables?source=duckdb`, and (with Marquez up) lineage ingest logs. **Static UI:** set `VITE_API_BASE` in the Render static service to the **public** API URL (e.g. `https://<zetabridge-api>.onrender.com`) so the production build bakes in the correct API origin for the dev-server proxy pattern (or use same-origin if you front both behind one host).
+- **Vite:** Dev proxy target is `process.env.VITE_API_BASE || http://localhost:8000` (see `artifacts/zetabridge/vite.config.ts`).
+
+### Pre-flight checks (local)
+
+1. `cd backend && uvicorn main:app --port 8000` → `GET /health` → 200.
+2. `USE_LEGACY_STORE=0 uvicorn main:app --port 8001` → `GET /health` → 200; `GET /api/connectors` returns JSON without crashing (Gravitino connection errors during lifespan are expected if nothing listens on `GRAVITINO_URL`).
+3. With `HF_API_TOKEN` set: `POST /api/query` with `{"question":"...","source":"duckdb"}` should return non-trivial SQL when the model responds; without a token, heuristic SQL applies.
+4. With Marquez running: `POST /api/query` should log Marquez accept/reject; check Marquez logs if status is not 2xx.
+
+## update do not use docker - use render instead - deploy the backend and run docker in render vs running docker locally 
+
+Phase 1 — Environment (15 min)
+Create .env in project root. Every secret lives here, nothing hardcoded:
+
+bash
+# Snowflake
+SNOWFLAKE_ACCOUNT=your-account.region
+SNOWFLAKE_USER=your_user
+SNOWFLAKE_PASSWORD=your_password
+SNOWFLAKE_WAREHOUSE=COMPUTE_WH
+SNOWFLAKE_DATABASE=your_db
+SNOWFLAKE_SCHEMA=PUBLIC
+
+# Databricks
+DATABRICKS_HOST=adb-xxxxx.azuredatabricks.net
+DATABRICKS_HTTP_PATH=/sql/1.0/warehouses/xxxxx
+DATABRICKS_TOKEN=dapi_xxxxx
+DATABRICKS_CATALOG=main
+DATABRICKS_SCHEMA=default
+
+# Models
+HF_API_TOKEN=hf_xxxxx
+
+# Services
+GRAVITINO_URL=http://localhost:8090
+MARQUEZ_URL=http://localhost:5000
+DUCKDB_PATH=./data/zetabridge.duckdb
+Install everything in one shot:
+
+bash
+pip install snowflake-connector-python snowflake-sqlalchemy \
+  databricks-sql-connector databricks-sdk \
+  apache-gravitino \
+  openlineage-python \
+  delta-spark delta-rs \
+  huggingface_hub \
+  fastapi uvicorn httpx sqlalchemy duckdb \
+  python-dotenv pydantic
+Phase 2 — Spin Up Infrastructure (30 min)
+Single docker-compose.yml — run once, everything comes up:
+
+text
+version: "3.9"
+services:
+
+  gravitino:
+    image: apache/gravitino:1.0.0
+    ports: ["8090:8090"]
+    environment:
+      GRAVITINO_SERVER_SHUTDOWN_TIMEOUT: "3000"
+    volumes:
+      - gravitino_data:/opt/gravitino/data
+
+  marquez:
+    image: marquezproject/marquez:latest
+    ports: ["5000:5000", "5001:5001"]
+    environment:
+      MARQUEZ_CONFIG: /usr/src/app/marquez.dev.yml
+    depends_on: [marquez_db]
+
+  marquez_db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: marquez
+      POSTGRES_PASSWORD: marquez
+      POSTGRES_DB: marquez
+    volumes:
+      - marquez_pg:/var/lib/postgresql/data
+
+  nessie:
+    image: projectnessie/nessie:latest
+    ports: ["19120:19120"]
+
+volumes:
+  gravitino_data:
+  marquez_pg:
+bash
+docker-compose up -d
+# wait ~30 seconds then verify:
+curl http://localhost:8090/api/metalakes        # Gravitino up
+curl http://localhost:5000/api/v1/namespaces    # Marquez up
+curl http://localhost:19120/api/v1/config       # Nessie up
+Phase 3 — Backend File Structure
+Rip out the Express mock layer entirely. The backend is the only server:
+
+text
+backend/
+├── main.py                    ← FastAPI app entry
+├── config.py                  ← loads .env
+├── connectors/
+│   ├── __init__.py
+│   ├── snowflake_connector.py
+│   ├── databricks_connector.py
+│   └── duckdb_connector.py
+├── catalog/
+│   ├── gravitino_client.py
+│   └── unity_client.py
+├── lineage/
+│   └── marquez_client.py
+├── agents/
+│   ├── query_agent.py         ← NL→SQL with Arctic
+│   ├── catalog_agent.py       ← unified schema fetch
+│   ├── lineage_agent.py       ← emit + query lineage
+│   └── connector_agent.py     ← test + manage connections
+└── routers/
+    ├── query.py
+    ├── catalog.py
+    ├── lineage.py
+    ├── connectors.py
+    └── copilot.py
+Phase 4 — Connector Layer (the real wiring)
+backend/connectors/snowflake_connector.py
+
+python
+import snowflake.connector
+from snowflake.connector import DictCursor
+from config import cfg
+
+class SnowflakeConnector:
+    def connect(self):
+        return snowflake.connector.connect(
+            account=cfg.SNOWFLAKE_ACCOUNT,
+            user=cfg.SNOWFLAKE_USER,
+            password=cfg.SNOWFLAKE_PASSWORD,
+            warehouse=cfg.SNOWFLAKE_WAREHOUSE,
+            database=cfg.SNOWFLAKE_DATABASE,
+            schema=cfg.SNOWFLAKE_SCHEMA
+        )
+
+    def list_tables(self) -> list[dict]:
+        conn = self.connect()
+        cur = conn.cursor(DictCursor)
+        cur.execute("SELECT TABLE_NAME, TABLE_SCHEMA, ROW_COUNT, BYTES "
+                    "FROM INFORMATION_SCHEMA.TABLES "
+                    "WHERE TABLE_TYPE='BASE TABLE'")
+        return cur.fetchall()
+
+    def get_schema(self, table: str) -> list[dict]:
+        conn = self.connect()
+        cur = conn.cursor(DictCursor)
+        cur.execute(f"DESCRIBE TABLE {table}")
+        return cur.fetchall()
+
+    def run_query(self, sql: str) -> list[dict]:
+        conn = self.connect()
+        cur = conn.cursor(DictCursor)
+        cur.execute(sql)
+        return cur.fetchall()
+
+    def test_connection(self) -> bool:
+        try:
+            self.connect().cursor().execute("SELECT 1")
+            return True
+        except Exception:
+            return False
+backend/connectors/databricks_connector.py
+
+python
+from databricks import sql
+from databricks.sdk import WorkspaceClient
+from config import cfg
+
+class DatabricksConnector:
+    def get_conn(self):
+        return sql.connect(
+            server_hostname=cfg.DATABRICKS_HOST,
+            http_path=cfg.DATABRICKS_HTTP_PATH,
+            access_token=cfg.DATABRICKS_TOKEN
+        )
+
+    def list_unity_catalog_tables(self) -> list[dict]:
+        w = WorkspaceClient(
+            host=cfg.DATABRICKS_HOST,
+            token=cfg.DATABRICKS_TOKEN
+        )
+        tables = []
+        for t in w.tables.list(
+            catalog_name=cfg.DATABRICKS_CATALOG,
+            schema_name=cfg.DATABRICKS_SCHEMA
+        ):
+            tables.append({
+                "name": t.name,
+                "catalog": t.catalog_name,
+                "schema": t.schema_name,
+                "type": str(t.table_type),
+                "format": str(t.data_source_format)
+            })
+        return tables
+
+    def get_schema(self, table: str) -> list[dict]:
+        conn = self.get_conn()
+        cur = conn.cursor()
+        cur.execute(f"DESCRIBE TABLE {cfg.DATABRICKS_CATALOG}"
+                    f".{cfg.DATABRICKS_SCHEMA}.{table}")
+        cols = cur.fetchall()
+        return [{"name": r[0], "type": r[1]} for r in cols]
+
+    def run_query(self, sql_str: str) -> list[dict]:
+        conn = self.get_conn()
+        cur = conn.cursor()
+        cur.execute(sql_str)
+        cols = [d[0] for d in cur.description]
+        return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    def test_connection(self) -> bool:
+        try:
+            self.run_query("SELECT 1")
+            return True
+        except Exception:
+            return False
+Phase 5 — Gravitino Catalog Client
+python
+# backend/catalog/gravitino_client.py
+import requests
+from config import cfg
+
+METALAKE = "zetabridge"
+BASE = cfg.GRAVITINO_URL + "/api/metalakes"
+
+class GravitinoClient:
+    def setup_metalake(self):
+        requests.post(BASE, json={
+            "name": METALAKE,
+            "comment": "ZetaBridge unified catalog",
+            "properties": {}
+        })
+
+    def register_snowflake_catalog(self):
+        requests.post(f"{BASE}/{METALAKE}/catalogs", json={
+            "name": "snowflake",
+            "type": "RELATIONAL",
+            "provider": "jdbc",
+            "comment": "Snowflake production warehouse",
+            "properties": {
+                "jdbc-driver": "net.snowflake.client.jdbc.SnowflakeDriver",
+                "jdbc-url": f"jdbc:snowflake://{cfg.SNOWFLAKE_ACCOUNT}.snowflakecomputing.com",
+                "jdbc-user": cfg.SNOWFLAKE_USER,
+                "jdbc-password": cfg.SNOWFLAKE_PASSWORD
+            }
+        })
+
+    def register_databricks_catalog(self):
+        # Register Unity Catalog OSS as a catalog entry
+        requests.post(f"{BASE}/{METALAKE}/catalogs", json={
+            "name": "databricks",
+            "type": "RELATIONAL",
+            "provider": "jdbc",
+            "comment": "Databricks Unity Catalog",
+            "properties": {
+                "jdbc-driver": "com.simba.spark.jdbc.Driver",
+                "jdbc-url": f"jdbc:spark://{cfg.DATABRICKS_HOST}:443"
+                            f"/default;transportMode=http;ssl=1;"
+                            f"httpPath={cfg.DATABRICKS_HTTP_PATH}",
+                "jdbc-user": "token",
+                "jdbc-password": cfg.DATABRICKS_TOKEN
+            }
+        })
+
+    def list_all_tables(self) -> list[dict]:
+        catalogs = requests.get(
+            f"{BASE}/{METALAKE}/catalogs"
+        ).json().get("catalogs", [])
+        tables = []
+        for cat in catalogs:
+            try:
+                schemas = requests.get(
+                    f"{BASE}/{METALAKE}/catalogs/{cat['name']}/schemas"
+                ).json().get("schemas", [])
+                for schema in schemas:
+                    tbls = requests.get(
+                        f"{BASE}/{METALAKE}/catalogs/{cat['name']}"
+                        f"/schemas/{schema['name']}/tables"
+                    ).json().get("tables", [])
+                    for t in tbls:
+                        t["catalog"] = cat["name"]
+                        t["schema"] = schema["name"]
+                        tables.append(t)
+            except Exception:
+                pass
+        return tables
+Phase 6 — Arctic NL→SQL Agent (the demo's centerpiece)
+python
+# backend/agents/query_agent.py
+from huggingface_hub import InferenceClient
+from connectors.snowflake_connector import SnowflakeConnector
+from connectors.databricks_connector import DatabricksConnector
+from connectors.duckdb_connector import DuckDBConnector
+from catalog.gravitino_client import GravitinoClient
+from config import cfg
+import re
+
+client = InferenceClient(
+    model="Snowflake/Arctic-Text2SQL-R1.5",
+    token=cfg.HF_API_TOKEN
+)
+
+def get_schema_context(source: str) -> str:
+    """Pull live schema from whichever source is targeted."""
+    if source == "snowflake":
+        tables = SnowflakeConnector().list_tables()
+    elif source == "databricks":
+        tables = DatabricksConnector().list_unity_catalog_tables()
+    elif source == "unified":
+        tables = GravitinoClient().list_all_tables()
+    else:
+        tables = DuckDBConnector().list_tables()
+
+    lines = []
+    for t in tables[:30]:  # cap context window
+        name = t.get("TABLE_NAME") or t.get("name", "unknown")
+        lines.append(f"- {name}")
+    return "Available tables:\n" + "\n".join(lines)
+
+def nl_to_sql(question: str, source: str = "duckdb") -> dict:
+    schema_ctx = get_schema_context(source)
+    prompt = (
+        f"You are a SQL expert. Given these tables:\n{schema_ctx}\n\n"
+        f"Write a single SQL query to answer: {question}\n"
+        f"SQL:"
+    )
+    raw = client.text_generation(
+        prompt,
+        max_new_tokens=300,
+        temperature=0.1,
+        stop_sequences=[";", "\n\n"]
+    )
+    sql = raw.strip().rstrip(";") + ";"
+    return {"sql": sql, "source": source, "schema_context": schema_ctx}
+
+def execute_nl_query(question: str, source: str = "duckdb") -> dict:
+    result = nl_to_sql(question, source)
+    sql = result["sql"]
+    try:
+        if source == "snowflake":
+            rows = SnowflakeConnector().run_query(sql)
+        elif source == "databricks":
+            rows = DatabricksConnector().run_query(sql)
+        else:
+            rows = DuckDBConnector().run_query(sql)
+        return {"sql": sql, "rows": rows, "source": source, "error": None}
+    except Exception as e:
+        return {"sql": sql, "rows": [], "source": source, "error": str(e)}
+Phase 7 — Lineage: Emit on Every Query
+python
+# backend/lineage/marquez_client.py
+import uuid
+import requests
+from datetime import datetime, timezone
+from config import cfg
+
+def emit_query_lineage(job_name: str, sql: str,
+                        input_tables: list[str],
+                        output_table: str | None,
+                        source: str):
+    run_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+    namespace = f"zetabridge.{source}"
+
+    event = {
+        "eventType": "COMPLETE",
+        "eventTime": now,
+        "run": {"runId": run_id},
+        "job": {"namespace": namespace, "name": job_name},
+        "inputs": [
+            {"namespace": namespace, "name": t}
+            for t in input_tables
+        ],
+        "outputs": (
+            [{"namespace": namespace, "name": output_table}]
+            if output_table else []
+        ),
+        "producer": "zetabridge/query-agent"
+    }
+
+    requests.post(
+        cfg.MARQUEZ_URL + "/api/v1/lineage",
+        json=event,
+        timeout=5
+    )
+
+def get_lineage_graph(dataset: str, source: str) -> dict:
+    namespace = f"zetabridge.{source}"
+    resp = requests.get(
+        f"{cfg.MARQUEZ_URL}/api/v1/lineage",
+        params={"nodeId": f"dataset:{namespace}:{dataset}", "depth": 5}
+    )
+    return resp.json()
+Phase 8 — FastAPI Routers (replace all Express mocks)
+backend/routers/query.py
+
+python
+from fastapi import APIRouter
+from pydantic import BaseModel
+from agents.query_agent import execute_nl_query
+from lineage.marquez_client import emit_query_lineage
+import re
+
+router = APIRouter(prefix="/api/query")
+
+class QueryRequest(BaseModel):
+    question: str
+    source: str = "duckdb"  # duckdb | snowflake | databricks | unified
+
+@router.post("")
+async def run_query(req: QueryRequest):
+    result = execute_nl_query(req.question, req.source)
+    if not result["error"]:
+        tables = re.findall(r'FROM\s+(\w+)', result["sql"], re.I)
+        emit_query_lineage(
+            job_name="copilot_query",
+            sql=result["sql"],
+            input_tables=tables,
+            output_table=None,
+            source=req.source
+        )
+    return result
+backend/routers/catalog.py
+
+python
+from fastapi import APIRouter
+from connectors.snowflake_connector import SnowflakeConnector
+from connectors.databricks_connector import DatabricksConnector
+from catalog.gravitino_client import GravitinoClient
+
+router = APIRouter(prefix="/api/catalog")
+
+@router.get("/tables")
+async def list_tables(source: str = "unified"):
+    if source == "snowflake":
+        return SnowflakeConnector().list_tables()
+    elif source == "databricks":
+        return DatabricksConnector().list_unity_catalog_tables()
+    elif source == "unified":
+        return GravitinoClient().list_all_tables()
+
+@router.get("/schema/{table}")
+async def get_schema(table: str, source: str = "snowflake"):
+    if source == "snowflake":
+        return SnowflakeConnector().get_schema(table)
+    elif source == "databricks":
+        return DatabricksConnector().get_schema(table)
+
+@router.get("/health")
+async def catalog_health():
+    return {
+        "snowflake": SnowflakeConnector().test_connection(),
+        "databricks": DatabricksConnector().test_connection()
+    }
+backend/routers/lineage.py
+
+python
+from fastapi import APIRouter
+from lineage.marquez_client import get_lineage_graph
+
+router = APIRouter(prefix="/api/lineage")
+
+@router.get("")
+async def lineage(dataset: str, source: str = "snowflake"):
+    return get_lineage_graph(dataset, source)
+Phase 9 — Wire React Frontend to FastAPI
+In your Vite config (vite.config.ts), remove the Express proxy and point directly at FastAPI:
+
+typescript
+server: {
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8000',  // FastAPI, not Express
+      changeOrigin: true
+    }
+  }
+}
+Kill the Express server entirely. Delete server/ directory. The frontend now calls FastAPI directly.
+
+Phase 10 — main.py Final Entry Point
+python
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+load_dotenv()
+
+from routers import query, catalog, lineage, connectors, copilot
+from catalog.gravitino_client import GravitinoClient
+
+app = FastAPI(title="ZetaBridge API", version="1.0.0")
+
+app.add_middleware(CORSMiddleware,
+    allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+app.include_router(query.router)
+app.include_router(catalog.router)
+app.include_router(lineage.router)
+app.include_router(connectors.router)
+app.include_router(copilot.router)
+
+@app.on_event("startup")
+async def startup():
+    g = GravitinoClient()
+    g.setup_metalake()
+    g.register_snowflake_catalog()
+    g.register_databricks_catalog()
+    print("Gravitino catalogs registered")
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+Start everything:
+
+bash
+docker-compose up -d          # Gravitino + Marquez + Nessie
+uvicorn main:app --reload --port 8000  # FastAPI
+npm run dev                   # Vite React on 5173
+The Live Demo Script (What You Show)
+Open Catalog page → live Snowflake + Databricks tables load from Gravitino. Two platforms, one tree.
+
+Click a table → real schema renders from whichever platform owns it
+
+Open Co-Pilot → type "Show me top 10 customers by revenue" → Arctic generates SQL → routes to correct engine → real rows return
+
+Open Lineage → the query you just ran shows as a node in Marquez's graph. Input tables → query job → output. Real provenance.
+
+Open Connectors → green status badges on Snowflake and Databricks because test_connection() is running live
+
+Open a terminal tab → curl -X POST localhost:8000/api/query -d '{"question":"total sales by month","source":"snowflake"}' → show the raw API response → "Any system that speaks HTTP can trigger this"
+
+That last curl command is your Act 3. That's the VP moment. 🎯---
+alwaysApply: true
+---

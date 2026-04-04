@@ -1,0 +1,16 @@
+FROM apache/gravitino:1.0.0
+
+# Snowflake JDBC (Maven)
+ADD https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.15.0/snowflake-jdbc-3.15.0.jar \
+    /opt/gravitino/libs/
+
+# Databricks Simba Spark JDBC — obtain under Databricks license, place at drivers/SparkJDBC42.jar, then uncomment:
+# COPY drivers/SparkJDBC42.jar /opt/gravitino/libs/
+
+# Render (and similar) inject PORT; patch gravitino.conf before the upstream start script runs.
+COPY scripts/gravitino-render-entrypoint.sh /gravitino-render-entrypoint.sh
+USER root
+RUN chmod +x /gravitino-render-entrypoint.sh
+ENTRYPOINT ["/gravitino-render-entrypoint.sh"]
+
+EXPOSE 8090
