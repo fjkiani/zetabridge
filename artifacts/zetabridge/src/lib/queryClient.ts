@@ -1,6 +1,6 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
+const BASE = import.meta.env.VITE_API_BASE?.replace(/\/$/, "") ?? "";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {

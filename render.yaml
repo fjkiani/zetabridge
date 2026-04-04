@@ -56,12 +56,12 @@ services:
       - key: PYTHON_VERSION
         value: "3.11.0"
 
+  # Monorepo uses pnpm `catalog:` in package.json — build from repo root (no rootDir).
   - type: web
     name: zetabridge-ui
     runtime: static
-    rootDir: artifacts/zetabridge
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist/public
+    buildCommand: corepack enable && pnpm install && pnpm --filter @workspace/zetabridge run build
+    staticPublishPath: artifacts/zetabridge/dist/public
     envVars:
       - key: VITE_API_BASE
-        sync: false
+        value: "https://zetabridge-api.onrender.com"
