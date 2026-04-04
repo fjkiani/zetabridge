@@ -30,6 +30,7 @@ class Config:
     DUCKDB_PATH = os.environ.get("DUCKDB_PATH", "./data/zetabridge.duckdb")
 
     HF_API_TOKEN = os.environ.get("HF_API_TOKEN", "")
+        GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
     HF_TEXT2SQL_MODEL = os.environ.get(
         "HF_TEXT2SQL_MODEL",
         os.environ.get("HF_MODEL_ID", "Snowflake/Arctic-Text2SQL-R1-7B"),
