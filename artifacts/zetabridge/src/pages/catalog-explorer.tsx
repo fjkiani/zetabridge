@@ -4,6 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { safeRender } from "@/lib/utils";
 import {
   Database,
   FolderOpen,
@@ -44,11 +45,11 @@ function TreeNode({ icon: Icon, label, badge, isActive, depth, expanded, onClick
         )}
         <Icon className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
         <span className="truncate">{label}</span>
-        {badge && (
+        {badge ? (
           <Badge variant="outline" className="text-[9px] ml-auto shrink-0 border-muted-foreground/20">
-            {badge}
+            {safeRender(badge)}
           </Badge>
-        )}
+        ) : null}
       </button>
     </div>
   );
@@ -211,7 +212,7 @@ export default function CatalogExplorer() {
                   {Object.entries(selectedTable.properties).map(([key, val]) => (
                     <div key={key} className="flex items-center justify-between py-1.5 text-xs">
                       <span className="text-muted-foreground">{key}</span>
-                      <code className="text-foreground font-mono bg-muted/30 px-1.5 py-0.5 rounded text-[11px]">{String(val)}</code>
+                      <code className="text-foreground font-mono bg-muted/30 px-1.5 py-0.5 rounded text-[11px]">{safeRender(val)}</code>
                     </div>
                   ))}
                 </div>

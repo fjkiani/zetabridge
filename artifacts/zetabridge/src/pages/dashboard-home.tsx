@@ -14,6 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Link } from "wouter";
+import { safeRender } from "@/lib/utils";
 
 function KPICard({ icon: Icon, label, value, sub, color }: { icon: any; label: string; value: string; sub?: string; color: string }) {
   return (
@@ -206,7 +207,7 @@ export default function DashboardHome() {
                       : "border-muted-foreground/30 text-muted-foreground"
                   }`}
                 >
-                  {node.name}
+                  {safeRender(node.name ?? node.label ?? node.id)}
                 </Badge>
               ))}
               {(lineageGraph?.nodes?.length ?? 0) > 12 && (

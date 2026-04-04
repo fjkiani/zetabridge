@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { safeRender } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -87,8 +88,13 @@ function ExecutionMeta({ intent, agents, latency, tasks }: { intent?: string; ag
   );
 }
 
+function messageText(content: unknown): string {
+  return typeof content === "string" ? content : safeRender(content);
+}
+
 function MessageBubble({ msg, onSuggestionClick }: { msg: ChatMessage; onSuggestionClick: (s: string) => void }) {
   const isUser = msg.role === "user";
+  const body = messageText(msg.content);
 
   return (
     <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`} data-testid={`msg-${msg.role}`}>
@@ -106,11 +112,13 @@ function MessageBubble({ msg, onSuggestionClick }: { msg: ChatMessage; onSuggest
           }`}
         >
           {isUser ? (
-            <p>{msg.content}</p>
+            <p>{body}</p>
           ) : (
             <>
-              <p className="whitespace-pre-wrap leading-relaxed">{msg.content.replace(/\*\*(.*?)\*\*/g, "$1")}</p>
-              {msg.data && msg.render_type === "table" && <DataTable data={msg.data} />}
+              <p className="whitespace-pre-wrap leading-relaxed">{body.replace(/\*\*(.*?)\*\*/g, "$1")}</p>
+              {Array.isArray(msg.data) && msg.data.length > 0 && msg.render_type === "table" && (
+                <DataTable data={msg.data} />
+              )}
             </>
           )}
         </div>
@@ -166,7 +174,7 @@ export default function CoPilot() {
             const data = JSON.parse(turn.content);
             parsed.push({
               role: "assistant",
-              content: data.summary,
+              content: messageText(data.summary),
               intent: data.intent,
               agents_used: data.agents_used,
               latency_ms: turn.latency_ms,
@@ -195,17 +203,17 @@ export default function CoPilot() {
       return res.json();
     },
     onSuccess: (data) => {
-      const resp = data.response;
+      const resp = data.response ?? {};
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: resp.summary,
+          content: messageText(resp.summary),
           intent: resp.intent,
           agents_used: resp.agents_used,
           latency_ms: data.execution?.latency_ms,
           tasks: data.execution?.tasks,
-          suggestions: resp.suggestions,
+          suggestions: Array.isArray(resp.suggestions) ? resp.suggestions : undefined,
           data: resp.data,
           render_type: resp.render_type,
         },

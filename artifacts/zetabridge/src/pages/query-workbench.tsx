@@ -14,10 +14,12 @@ import {
   Sparkles,
   Code2,
 } from "lucide-react";
+import { safeRender } from "@/lib/utils";
 
-function SQLBlock({ sql }: { sql: string }) {
+function SQLBlock({ sql }: { sql: unknown }) {
+  const s = typeof sql === "string" ? sql : safeRender(sql);
   // Basic SQL syntax highlighting
-  const highlighted = sql
+  const highlighted = s
     .replace(/(SELECT|FROM|WHERE|ORDER BY|GROUP BY|LIMIT|AS|DESC|ASC|JOIN|ON|AND|OR|INSERT|UPDATE|DELETE|COUNT|SUM|AVG|MAX|MIN)\b/gi, '<span class="text-primary">$1</span>')
     .replace(/('.*?')/g, '<span class="text-emerald-400">$1</span>')
     .replace(/(\d+)/g, '<span class="text-amber-400">$1</span>');
@@ -170,10 +172,10 @@ export default function QueryWorkbench() {
       {result && (
         <div className="space-y-3" data-testid="query-result">
           {result.error ? (
-            <p className="text-sm text-destructive" data-testid="query-error">{String(result.error)}</p>
+            <p className="text-sm text-destructive" data-testid="query-error">{safeRender(result.error)}</p>
           ) : null}
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="text-[10px]">{result.engine}</Badge>
+            <Badge variant="outline" className="text-[10px]">{safeRender(result.engine)}</Badge>
             <span className="text-xs text-muted-foreground flex items-center gap-1">
               <Table2 className="w-3 h-3" /> {result.row_count} rows
             </span>
@@ -202,11 +204,11 @@ export default function QueryWorkbench() {
                 className="w-full flex items-center justify-between py-2.5 border-b border-border/20 last:border-0 hover:bg-muted/20 px-2 rounded transition-colors text-left"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground truncate">{h.question}</p>
-                  <p className="text-[10px] text-muted-foreground font-mono mt-0.5 truncate">{h.sql}</p>
+                  <p className="text-sm text-foreground truncate">{safeRender(h.question)}</p>
+                  <p className="text-[10px] text-muted-foreground font-mono mt-0.5 truncate">{safeRender(h.sql)}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
-                  <Badge variant="outline" className="text-[9px]">{h.engine}</Badge>
+                  <Badge variant="outline" className="text-[9px]">{safeRender(h.engine)}</Badge>
                   <span className="text-[10px] tabular-nums text-muted-foreground">{h.duration_ms}ms</span>
                 </div>
               </button>

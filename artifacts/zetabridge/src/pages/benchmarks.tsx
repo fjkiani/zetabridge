@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { safeRender } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -222,7 +223,11 @@ export default function Benchmarks() {
                       <Clock className="w-3 h-3" /> {r.latency_ms}ms
                     </td>
                     <td className="px-4 py-3 text-xs text-muted-foreground max-w-[200px] truncate">
-                      {r.error ? <span className="text-destructive">{r.error}</span> : r.details}
+                      {r.error ? (
+                        <span className="text-destructive">{safeRender(r.error)}</span>
+                      ) : (
+                        safeRender(r.details)
+                      )}
                     </td>
                   </tr>
                 ))}
