@@ -1,30 +1,38 @@
-"""Connector health for Snowflake / Databricks / DuckDB."""
+"""Connectors router — GET /api/connectors, GET /api/connectors/{name}/health."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from config import cfg
-from connectors.databricks_connector import DatabricksConnector
-from connectors.duckdb_connector import DuckDBConnector
-from connectors.snowflake_connector import SnowflakeConnector
+from connectors.registry import registry
 
 router = APIRouter(prefix="/api/connectors", tags=["connectors"])
 
 
 @router.get("")
-async def connectors_health():
-    sf_ok = SnowflakeConnector().test_connection()
-    dbx_ok = DatabricksConnector().test_connection()
-    duck_ok = DuckDBConnector().test_connection()
-    return {
-        "snowflake": {
-            "configured": bool(cfg.SNOWFLAKE_ACCOUNT and cfg.SNOWFLAKE_USER),
-            "ok": sf_ok,
-        },
-        "databricks": {
-            "configured": bool(cfg.DATABRICKS_HOST and cfg.DATABRICKS_TOKEN),
-            "ok": dbx_ok,
-        },
-        "duckdb": {"ok": duck_ok},
-    }
+async def list_connectors():
+    """List all connectors. wired=True means actually connected."""
+    return [c.to_dict() for c in registry.list_all()]
+
+
+@router.get("/{name}")
+async def get_connector(name: str):
+    """Get a single connector by name."""
+    spec = registry.get(name)
+    if not spec:
+        raise HTTPException(status_code=404, detail=f"Connector '{name}' not found")
+    return spec.to_dict()
+
+
+@router.get("/{name}/health")
+async def connector_health(name: str):
+    """
+    Run a health check for a connector.
+
+    For wired=True connectors: runs a real ping (DuckDB: SELECT 1, SQLite: SELECT 1).
+    For wired=False connectors: returns not_wired status immediately.
+    """
+    spec = registry.get(name)
+    if not spec:
+        raise HTTPException(status_code=404, detail=f"Connector '{name}' not found")
+    return spec.run_health_check()

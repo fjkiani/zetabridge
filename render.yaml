@@ -1,62 +1,42 @@
-# Render Blueprint for ZetaBridge
-# API + Postgres + Static Dashboard
-
-databases:
-  - name: zetabridge-pg
-    databaseName: zetabridge
-    user: zetabridge
-    plan: free
+# Render Blueprint for ZetaBridge substrate
+# Single Python web service + embedded DuckDB + embedded SQLite lineage store.
+# No managed Postgres. No Gravitino. No Marquez. No Snowflake/Databricks.
+#
+# Disk: starter plan required for persistent DuckDB and SQLite files.
+# Set DUCKDB_PATH and LINEAGE_DB_PATH to paths under /var/data/ (Render persistent disk).
 
 services:
   - type: web
-    name: zetabridge-api
+    name: zetabridge-substrate
     runtime: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
-    plan: free
+    plan: starter
+    disk:
+      name: zetabridge-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
-      - key: USE_LEGACY_STORE
-        value: "1"
-      - key: HF_TEXT2SQL_MODEL
-        value: Snowflake/Arctic-Text2SQL-R1-7B
-      - key: DATABASE_URL
-        fromDatabase:
-          name: zetabridge-pg
-          property: connectionString
-      - key: SNOWFLAKE_ACCOUNT
-        sync: false
-      - key: SNOWFLAKE_USER
-        sync: false
-      - key: SNOWFLAKE_PASSWORD
-        sync: false
-      - key: SNOWFLAKE_WAREHOUSE
-        sync: false
-      - key: SNOWFLAKE_DATABASE
-        sync: false
-      - key: SNOWFLAKE_SCHEMA
-        sync: false
-      - key: DATABRICKS_HOST
-        sync: false
-      - key: DATABRICKS_HTTP_PATH
-        sync: false
-      - key: DATABRICKS_TOKEN
-        sync: false
-      - key: DATABRICKS_CATALOG
-        sync: false
-      - key: DATABRICKS_SCHEMA
+      - key: DUCKDB_PATH
+        value: /var/data/biotech.duckdb
+      - key: LINEAGE_DB_PATH
+        value: /var/data/lineage.sqlite
+      - key: CORS_ORIGINS
+        value: '["https://zetabridge-ui.onrender.com"]'
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      # Set these in Render dashboard — do not commit values
+      - key: GROQ_API_KEY
         sync: false
       - key: HF_API_TOKEN
         sync: false
-      - key: GRAVITINO_URL
-        sync: false
-      - key: MARQUEZ_URL
-        sync: false
-      - key: PYTHON_VERSION
-        value: "3.11.0"
+      - key: HF_TEXT2SQL_MODEL
+        value: Snowflake/Arctic-Text2SQL-R1-7B
 
-  # Monorepo uses pnpm `catalog:` in package.json — build from repo root (no rootDir).
   - type: web
     name: zetabridge-ui
     runtime: static
@@ -64,4 +44,4 @@ services:
     staticPublishPath: artifacts/zetabridge/dist/public
     envVars:
       - key: VITE_API_BASE
-        value: "https://zetabridge-api.onrender.com"
+        value: "https://zetabridge-substrate.onrender.com"

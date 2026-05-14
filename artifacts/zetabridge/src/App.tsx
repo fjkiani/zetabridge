@@ -7,25 +7,39 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
-  MessageSquare,
-  Bot,
   Database,
   GitBranch,
   Terminal,
   Plug,
-  FlaskConical,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import DashboardHome from "@/pages/dashboard-home";
-import CoPilot from "@/pages/copilot";
-import AgentsPage from "@/pages/agents";
 import CatalogExplorer from "@/pages/catalog-explorer";
 import LineageGraph from "@/pages/lineage-graph";
 import QueryWorkbench from "@/pages/query-workbench";
 import Connectors from "@/pages/connectors";
-import Benchmarks from "@/pages/benchmarks";
 import NotFound from "@/pages/not-found";
+
+// Quarantined pages (not imported — routes return placeholder):
+//   /copilot   → copilot.tsx  (depends on legacy_app._copilot, removed)
+//   /agents    → agents.tsx   (depends on orchestrator, quarantined)
+//   /benchmarks → benchmarks.tsx (benchmarks module deleted)
+// Revive from artifacts/zetabridge/src/pages/quarantine/ when needed.
+
+function QuarantinedPage({ name }: { name: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground p-8">
+      <div className="text-4xl">🚧</div>
+      <div className="text-lg font-medium text-foreground">{name}</div>
+      <div className="text-sm text-center max-w-sm">
+        This page is quarantined in the substrate branch. It depends on modules
+        that were disabled during the ZetaBridge → BrenusBridge refactor.
+        It will be revived during the Brenus integration sprint.
+      </div>
+    </div>
+  );
+}
 
 function ZetaBridgeLogo({ collapsed }: { collapsed: boolean }) {
   return (
@@ -58,15 +72,13 @@ function ZetaBridgeLogo({ collapsed }: { collapsed: boolean }) {
   );
 }
 
+// Active nav items only — quarantined pages removed from sidebar
 const navItems = [
   { path: "/", label: "Overview", icon: LayoutDashboard },
-  { path: "/copilot", label: "Co-Pilot", icon: MessageSquare },
-  { path: "/agents", label: "Agents", icon: Bot },
   { path: "/catalog", label: "Catalog", icon: Database },
   { path: "/lineage", label: "Lineage", icon: GitBranch },
   { path: "/query", label: "Query", icon: Terminal },
   { path: "/connectors", label: "Connectors", icon: Plug },
-  { path: "/benchmarks", label: "Benchmarks", icon: FlaskConical },
 ];
 
 function Sidebar() {
@@ -134,14 +146,24 @@ function AppLayout() {
       <Sidebar />
       <main className="flex-1 overflow-y-auto overscroll-contain">
         <Switch>
+          {/* Active routes */}
           <Route path="/" component={DashboardHome} />
-          <Route path="/copilot" component={CoPilot} />
-          <Route path="/agents" component={AgentsPage} />
           <Route path="/catalog" component={CatalogExplorer} />
           <Route path="/lineage" component={LineageGraph} />
           <Route path="/query" component={QueryWorkbench} />
           <Route path="/connectors" component={Connectors} />
-          <Route path="/benchmarks" component={Benchmarks} />
+
+          {/* Quarantined routes — show placeholder, not 404 */}
+          <Route path="/copilot">
+            {() => <QuarantinedPage name="Co-Pilot" />}
+          </Route>
+          <Route path="/agents">
+            {() => <QuarantinedPage name="Agents" />}
+          </Route>
+          <Route path="/benchmarks">
+            {() => <QuarantinedPage name="Benchmarks" />}
+          </Route>
+
           <Route component={NotFound} />
         </Switch>
       </main>

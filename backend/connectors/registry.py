@@ -1,23 +1,26 @@
 """
-ZetaBridge Connector Registry
-===============================
-Unified connector framework for data lakes, warehouses, and ETL tools:
-  - ConnectorSpec: Declarative connector definition
-  - ConnectorRegistry: Central registry of all available connectors
-  - ConnectorHealth: Health check and monitoring
-  - Built-in connectors for all OSS components
+ZetaBridge Connector Registry — honest, minimal implementation.
 
-OSS alignment:
-  - Iceberg REST Catalog (Gravitino/Lakekeeper protocol)
-  - Delta Lake Protocol (delta-rs)
-  - DuckDB embedded analytics
-  - Neon Postgres (PostgreSQL wire protocol)
-  - dbt-core, dlt, Airbyte (ETL orchestration)
-  - Apache Kafka, OpenSearch (streaming/search)
-  - Nessie (versioned catalog)
-  - OpenLineage (lineage protocol)
+Key design principle: every connector has a `wired` field.
+  wired=True  → actually connected; health checks run real pings
+  wired=False → declared extension point only; health returns not_wired status
 
-License: Apache-2.0
+This replaces the original 17-connector theater where all connectors
+appeared ACTIVE but only DuckDB was actually wired.
+
+Active connectors (wired=True):
+  - duckdb        — embedded analytics store (SELECT 1 health check)
+  - local_lineage — embedded SQLite lineage store (SELECT 1 health check)
+
+Extension points (wired=False, for Brenus integration):
+  - clinicaltrials_gov — ClinicalTrials.gov API v2
+  - pubmed             — PubMed / NCBI Entrez
+  - sec_edgar          — SEC EDGAR full-text search
+
+To add a Brenus source connector:
+  1. Add a ConnectorSpec with wired=False and category=ConnectorCategory.SOURCE
+  2. When the connector is implemented, set wired=True and add a health_check()
+  3. See connectors/README.md for the integration pattern
 """
 
 from __future__ import annotations
@@ -27,48 +30,52 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, Callable, Optional
 
 log = logging.getLogger("zetabridge.connectors")
 
 
+# ── Enums ─────────────────────────────────────────────────────────────────────
+
 class ConnectorStatus(str, Enum):
-    ACTIVE = "active"
-    CONFIGURED = "configured"
-    AVAILABLE = "available"
-    ERROR = "error"
-    DISABLED = "disabled"
+    ACTIVE = "active"           # wired=True, last health check passed
+    CONFIGURED = "configured"   # wired=True, not yet health-checked
+    AVAILABLE = "available"     # wired=False, declared extension point
+    ERROR = "error"             # wired=True, last health check failed
+    DISABLED = "disabled"       # explicitly turned off
 
 
 class ConnectorCategory(str, Enum):
-    LAKE = "data_lake"
-    WAREHOUSE = "warehouse"
-    ETL = "etl"
-    STREAMING = "streaming"
-    SEARCH = "search"
-    CATALOG = "catalog"
-    LINEAGE = "lineage"
-    STORAGE = "object_storage"
-    DATABASE = "database"
+    DATABASE = "database"       # embedded stores (DuckDB, SQLite)
+    LINEAGE = "lineage"         # lineage stores
+    SOURCE = "source"           # external data sources (Brenus extension points)
+    WAREHOUSE = "warehouse"     # cloud warehouses (future)
+    LAKE = "data_lake"          # data lakes (future)
 
+
+# ── Data contract ─────────────────────────────────────────────────────────────
 
 @dataclass
 class ConnectorSpec:
-    """Declarative connector definition."""
+    """
+    Declarative connector definition.
+
+    The `wired` field is the critical addition over the original registry.
+    Any connector with wired=False is honest about its status — it is a
+    declared extension point, not a production connection.
+    """
     name: str
     display_name: str
     category: ConnectorCategory
     protocol: str
-    oss_component: str
-    license: str
     description: str
-    config_schema: dict = field(default_factory=dict)
     capabilities: list[str] = field(default_factory=list)
-    data_modalities: list[str] = field(default_factory=list)
     status: ConnectorStatus = ConnectorStatus.AVAILABLE
+    wired: bool = False                    # True = actually connected
     config: dict = field(default_factory=dict)
     health: dict = field(default_factory=dict)
-    last_check: str | None = None
+    last_check: Optional[str] = None
+    _health_fn: Optional[Callable[[], dict]] = field(default=None, repr=False)
 
     def to_dict(self) -> dict:
         return {
@@ -76,299 +83,175 @@ class ConnectorSpec:
             "display_name": self.display_name,
             "category": self.category.value,
             "protocol": self.protocol,
-            "oss_component": self.oss_component,
-            "license": self.license,
             "description": self.description,
             "capabilities": self.capabilities,
-            "data_modalities": self.data_modalities,
             "status": self.status.value,
+            "wired": self.wired,
             "health": self.health,
             "last_check": self.last_check,
         }
 
+    def run_health_check(self) -> dict:
+        """
+        Run a real health check for wired=True connectors.
+        For wired=False, return a not_wired status immediately.
+        """
+        if not self.wired:
+            result = {
+                "status": "not_wired",
+                "message": "Declared extension point only — not connected",
+                "wired": False,
+            }
+            self.health = result
+            return result
 
-# ── Built-in Connector Definitions ──────────────────────────────────────────
+        if self._health_fn is None:
+            result = {"status": "unknown", "message": "No health check function registered"}
+            self.health = result
+            return result
 
-BUILTIN_CONNECTORS: list[ConnectorSpec] = [
-    ConnectorSpec(
-        name="gravitino_iceberg",
-        display_name="Apache Gravitino (Iceberg)",
-        category=ConnectorCategory.CATALOG,
-        protocol="Gravitino REST API / Iceberg REST Catalog",
-        oss_component="Apache Gravitino",
-        license="Apache-2.0",
-        description="Federated metadata catalog with Iceberg table format support. REST API for schema discovery, table management, and cross-catalog queries.",
-        capabilities=["catalog_management", "schema_discovery", "table_registration", "cross_catalog_query"],
-        data_modalities=["structured"],
-        config_schema={"gravitino_url": "str", "metalake": "str"},
-    ),
-    ConnectorSpec(
-        name="lakekeeper_iceberg",
-        display_name="Lakekeeper (Iceberg REST)",
-        category=ConnectorCategory.CATALOG,
-        protocol="Iceberg REST Catalog API",
-        oss_component="Lakekeeper",
-        license="Apache-2.0",
-        description="Lightweight Iceberg REST catalog server. Native table management with snapshot isolation and time travel.",
-        capabilities=["iceberg_tables", "time_travel", "snapshot_management", "schema_evolution"],
-        data_modalities=["structured"],
-        config_schema={"lakekeeper_url": "str", "warehouse": "str"},
-    ),
-    ConnectorSpec(
-        name="nessie_catalog",
-        display_name="Project Nessie",
-        category=ConnectorCategory.CATALOG,
-        protocol="Nessie REST API",
-        oss_component="Project Nessie",
-        license="Apache-2.0",
-        description="Git-like versioned data catalog. Branch, tag, and merge table metadata like code. Supports Iceberg and Delta tables.",
-        capabilities=["versioned_catalog", "branching", "merging", "table_versioning"],
-        data_modalities=["structured"],
-        config_schema={"nessie_url": "str", "ref": "str"},
-    ),
-    ConnectorSpec(
-        name="delta_lake",
-        display_name="Delta Lake (delta-rs)",
-        category=ConnectorCategory.LAKE,
-        protocol="Delta Lake Protocol",
-        oss_component="delta-rs",
-        license="Apache-2.0",
-        description="Delta Lake table format via Rust-native delta-rs. ACID transactions, time travel, schema enforcement without Spark.",
-        capabilities=["acid_transactions", "time_travel", "schema_enforcement", "z_ordering"],
-        data_modalities=["structured"],
-        config_schema={"storage_url": "str", "storage_options": "dict"},
-    ),
-    ConnectorSpec(
-        name="iceberg_tables",
-        display_name="Apache Iceberg",
-        category=ConnectorCategory.LAKE,
-        protocol="Iceberg Table Spec v2",
-        oss_component="Apache Iceberg (pyiceberg)",
-        license="Apache-2.0",
-        description="Apache Iceberg table format. Hidden partitioning, snapshot isolation, schema evolution. Accessed via REST catalog.",
-        capabilities=["hidden_partitioning", "snapshot_isolation", "schema_evolution", "time_travel"],
-        data_modalities=["structured"],
-        config_schema={"catalog_url": "str", "warehouse": "str"},
-    ),
-    ConnectorSpec(
-        name="duckdb_analytics",
-        display_name="DuckDB",
-        category=ConnectorCategory.WAREHOUSE,
-        protocol="Embedded SQL (libduckdb)",
-        oss_component="DuckDB",
-        license="MIT",
-        description="Embedded analytical SQL engine. Zero-copy reads from Parquet/CSV/JSON. In-process OLAP without server deployment.",
-        capabilities=["sql_analytics", "parquet_read", "csv_read", "json_read", "in_process"],
-        data_modalities=["structured", "semi_structured"],
-        status=ConnectorStatus.ACTIVE,
-        config_schema={"database": "str"},
-    ),
-    ConnectorSpec(
-        name="neon_postgres",
-        display_name="Neon Postgres",
-        category=ConnectorCategory.DATABASE,
-        protocol="PostgreSQL Wire Protocol",
-        oss_component="PostgreSQL (Neon serverless)",
-        license="PostgreSQL License",
-        description="Serverless Postgres with auto-scaling and branching. Used as the catalog and lineage metadata store.",
-        capabilities=["sql_queries", "transactions", "branching", "auto_scaling"],
-        data_modalities=["structured"],
-        status=ConnectorStatus.ACTIVE,
-        config_schema={"database_url": "str"},
-    ),
-    ConnectorSpec(
-        name="dbt_core",
-        display_name="dbt Core",
-        category=ConnectorCategory.ETL,
-        protocol="dbt Core CLI / dbt Cloud API",
-        oss_component="dbt-core",
-        license="Apache-2.0",
-        description="SQL-first transformation framework. Model dependencies, incremental builds, testing, documentation. Drives the T in ELT.",
-        capabilities=["sql_transforms", "incremental_builds", "testing", "documentation", "lineage_emission"],
-        data_modalities=["structured"],
-        config_schema={"project_dir": "str", "profiles_dir": "str"},
-    ),
-    ConnectorSpec(
-        name="dlt_loader",
-        display_name="dlt (data load tool)",
-        category=ConnectorCategory.ETL,
-        protocol="dlt Python API",
-        oss_component="dlt",
-        license="Apache-2.0",
-        description="Python-native data loading. Schema inference, automatic normalization, incremental loading. 100+ source connectors.",
-        capabilities=["data_loading", "schema_inference", "normalization", "incremental_load"],
-        data_modalities=["structured", "semi_structured"],
-        config_schema={"pipeline_name": "str", "destination": "str"},
-    ),
-    ConnectorSpec(
-        name="airbyte_oss",
-        display_name="Airbyte OSS",
-        category=ConnectorCategory.ETL,
-        protocol="Airbyte REST API",
-        oss_component="Airbyte",
-        license="ELv2 (connectors MIT)",
-        description="Data integration platform with 300+ connectors. CDC, full refresh, incremental sync modes.",
-        capabilities=["data_integration", "cdc", "full_refresh", "incremental_sync", "300+_connectors"],
-        data_modalities=["structured", "semi_structured"],
-        config_schema={"airbyte_url": "str", "workspace_id": "str"},
-    ),
-    ConnectorSpec(
-        name="apache_hop",
-        display_name="Apache Hop",
-        category=ConnectorCategory.ETL,
-        protocol="Hop REST API",
-        oss_component="Apache Hop",
-        license="Apache-2.0",
-        description="Visual data orchestration and integration platform. Pipelines and workflows with 200+ transforms.",
-        capabilities=["visual_pipelines", "workflow_orchestration", "200+_transforms"],
-        data_modalities=["structured", "semi_structured", "unstructured"],
-        config_schema={"hop_server_url": "str"},
-    ),
-    ConnectorSpec(
-        name="openlineage",
-        display_name="OpenLineage",
-        category=ConnectorCategory.LINEAGE,
-        protocol="OpenLineage HTTP API",
-        oss_component="OpenLineage",
-        license="Apache-2.0",
-        description="Open standard for data lineage. Run-level event tracking with job/dataset facets. Compatible with Marquez backend.",
-        capabilities=["lineage_tracking", "run_events", "facets", "cross_platform_lineage"],
-        data_modalities=["structured"],
-        status=ConnectorStatus.ACTIVE,
-        config_schema={"transport_url": "str"},
-    ),
-    ConnectorSpec(
-        name="marquez",
-        display_name="Marquez",
-        category=ConnectorCategory.LINEAGE,
-        protocol="Marquez REST API",
-        oss_component="Marquez",
-        license="Apache-2.0",
-        description="OpenLineage-compatible metadata service. Stores lineage events, job runs, and dataset versions.",
-        capabilities=["lineage_storage", "job_tracking", "dataset_versioning", "graph_queries"],
-        data_modalities=["structured"],
-        config_schema={"marquez_url": "str"},
-    ),
-    ConnectorSpec(
-        name="s3_storage",
-        display_name="S3 / MinIO",
-        category=ConnectorCategory.STORAGE,
-        protocol="S3 REST API",
-        oss_component="MinIO / AWS S3",
-        license="AGPL-3.0 (MinIO) / Proprietary (AWS)",
-        description="Object storage for data lake files. Parquet, Delta, Iceberg table data, unstructured documents, ML models.",
-        capabilities=["object_storage", "bucket_management", "versioning", "lifecycle_policies"],
-        data_modalities=["structured", "unstructured", "binary"],
-        config_schema={"endpoint": "str", "access_key": "str", "secret_key": "str", "bucket": "str"},
-    ),
-    ConnectorSpec(
-        name="unity_catalog",
-        display_name="Unity Catalog (OSS)",
-        category=ConnectorCategory.CATALOG,
-        protocol="Unity Catalog REST API",
-        oss_component="Unity Catalog",
-        license="Apache-2.0",
-        description="Open-source data catalog with fine-grained access control. Supports Delta Lake, Iceberg, and external tables.",
-        capabilities=["access_control", "data_governance", "table_management", "external_tables"],
-        data_modalities=["structured"],
-        config_schema={"unity_url": "str"},
-    ),
-    ConnectorSpec(
-        name="kafka_streaming",
-        display_name="Apache Kafka",
-        category=ConnectorCategory.STREAMING,
-        protocol="Kafka Protocol",
-        oss_component="Apache Kafka",
-        license="Apache-2.0",
-        description="Distributed event streaming platform. Real-time data pipelines, event sourcing, log aggregation.",
-        capabilities=["event_streaming", "pub_sub", "log_aggregation", "real_time_pipelines"],
-        data_modalities=["semi_structured", "structured"],
-        config_schema={"bootstrap_servers": "str", "group_id": "str"},
-    ),
-    ConnectorSpec(
-        name="opensearch",
-        display_name="OpenSearch",
-        category=ConnectorCategory.SEARCH,
-        protocol="OpenSearch REST API",
-        oss_component="OpenSearch",
-        license="Apache-2.0",
-        description="Distributed search and analytics engine. Full-text search, log analytics, vector similarity search.",
-        capabilities=["full_text_search", "log_analytics", "vector_search", "dashboards"],
-        data_modalities=["unstructured", "semi_structured"],
-        config_schema={"opensearch_url": "str", "index": "str"},
-    ),
-]
+        t0 = time.monotonic()
+        try:
+            result = self._health_fn()
+            result["latency_ms"] = round((time.monotonic() - t0) * 1000, 2)
+            result["wired"] = True
+            self.status = ConnectorStatus.ACTIVE
+        except Exception as exc:
+            result = {
+                "status": "error",
+                "error": str(exc),
+                "latency_ms": round((time.monotonic() - t0) * 1000, 2),
+                "wired": True,
+            }
+            self.status = ConnectorStatus.ERROR
+
+        self.health = result
+        self.last_check = datetime.now(timezone.utc).isoformat()
+        return result
 
 
-# ── Connector Registry ───────────────────────────────────────────────────────
+# ── Health check functions ────────────────────────────────────────────────────
+
+def _duckdb_health() -> dict:
+    """Ping DuckDB with SELECT 1."""
+    import duckdb
+    from config import cfg
+    con = duckdb.connect(cfg.DUCKDB_PATH, read_only=True)
+    try:
+        con.execute("SELECT 1").fetchone()
+        return {"status": "ok"}
+    finally:
+        con.close()
+
+
+def _sqlite_lineage_health() -> dict:
+    """Ping SQLite lineage store with SELECT 1."""
+    import sqlite3
+    from config import cfg
+    con = sqlite3.connect(cfg.LINEAGE_DB_PATH)
+    try:
+        con.execute("SELECT 1").fetchone()
+        return {"status": "ok"}
+    finally:
+        con.close()
+
+
+# ── Registry ──────────────────────────────────────────────────────────────────
 
 class ConnectorRegistry:
-    """Central registry of all available data connectors."""
+    """Central registry of all connectors."""
 
     def __init__(self):
         self._connectors: dict[str, ConnectorSpec] = {}
-        # Load built-in connectors
-        for conn in BUILTIN_CONNECTORS:
-            self._connectors[conn.name] = conn
 
-    def register(self, connector: ConnectorSpec) -> None:
-        self._connectors[connector.name] = connector
-        log.info("Registered connector: %s", connector.name)
+    def register(self, spec: ConnectorSpec) -> None:
+        self._connectors[spec.name] = spec
+        log.debug("Registered connector: %s (wired=%s)", spec.name, spec.wired)
 
-    def get(self, name: str) -> ConnectorSpec | None:
+    def get(self, name: str) -> Optional[ConnectorSpec]:
         return self._connectors.get(name)
 
-    def list_all(self) -> list[dict]:
-        return [c.to_dict() for c in self._connectors.values()]
+    def list_all(self) -> list[ConnectorSpec]:
+        return list(self._connectors.values())
 
-    def list_by_category(self, category: str) -> list[dict]:
-        return [
-            c.to_dict() for c in self._connectors.values()
-            if c.category.value == category
-        ]
+    def list_wired(self) -> list[ConnectorSpec]:
+        return [c for c in self._connectors.values() if c.wired]
 
-    def list_active(self) -> list[dict]:
-        return [
-            c.to_dict() for c in self._connectors.values()
-            if c.status == ConnectorStatus.ACTIVE
-        ]
+    def list_extension_points(self) -> list[ConnectorSpec]:
+        return [c for c in self._connectors.values() if not c.wired]
 
-    def get_stats(self) -> dict:
-        by_category: dict[str, int] = {}
-        by_status: dict[str, int] = {}
-        for c in self._connectors.values():
-            by_category[c.category.value] = by_category.get(c.category.value, 0) + 1
-            by_status[c.status.value] = by_status.get(c.status.value, 0) + 1
+    def health_check_all(self) -> dict[str, dict]:
+        return {name: spec.run_health_check() for name, spec in self._connectors.items()}
 
-        return {
-            "total_connectors": len(self._connectors),
-            "by_category": by_category,
-            "by_status": by_status,
-            "active": sum(1 for c in self._connectors.values() if c.status == ConnectorStatus.ACTIVE),
-            "modalities_supported": sorted(set(
-                m for c in self._connectors.values() for m in c.data_modalities
-            )),
-        }
 
-    def health_check_all(self) -> list[dict]:
-        """Quick health check across all connectors."""
-        results = []
-        for c in self._connectors.values():
-            check = {
-                "name": c.name,
-                "display_name": c.display_name,
-                "status": c.status.value,
-                "category": c.category.value,
-                "checked_at": datetime.now(timezone.utc).isoformat(),
-            }
-            if c.status == ConnectorStatus.ACTIVE:
-                check["healthy"] = True
-                check["message"] = "Connected and operational"
-            elif c.status == ConnectorStatus.CONFIGURED:
-                check["healthy"] = True
-                check["message"] = "Configured, awaiting activation"
-            else:
-                check["healthy"] = False
-                check["message"] = "Not configured"
-            results.append(check)
-        return results
+# ── Default registry ──────────────────────────────────────────────────────────
+
+registry = ConnectorRegistry()
+
+# Active connectors (wired=True)
+registry.register(ConnectorSpec(
+    name="duckdb",
+    display_name="DuckDB (embedded)",
+    category=ConnectorCategory.DATABASE,
+    protocol="duckdb",
+    description="Embedded analytical database. Primary query store for substrate tables.",
+    capabilities=["query", "schema-discovery", "nl-to-sql"],
+    status=ConnectorStatus.ACTIVE,
+    wired=True,
+    _health_fn=_duckdb_health,
+))
+
+registry.register(ConnectorSpec(
+    name="local_lineage",
+    display_name="Local Lineage Store (SQLite)",
+    category=ConnectorCategory.LINEAGE,
+    protocol="sqlite",
+    description="Embedded SQLite lineage store. OpenLineage RunEvent shape. No external server required.",
+    capabilities=["lineage-emit", "lineage-query", "graph"],
+    status=ConnectorStatus.ACTIVE,
+    wired=True,
+    _health_fn=_sqlite_lineage_health,
+))
+
+# Extension points (wired=False) — Brenus source registry stubs
+registry.register(ConnectorSpec(
+    name="clinicaltrials_gov",
+    display_name="ClinicalTrials.gov API v2",
+    category=ConnectorCategory.SOURCE,
+    protocol="http-rest",
+    description=(
+        "BRENUS EXTENSION POINT. ClinicalTrials.gov API v2 for trial metadata retrieval. "
+        "NCT ID is the primary key. Re-fetch + fingerprint required for T1-SCI admissibility."
+    ),
+    capabilities=["trial-metadata", "enrollment-data", "eligibility-criteria"],
+    status=ConnectorStatus.AVAILABLE,
+    wired=False,
+))
+
+registry.register(ConnectorSpec(
+    name="pubmed",
+    display_name="PubMed / NCBI Entrez",
+    category=ConnectorCategory.SOURCE,
+    protocol="http-rest",
+    description=(
+        "BRENUS EXTENSION POINT. PubMed for peer-reviewed publication retrieval. "
+        "PMID is the primary key. Fingerprint = first_author:journal:year."
+    ),
+    capabilities=["publication-retrieval", "abstract-extraction", "citation-lookup"],
+    status=ConnectorStatus.AVAILABLE,
+    wired=False,
+))
+
+registry.register(ConnectorSpec(
+    name="sec_edgar",
+    display_name="SEC EDGAR",
+    category=ConnectorCategory.SOURCE,
+    protocol="http-rest",
+    description=(
+        "BRENUS EXTENSION POINT. SEC EDGAR full-text search for corporate filings. "
+        "Accession number is the primary key. T1-CORP tier source."
+    ),
+    capabilities=["filing-retrieval", "10-k", "8-k", "proxy-statement"],
+    status=ConnectorStatus.AVAILABLE,
+    wired=False,
+))

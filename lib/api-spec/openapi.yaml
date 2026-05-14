@@ -1,29 +1,372 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
-  version: 0.1.0
-  description: API specification
+  version: 0.2.0
+  description: |
+    ZetaBridge substrate API.
+    Active routes: health, query, federation, connectors, lineage, catalog.
+    Brenus extension points: /api/trials, /api/claims, /api/blockers, /api/consumers
+    (return 501 until Brenus integration sprint).
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+    description: Service health
+  - name: query
+    description: NL→SQL query engine
+  - name: federation
+    description: Federation query (NL or raw SQL → DuckDB)
+  - name: connectors
+    description: Connector registry
+  - name: lineage
+    description: Local lineage store
+  - name: catalog
+    description: DuckDB table catalog
+  - name: brenus-stubs
+    description: Brenus extension points (501 until integration sprint)
+
 paths:
-  /healthz:
+  /health:
     get:
-      operationId: healthCheck
+      operationId: getHealth
       tags: [health]
-      summary: Health check
-      description: Returns server health status
+      summary: Service health check
       responses:
         "200":
-          description: Healthy
+          description: Service is healthy
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /query/execute:
+    post:
+      operationId: executeQuery
+      tags: [query]
+      summary: NL question → SQL → DuckDB results
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryRequest"
+      responses:
+        "200":
+          description: Query result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryResult"
+
+  /query/tables:
+    get:
+      operationId: listQueryTables
+      tags: [query]
+      summary: List tables available in the active schema context
+      responses:
+        "200":
+          description: List of tables with column metadata
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TableMeta"
+
+  /federation/ask:
+    post:
+      operationId: federationAsk
+      tags: [federation]
+      summary: NL question → SQL → execute (primary end-to-end path)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AskRequest"
+      responses:
+        "200":
+          description: Query result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryResult"
+        "500":
+          description: Query execution error
+
+  /federation/sql:
+    post:
+      operationId: federationSql
+      tags: [federation]
+      summary: Execute raw SQL against DuckDB (sanitized before execution)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SqlRequest"
+      responses:
+        "200":
+          description: Query result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryResult"
+        "400":
+          description: Unsafe SQL rejected
+
+  /connectors:
+    get:
+      operationId: listConnectors
+      tags: [connectors]
+      summary: List all connectors. wired=true means actually connected.
+      responses:
+        "200":
+          description: List of connectors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConnectorSpec"
+
+  /connectors/{name}:
+    get:
+      operationId: getConnector
+      tags: [connectors]
+      summary: Get a single connector by name
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Connector details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectorSpec"
+        "404":
+          description: Connector not found
+
+  /connectors/{name}/health:
+    get:
+      operationId: connectorHealth
+      tags: [connectors]
+      summary: Health check for a connector. wired=false returns not_wired status.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Health check result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectorHealth"
+        "404":
+          description: Connector not found
+
+  /lineage/emit:
+    post:
+      operationId: emitLineage
+      tags: [lineage]
+      summary: Write a lineage event to the local store
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LineageEmitRequest"
+      responses:
+        "200":
+          description: Event written
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LineageEmitResponse"
+
+  /lineage/graph:
+    get:
+      operationId: getLineageGraph
+      tags: [lineage]
+      summary: D3-compatible node/edge graph from lineage events
+      parameters:
+        - name: namespace
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lineage graph
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LineageGraph"
+
+  /lineage/events:
+    get:
+      operationId: getLineageEvents
+      tags: [lineage]
+      summary: Paginated lineage event log, newest first
+      parameters:
+        - name: job
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            maximum: 500
+      responses:
+        "200":
+          description: List of lineage events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LineageEvent"
+
+  /catalog/tables:
+    get:
+      operationId: listCatalogTables
+      tags: [catalog]
+      summary: List all tables in the DuckDB catalog with column metadata
+      responses:
+        "200":
+          description: List of tables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TableMeta"
+
+  /catalog/tables/{table_name}:
+    get:
+      operationId: getCatalogTable
+      tags: [catalog]
+      summary: Get schema details for a single table
+      parameters:
+        - name: table_name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Table schema
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableMeta"
+        "404":
+          description: Table not found
+
+  # ── Brenus extension points (501 until integration sprint) ──────────────────
+
+  /trials:
+    get:
+      operationId: listTrials
+      tags: [brenus-stubs]
+      summary: "[BRENUS STUB] List governed trial packages"
+      description: |
+        Returns 501 until Brenus integration sprint.
+        Will return governed trial packages from the Brenus DuckDB trials table.
+      responses:
+        "501":
+          description: Not implemented — Brenus integration pending
+
+  /trials/{nct_id}:
+    get:
+      operationId: getTrial
+      tags: [brenus-stubs]
+      summary: "[BRENUS STUB] Get a single trial package"
+      parameters:
+        - name: nct_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "501":
+          description: Not implemented — Brenus integration pending
+
+  /claims:
+    get:
+      operationId: listClaims
+      tags: [brenus-stubs]
+      summary: "[BRENUS STUB] List governed claims with admissibility enforcement"
+      description: |
+        Returns 501 until Brenus integration sprint.
+        BLOCKED claims must never return their value — only {blocked: true, blocker_id}.
+      parameters:
+        - name: nct_id
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: confidence
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: blocked
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "501":
+          description: Not implemented — Brenus integration pending
+
+  /blockers:
+    get:
+      operationId: listBlockers
+      tags: [brenus-stubs]
+      summary: "[BRENUS STUB] List blockers from the Brenus blocker ledger"
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "501":
+          description: Not implemented — Brenus integration pending
+
+  /consumers/{consumer_id}/claims:
+    get:
+      operationId: consumerClaims
+      tags: [brenus-stubs]
+      summary: "[BRENUS STUB] External-safe claims for a consumer (deck, outreach, escape map)"
+      description: |
+        Returns 501 until Brenus integration sprint.
+        Admissibility gate: only external_safe claims. BLOCKED → 403. QUARANTINED → NULL_TOKEN.
+      parameters:
+        - name: consumer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "501":
+          description: Not implemented — Brenus integration pending
+        "403":
+          description: Claim blocked — admissibility gate enforced
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +374,242 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+        version:
+          type: string
+        duckdb_tables:
+          type: integer
+        lineage_events:
+          type: integer
+      required: [status]
 
+    QueryRequest:
+      type: object
+      properties:
+        question:
+          type: string
+          description: Natural language question
+      required: [question]
+
+    AskRequest:
+      type: object
+      properties:
+        question:
+          type: string
+      required: [question]
+
+    SqlRequest:
+      type: object
+      properties:
+        sql:
+          type: string
+      required: [sql]
+
+    QueryResult:
+      type: object
+      properties:
+        sql:
+          type: string
+        columns:
+          type: array
+          items:
+            type: string
+        rows:
+          type: array
+          items:
+            type: object
+        row_count:
+          type: integer
+        fallback_used:
+          type: string
+          nullable: true
+          description: "null | hf_client | hf_http | heuristic"
+        sql_hash:
+          type: string
+        error:
+          type: string
+          nullable: true
+      required: [sql, columns, rows, row_count]
+
+    ColumnMeta:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+      required: [name, type]
+
+    TableMeta:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        source:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: "#/components/schemas/ColumnMeta"
+      required: [name, columns]
+
+    ConnectorSpec:
+      type: object
+      properties:
+        name:
+          type: string
+        display_name:
+          type: string
+        category:
+          type: string
+        protocol:
+          type: string
+        description:
+          type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        wired:
+          type: boolean
+          description: "true = actually connected; false = declared extension point only"
+        health:
+          type: object
+        last_check:
+          type: string
+          nullable: true
+      required: [name, display_name, category, protocol, description, status, wired]
+
+    ConnectorHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          description: "ok | error | not_wired | unknown"
+        wired:
+          type: boolean
+        latency_ms:
+          type: number
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        message:
+          type: string
+          nullable: true
+      required: [status, wired]
+
+    DatasetRef:
+      type: object
+      properties:
+        namespace:
+          type: string
+        name:
+          type: string
+      required: [namespace, name]
+
+    LineageEmitRequest:
+      type: object
+      properties:
+        job_name:
+          type: string
+        namespace:
+          type: string
+        event_type:
+          type: string
+          default: COMPLETE
+        inputs:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetRef"
+        outputs:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetRef"
+        sql:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+      required: [job_name, namespace]
+
+    LineageEmitResponse:
+      type: object
+      properties:
+        run_id:
+          type: string
+        event_time:
+          type: string
+      required: [run_id, event_time]
+
+    LineageNode:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          description: "job | dataset"
+        namespace:
+          type: string
+      required: [id, label, type]
+
+    LineageEdge:
+      type: object
+      properties:
+        source:
+          type: string
+        target:
+          type: string
+        type:
+          type: string
+          description: "read | write"
+      required: [source, target, type]
+
+    LineageGraph:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/LineageNode"
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/LineageEdge"
+      required: [nodes, edges]
+
+    LineageEvent:
+      type: object
+      properties:
+        run_id:
+          type: string
+        event_type:
+          type: string
+        event_time:
+          type: string
+        job_name:
+          type: string
+        namespace:
+          type: string
+        inputs:
+          type: string
+          description: JSON array of DatasetRef
+        outputs:
+          type: string
+          description: JSON array of DatasetRef
+        sql_hash:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+      required: [run_id, event_type, event_time, job_name, namespace]
