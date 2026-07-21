@@ -114,6 +114,65 @@ class ZetaPDSConnector:
             "biomarker_genes": sorted(self.list_biomarkers().keys()),
         }
 
+    # ── ELT staging layer (Session 5) ────────────────────────────────────
+
+    def list_tables(self) -> list[str]:
+        """Return all distinct table names in the PDS SourceNode staging layer."""
+        return self.store.list_tables(ENDPOINT)
+
+    def table_schema(self, table: str) -> dict | None:
+        """Return the schema SourceNode for a PDS table, or None if not staged."""
+        node = self.store.schema_for_table(ENDPOINT, table)
+        if not node:
+            return None
+        import json
+        raw_str = node.get("attributes", {}).get("_raw_payload", "{}")
+        try:
+            return json.loads(raw_str) if isinstance(raw_str, str) else raw_str
+        except Exception:
+            return {"raw": raw_str}
+
+    def raw_rows(self, table: str, limit: int = 100) -> list[dict]:
+        """Return raw row payloads from a PDS staging table."""
+        return self.store.raw_rows(ENDPOINT, table, limit=limit)
+
+    def source_node_summary(self) -> dict:
+        """Summary of all PDS SourceNodes in the staging layer."""
+        counts = self.store.source_node_counts()
+        return {
+            "endpoint": ENDPOINT,
+            "total_source_nodes": counts["by_endpoint"].get(ENDPOINT, 0),
+            "tables": self.list_tables(),
+        }
+
+    def trial_schemas(self) -> list[dict]:
+        """Return all extracted trial data dictionaries from the staging layer."""
+        nodes = self.store.source_nodes(endpoint=ENDPOINT, table="pds_trial_schema")
+        import json
+        schemas = []
+        for n in nodes:
+            raw_str = n.get("attributes", {}).get("_raw_payload", "{}")
+            try:
+                payload = json.loads(raw_str) if isinstance(raw_str, str) else raw_str
+            except Exception:
+                payload = {}
+            schemas.append(payload)
+        return schemas
+
+    def demographic_codebooks(self) -> list[dict]:
+        """Return per-trial demographic codebooks (observed value distributions)."""
+        nodes = self.store.source_nodes(endpoint=ENDPOINT, table="pds_demographic_codebook")
+        import json
+        books = []
+        for n in nodes:
+            raw_str = n.get("attributes", {}).get("_raw_payload", "{}")
+            try:
+                payload = json.loads(raw_str) if isinstance(raw_str, str) else raw_str
+            except Exception:
+                payload = {}
+            books.append(payload)
+        return books
+
     def survival_capability(self) -> dict:
         """Explicit, machine-readable statement of the survival-join limitation.
 
