@@ -1,0 +1,49 @@
+{
+  "session": 10,
+  "branch": "zeta/session10-ega-endpoint",
+  "timestamp": "2026-07-23T06:17:58.433356Z",
+  "mint_planner": "zeta_custodian_session10",
+  "new_endpoint": "EGA",
+  "ega_dataset": "EGAD00001011049",
+  "ega_title": "Shallow whole genome sequencing (BriTROC HGSOC)",
+  "ega_policy": "EGAP00001000436 (BriTROC Data Access and Use Agreement)",
+  "new_nodes": {
+    "EGADataset": 1,
+    "EGASample": 679,
+    "EGAFile": 679,
+    "EGAPolicy": 1,
+    "SequencingPlatform": 2,
+    "Disease": 1,
+    "KBGap": 2,
+    "total": 1365
+  },
+  "new_edges": {
+    "dataset_has_sample": 679,
+    "dataset_has_file": 679,
+    "governed_by_policy": 1,
+    "sequenced_on": 2,
+    "studies_disease": 3,
+    "cohort_parallels": 1,
+    "has_ega_metadata_node": 1,
+    "has_access_gap": 2,
+    "total": 1368
+  },
+  "kg_totals": {
+    "entities": 26312,
+    "edges": 98609
+  },
+  "neo4j_totals": {
+    "nodes": 30106,
+    "edges": 99139
+  },
+  "open_gaps": [
+    "GAP-EGA-CONTROLLED-ACCESS: credentials invalid, 511 GB BAMs unreachable",
+    "GAP-EGA-SAMPLE-FILE-LINK: sample<->file mapping not in public API"
+  ],
+  "federation_links": [
+    "vault:ega_britroc1 --cohort_parallels--> vault:synapse_msk_spectrum (disease-level, no patient join)",
+    "ega:dataset:EGAD00001011049 --studies_disease--> disease:hgsoc",
+    "cohort:britroc1_hgsoc --studies_disease--> disease:hgsoc",
+    "vault:synapse_msk_spectrum --studies_disease--> disease:hgsoc"
+  ]
+}
