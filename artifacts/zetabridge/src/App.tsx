@@ -11,6 +11,8 @@ import {
   Bot,
   Database,
   GitBranch,
+  Network,
+  Lightbulb,
   Terminal,
   Plug,
   FlaskConical,
@@ -22,6 +24,8 @@ import CoPilot from "@/pages/copilot";
 import AgentsPage from "@/pages/agents";
 import CatalogExplorer from "@/pages/catalog-explorer";
 import LineageGraph from "@/pages/lineage-graph";
+import GraphExplorer from "@/pages/graph-explorer";
+import Insights from "@/pages/insights";
 import QueryWorkbench from "@/pages/query-workbench";
 import Connectors from "@/pages/connectors";
 import Benchmarks from "@/pages/benchmarks";
@@ -63,6 +67,8 @@ const navItems = [
   { path: "/copilot", label: "Co-Pilot", icon: MessageSquare },
   { path: "/agents", label: "Agents", icon: Bot },
   { path: "/catalog", label: "Catalog", icon: Database },
+  { path: "/graph", label: "Graph Explorer", icon: Network },
+  { path: "/insights", label: "Insights", icon: Lightbulb },
   { path: "/lineage", label: "Lineage", icon: GitBranch },
   { path: "/query", label: "Query", icon: Terminal },
   { path: "/connectors", label: "Connectors", icon: Plug },
@@ -138,6 +144,8 @@ function AppLayout() {
           <Route path="/copilot" component={CoPilot} />
           <Route path="/agents" component={AgentsPage} />
           <Route path="/catalog" component={CatalogExplorer} />
+          <Route path="/graph" component={GraphExplorer} />
+          <Route path="/insights" component={Insights} />
           <Route path="/lineage" component={LineageGraph} />
           <Route path="/query" component={QueryWorkbench} />
           <Route path="/connectors" component={Connectors} />
