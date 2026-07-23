@@ -196,3 +196,49 @@ python3 -m pytest routers/test_graph_api.py -q
 # MCP end-to-end (needs live Neo4j creds in env)
 python3 -m pytest mcp_server/test_mcp_client.py -q -s --asyncio-mode=auto
 ```
+
+## Front-end (Session 13)
+
+The React/Vite app (`artifacts/zetabridge/`) now ships four **read-only** surfaces
+built directly on top of the `/api/graph/*` layer above. The graph is never
+mutated from the browser.
+
+### Surfaces
+
+- **Graph Explorer** (`/#/graph`) — search nodes by endpoint / label / name,
+  click a result to render its n-hop neighborhood in a D3 force graph, and open
+  a detail panel per node. Nodes are colored by endpoint (A_MSK = cyan,
+  B_SAS = gold, C_EGA = purple).
+- **Path Finder** (Explore/Path tabs inside `/#/graph`) — pick a source node and
+  a target endpoint; the app calls `POST /paths` (`target_prefix` routing) and
+  renders ranked, node-by-node cross-endpoint paths with the path highlighted in
+  the graph. This is the "search for opportunities" surface.
+- **Insights** (`/#/insights`) — the Session-12 deep-traversal findings
+  (reachability, structural bridges, cross-endpoint path summaries, deep chains)
+  as browsable cards. Each card deep-links into Graph Explorer
+  (`#/graph?focus=<id>`).
+- **Connectors** (`/#/connectors`) — the endpoint registry plus an
+  **Add a connection** flow. It builds a *draft-only* mint proposal
+  (`mint_proposal_<source>_s13.json`, tagged `_session:13, _draft:true`) that you
+  download and review; it is **never** pushed to the live graph.
+
+### Running it
+
+```bash
+cd artifacts/zetabridge
+pnpm install
+
+# point the app at a running backend + supply the graph API key
+export VITE_API_BASE="http://localhost:8000"     # your /api/graph host
+export VITE_ZETA_API_KEY="<ZETA_GRAPH_API_KEY>"  # sent as X-Zeta-Api-Key
+
+pnpm run dev                    # dev server
+# or
+pnpm run build && npx serve dist/public   # production build
+```
+
+**Live vs. snapshot.** When `VITE_API_BASE` + `VITE_ZETA_API_KEY` are set and the
+backend is reachable, the app queries live Neo4j. If they are unset or the API is
+unreachable, it transparently falls back to a bundled real export at
+`public/graph-snapshot/graph-snapshot.json` (regenerate with
+`python scripts/s13/export_snapshot.py`) so the UI is fully browsable offline.
