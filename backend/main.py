@@ -82,3 +82,10 @@ else:
     app.include_router(connectors.router)
     app.include_router(copilot.router)
     app.include_router(federation.router)
+
+# Graph access layer (Session 12) — read-only /api/graph over federated Neo4j KG.
+# Registered in BOTH store modes so external agents can reach it regardless of
+# USE_LEGACY_STORE.
+from routers import graph as graph_router
+
+app.include_router(graph_router.router)

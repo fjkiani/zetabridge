@@ -39,5 +39,13 @@ class Config:
     USE_LEGACY_STORE = os.environ.get("USE_LEGACY_STORE", "1") == "1"
     LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
+    # --- Federated Neo4j knowledge graph (Session 12 agent access layer) ---
+    # Credentials stay server-side; consumer agents authenticate with a scoped
+    # API key (ZETA_GRAPH_API_KEY), never with the Neo4j password.
+    NEO4J_URI = os.environ.get("NEO4J_URI", "")
+    NEO4J_USER = os.environ.get("NEO4J_USER", "")
+    NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "")
+    ZETA_GRAPH_API_KEY = os.environ.get("ZETA_GRAPH_API_KEY", "")
+
 
 cfg = Config()

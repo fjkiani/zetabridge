@@ -1,0 +1,900 @@
+{
+  "results": {
+    "worker": "w3_reachability",
+    "pairs": {
+      "A_MSK->B_SAS": {
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "SPECIMEN_OF->BRIDGE_EDGE",
+            40
+          ],
+          [
+            "HARBORS_MUTATION->SPECIMEN_OF->BRIDGE_EDGE",
+            15
+          ],
+          [
+            "HARBORS_CNA->SPECIMEN_OF->BRIDGE_EDGE",
+            3
+          ],
+          [
+            "BRIDGE_EDGE",
+            2
+          ]
+        ]
+      },
+      "A_MSK->C_EGA": {
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "SPECIMEN_OF->PART_OF->RELATES",
+            40
+          ],
+          [
+            "HARBORS_MUTATION->SPECIMEN_OF->PART_OF->RELATES",
+            13
+          ],
+          [
+            "BRIDGE_EDGE->BRIDGE_EDGE->RELATES",
+            4
+          ],
+          [
+            "RELATES",
+            1
+          ],
+          [
+            "PART_OF->RELATES",
+            1
+          ]
+        ]
+      },
+      "B_SAS->C_EGA": {
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "DRAWN_FROM->BRIDGE_EDGE->RELATES",
+            36
+          ],
+          [
+            "BRIDGE_EDGE->PART_OF->RELATES",
+            23
+          ],
+          [
+            "BRIDGE_EDGE->RELATES",
+            1
+          ]
+        ]
+      },
+      "B_SAS->A_MSK": {
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "BRIDGE_EDGE",
+            60
+          ]
+        ]
+      },
+      "C_EGA->A_MSK": {
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "SPECIMEN_OF->DRAWN_FROM->RELATES",
+            58
+          ],
+          [
+            "RELATES",
+            1
+          ],
+          [
+            "DRAWN_FROM->RELATES",
+            1
+          ]
+        ]
+      },
+      "C_EGA->B_SAS": {
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "SPECIMEN_OF->DRAWN_FROM->RELATES->BRIDGE_EDGE",
+            56
+          ],
+          [
+            "MEMBER_OF_COMMUNITY->MEMBER_OF_COMMUNITY",
+            2
+          ],
+          [
+            "RELATES->BRIDGE_EDGE",
+            1
+          ],
+          [
+            "DRAWN_FROM->RELATES->BRIDGE_EDGE",
+            1
+          ]
+        ]
+      }
+    },
+    "n_nodes": 22,
+    "n_edges": 16
+  },
+  "nodes": [
+    {
+      "id": "reach:s12:A_MSK:B_SAS",
+      "type": "ReachabilityProfile",
+      "name": "A_MSK->B_SAS reachability (<= 6 hops)",
+      "label": "ReachabilityProfile",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "A_MSK",
+        "endpoint_to": "B_SAS",
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "SPECIMEN_OF->BRIDGE_EDGE",
+            40
+          ],
+          [
+            "HARBORS_MUTATION->SPECIMEN_OF->BRIDGE_EDGE",
+            15
+          ],
+          [
+            "HARBORS_CNA->SPECIMEN_OF->BRIDGE_EDGE",
+            3
+          ],
+          [
+            "BRIDGE_EDGE",
+            2
+          ]
+        ],
+        "max_hops": 6
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.080749+00:00"
+    },
+    {
+      "id": "metapath:s12:A_MSK:B_SAS:0",
+      "type": "Metapath",
+      "name": "A_MSK->B_SAS: SPECIMEN_OF->BRIDGE_EDGE",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "A_MSK",
+        "endpoint_to": "B_SAS",
+        "rel_sequence": [
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "frequency": 40,
+        "n_hops": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.080786+00:00"
+    },
+    {
+      "id": "metapath:s12:A_MSK:B_SAS:1",
+      "type": "Metapath",
+      "name": "A_MSK->B_SAS: HARBORS_MUTATION->SPECIMEN_OF->BRIDGE_EDGE",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "A_MSK",
+        "endpoint_to": "B_SAS",
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "frequency": 15,
+        "n_hops": 3
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.080797+00:00"
+    },
+    {
+      "id": "metapath:s12:A_MSK:B_SAS:2",
+      "type": "Metapath",
+      "name": "A_MSK->B_SAS: HARBORS_CNA->SPECIMEN_OF->BRIDGE_EDGE",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "A_MSK",
+        "endpoint_to": "B_SAS",
+        "rel_sequence": [
+          "HARBORS_CNA",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "frequency": 3,
+        "n_hops": 3
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.080804+00:00"
+    },
+    {
+      "id": "reach:s12:A_MSK:C_EGA",
+      "type": "ReachabilityProfile",
+      "name": "A_MSK->C_EGA reachability (<= 6 hops)",
+      "label": "ReachabilityProfile",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "A_MSK",
+        "endpoint_to": "C_EGA",
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "SPECIMEN_OF->PART_OF->RELATES",
+            40
+          ],
+          [
+            "HARBORS_MUTATION->SPECIMEN_OF->PART_OF->RELATES",
+            13
+          ],
+          [
+            "BRIDGE_EDGE->BRIDGE_EDGE->RELATES",
+            4
+          ],
+          [
+            "RELATES",
+            1
+          ],
+          [
+            "PART_OF->RELATES",
+            1
+          ]
+        ],
+        "max_hops": 6
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.146871+00:00"
+    },
+    {
+      "id": "metapath:s12:A_MSK:C_EGA:0",
+      "type": "Metapath",
+      "name": "A_MSK->C_EGA: SPECIMEN_OF->PART_OF->RELATES",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "A_MSK",
+        "endpoint_to": "C_EGA",
+        "rel_sequence": [
+          "SPECIMEN_OF",
+          "PART_OF",
+          "RELATES"
+        ],
+        "frequency": 40,
+        "n_hops": 3
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.146901+00:00"
+    },
+    {
+      "id": "metapath:s12:A_MSK:C_EGA:1",
+      "type": "Metapath",
+      "name": "A_MSK->C_EGA: HARBORS_MUTATION->SPECIMEN_OF->PART_OF->RELATES",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "A_MSK",
+        "endpoint_to": "C_EGA",
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "PART_OF",
+          "RELATES"
+        ],
+        "frequency": 13,
+        "n_hops": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.146911+00:00"
+    },
+    {
+      "id": "metapath:s12:A_MSK:C_EGA:2",
+      "type": "Metapath",
+      "name": "A_MSK->C_EGA: BRIDGE_EDGE->BRIDGE_EDGE->RELATES",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "A_MSK",
+        "endpoint_to": "C_EGA",
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES"
+        ],
+        "frequency": 4,
+        "n_hops": 3
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.146918+00:00"
+    },
+    {
+      "id": "reach:s12:B_SAS:C_EGA",
+      "type": "ReachabilityProfile",
+      "name": "B_SAS->C_EGA reachability (<= 6 hops)",
+      "label": "ReachabilityProfile",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "B_SAS",
+        "endpoint_to": "C_EGA",
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "DRAWN_FROM->BRIDGE_EDGE->RELATES",
+            36
+          ],
+          [
+            "BRIDGE_EDGE->PART_OF->RELATES",
+            23
+          ],
+          [
+            "BRIDGE_EDGE->RELATES",
+            1
+          ]
+        ],
+        "max_hops": 6
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.215904+00:00"
+    },
+    {
+      "id": "metapath:s12:B_SAS:C_EGA:0",
+      "type": "Metapath",
+      "name": "B_SAS->C_EGA: DRAWN_FROM->BRIDGE_EDGE->RELATES",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "B_SAS",
+        "endpoint_to": "C_EGA",
+        "rel_sequence": [
+          "DRAWN_FROM",
+          "BRIDGE_EDGE",
+          "RELATES"
+        ],
+        "frequency": 36,
+        "n_hops": 3
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.215928+00:00"
+    },
+    {
+      "id": "metapath:s12:B_SAS:C_EGA:1",
+      "type": "Metapath",
+      "name": "B_SAS->C_EGA: BRIDGE_EDGE->PART_OF->RELATES",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "B_SAS",
+        "endpoint_to": "C_EGA",
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES"
+        ],
+        "frequency": 23,
+        "n_hops": 3
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.215937+00:00"
+    },
+    {
+      "id": "metapath:s12:B_SAS:C_EGA:2",
+      "type": "Metapath",
+      "name": "B_SAS->C_EGA: BRIDGE_EDGE->RELATES",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "B_SAS",
+        "endpoint_to": "C_EGA",
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "RELATES"
+        ],
+        "frequency": 1,
+        "n_hops": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.215956+00:00"
+    },
+    {
+      "id": "reach:s12:B_SAS:A_MSK",
+      "type": "ReachabilityProfile",
+      "name": "B_SAS->A_MSK reachability (<= 6 hops)",
+      "label": "ReachabilityProfile",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "B_SAS",
+        "endpoint_to": "A_MSK",
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "BRIDGE_EDGE",
+            60
+          ]
+        ],
+        "max_hops": 6
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.273801+00:00"
+    },
+    {
+      "id": "metapath:s12:B_SAS:A_MSK:0",
+      "type": "Metapath",
+      "name": "B_SAS->A_MSK: BRIDGE_EDGE",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "B_SAS",
+        "endpoint_to": "A_MSK",
+        "rel_sequence": [
+          "BRIDGE_EDGE"
+        ],
+        "frequency": 60,
+        "n_hops": 1
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.273825+00:00"
+    },
+    {
+      "id": "reach:s12:C_EGA:A_MSK",
+      "type": "ReachabilityProfile",
+      "name": "C_EGA->A_MSK reachability (<= 6 hops)",
+      "label": "ReachabilityProfile",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "C_EGA",
+        "endpoint_to": "A_MSK",
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "SPECIMEN_OF->DRAWN_FROM->RELATES",
+            58
+          ],
+          [
+            "RELATES",
+            1
+          ],
+          [
+            "DRAWN_FROM->RELATES",
+            1
+          ]
+        ],
+        "max_hops": 6
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.329166+00:00"
+    },
+    {
+      "id": "metapath:s12:C_EGA:A_MSK:0",
+      "type": "Metapath",
+      "name": "C_EGA->A_MSK: SPECIMEN_OF->DRAWN_FROM->RELATES",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "C_EGA",
+        "endpoint_to": "A_MSK",
+        "rel_sequence": [
+          "SPECIMEN_OF",
+          "DRAWN_FROM",
+          "RELATES"
+        ],
+        "frequency": 58,
+        "n_hops": 3
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.329178+00:00"
+    },
+    {
+      "id": "metapath:s12:C_EGA:A_MSK:1",
+      "type": "Metapath",
+      "name": "C_EGA->A_MSK: RELATES",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "C_EGA",
+        "endpoint_to": "A_MSK",
+        "rel_sequence": [
+          "RELATES"
+        ],
+        "frequency": 1,
+        "n_hops": 1
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.329185+00:00"
+    },
+    {
+      "id": "metapath:s12:C_EGA:A_MSK:2",
+      "type": "Metapath",
+      "name": "C_EGA->A_MSK: DRAWN_FROM->RELATES",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "C_EGA",
+        "endpoint_to": "A_MSK",
+        "rel_sequence": [
+          "DRAWN_FROM",
+          "RELATES"
+        ],
+        "frequency": 1,
+        "n_hops": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.329191+00:00"
+    },
+    {
+      "id": "reach:s12:C_EGA:B_SAS",
+      "type": "ReachabilityProfile",
+      "name": "C_EGA->B_SAS reachability (<= 6 hops)",
+      "label": "ReachabilityProfile",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "C_EGA",
+        "endpoint_to": "B_SAS",
+        "sampled": 60,
+        "reached": 60,
+        "reach_fraction": 1.0,
+        "top_metapaths": [
+          [
+            "SPECIMEN_OF->DRAWN_FROM->RELATES->BRIDGE_EDGE",
+            56
+          ],
+          [
+            "MEMBER_OF_COMMUNITY->MEMBER_OF_COMMUNITY",
+            2
+          ],
+          [
+            "RELATES->BRIDGE_EDGE",
+            1
+          ],
+          [
+            "DRAWN_FROM->RELATES->BRIDGE_EDGE",
+            1
+          ]
+        ],
+        "max_hops": 6
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.391880+00:00"
+    },
+    {
+      "id": "metapath:s12:C_EGA:B_SAS:0",
+      "type": "Metapath",
+      "name": "C_EGA->B_SAS: SPECIMEN_OF->DRAWN_FROM->RELATES->BRIDGE_EDGE",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "C_EGA",
+        "endpoint_to": "B_SAS",
+        "rel_sequence": [
+          "SPECIMEN_OF",
+          "DRAWN_FROM",
+          "RELATES",
+          "BRIDGE_EDGE"
+        ],
+        "frequency": 56,
+        "n_hops": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.391928+00:00"
+    },
+    {
+      "id": "metapath:s12:C_EGA:B_SAS:1",
+      "type": "Metapath",
+      "name": "C_EGA->B_SAS: MEMBER_OF_COMMUNITY->MEMBER_OF_COMMUNITY",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "C_EGA",
+        "endpoint_to": "B_SAS",
+        "rel_sequence": [
+          "MEMBER_OF_COMMUNITY",
+          "MEMBER_OF_COMMUNITY"
+        ],
+        "frequency": 2,
+        "n_hops": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.391940+00:00"
+    },
+    {
+      "id": "metapath:s12:C_EGA:B_SAS:2",
+      "type": "Metapath",
+      "name": "C_EGA->B_SAS: RELATES->BRIDGE_EDGE",
+      "label": "Metapath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_from": "C_EGA",
+        "endpoint_to": "B_SAS",
+        "rel_sequence": [
+          "RELATES",
+          "BRIDGE_EDGE"
+        ],
+        "frequency": 1,
+        "n_hops": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.391948+00:00"
+    }
+  ],
+  "edges": [
+    {
+      "source": "metapath:s12:A_MSK:B_SAS:0",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:A_MSK:B_SAS",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.080791+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:A_MSK:B_SAS:1",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:A_MSK:B_SAS",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.080800+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:A_MSK:B_SAS:2",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:A_MSK:B_SAS",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.080807+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:A_MSK:C_EGA:0",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:A_MSK:C_EGA",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.146905+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:A_MSK:C_EGA:1",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:A_MSK:C_EGA",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.146914+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:A_MSK:C_EGA:2",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:A_MSK:C_EGA",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.146935+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:B_SAS:C_EGA:0",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:B_SAS:C_EGA",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.215932+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:B_SAS:C_EGA:1",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:B_SAS:C_EGA",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.215941+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:B_SAS:C_EGA:2",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:B_SAS:C_EGA",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.215958+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:B_SAS:A_MSK:0",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:B_SAS:A_MSK",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.273829+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:C_EGA:A_MSK:0",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:C_EGA:A_MSK",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.329182+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:C_EGA:A_MSK:1",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:C_EGA:A_MSK",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.329188+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:C_EGA:A_MSK:2",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:C_EGA:A_MSK",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.329209+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:C_EGA:B_SAS:0",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:C_EGA:B_SAS",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.391934+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:C_EGA:B_SAS:1",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:C_EGA:B_SAS",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.391943+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "metapath:s12:C_EGA:B_SAS:2",
+      "relation": "instance_of_reachability",
+      "target": "reach:s12:C_EGA:B_SAS",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.391966+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    }
+  ]
+}
