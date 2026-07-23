@@ -1,0 +1,98 @@
+{
+  "session": 11,
+  "title": "Deep graph analysis — 5-worker parallel mining of the federated KG",
+  "mint_planner": "zeta_custodian_session11",
+  "date": "2026-07-23",
+  "base_branch": "zeta/session10-ega-endpoint",
+  "base_commit": "c3c570d",
+  "endpoints": {
+    "A": "MSK SPECTRUM / Synapse (HGSOC single-cell + bulk)",
+    "B": "PDS / SAS (94 solid-tumor clinical trials)",
+    "C": "EGA EGAD00001011049 / BriTROC (HGSOC sWGS, 679 samples)"
+  },
+  "kg_before": {"entities": 26312, "edges": 98609},
+  "kg_after": {"entities": 26923, "edges": 101595},
+  "added": {"nodes": 611, "edges": 2986},
+  "neo4j": {
+    "uri": "neo4j+s://82886682.databases.neo4j.io",
+    "before": {"nodes": 30106, "edges": 99139},
+    "after": {"nodes": 30717, "edges": 102125},
+    "session11_nodes_verified": 611,
+    "session11_edges_verified": 2986,
+    "relationship_convention": "typed relationships (UPPERCASE of `relation`), via apoc.merge.relationship"
+  },
+  "workers": {
+    "W0_topology": {
+      "nodes": 108, "edges": 350,
+      "methods": ["PageRank (alpha=0.85)", "betweenness (k=500)", "networkx Louvain (seed=42)", "WCC", "rich-club"],
+      "node_types": {"GraphCentralityScore": 90, "GraphCommunity": 13, "StructuralGap": 5},
+      "key_findings": {
+        "top_pagerank": {"node": "trial:sas:Breast_Allianc_2002_200", "score": 0.03403},
+        "n_communities_total": 1984,
+        "largest_community_sizes": [7247, 5076, 3042],
+        "community0_is_ega_cluster": "679 EGAFile + 679 EGASample",
+        "community4_is_britroc_biospecimen": "719 Biospecimen + 72 Trial/TrialDesign",
+        "isolated_nodes": 1971,
+        "degree_max": 3881
+      }
+    },
+    "W1_ae_outliers": {
+      "nodes": 67, "edges": 222,
+      "methods": ["z-score + IQR on DrugAESignal RR", "cross-trial replication", "severe-AE co-occurrence cliques", "drug toxicity Jaccard"],
+      "node_types": {"AEOutlierSignal": 39, "ToxicitySyndrome": 20, "DrugToxicityProfile": 2},
+      "key_findings": {
+        "top_real_outlier": {"drug": "Panitumumab+FOLFOX4", "ae": "acneiform rash", "rate_ratio": 124.73, "z_score": 6.07},
+        "capped_signals_ctrl_rate_zero": 28,
+        "largest_toxicity_syndrome_clique": 9
+      }
+    },
+    "W2_escalation": {
+      "nodes": 34, "edges": 959,
+      "methods": ["arm escalation burden = sum(grade_delta x patient_count)", "drug-class Mann-Whitney U", "co-escalation cliques", "grade trajectory"],
+      "node_types": {"ArmEscalationBurden": 10, "DrugClassEscalationProfile": 4, "EscalationSyndrome": 20},
+      "key_findings": {
+        "top_arm_burden": {"arm": "arm:sas:Colorec_Amgen_2006_264:42", "total_burden": 1738, "n_signals": 420, "severe_count": 548},
+        "egfr_vs_chemo_mannwhitney_p": 0.8571,
+        "core_escalation_syndrome": ["VOMITING", "THROMBOCYTOPENIA", "FATIGUE", "CONSTIPATION", "NAUSEA"]
+      }
+    },
+    "W3_genomic_bridge": {
+      "nodes": 232, "edges": 1295,
+      "methods": ["bridge score = recurrence_pct x max(RR, consistency)/100", "shortest-path federation nodes", "EGA file-size outliers", "longitudinal pair detection", "gene-drug target match", "Biospecimen<->EGAFile reconciliation"],
+      "node_types": {"GenomicAEBridge": 20, "FederationPathNode": 2, "EGAFileOutlier": 28, "LongitudinalPair": 182},
+      "key_findings": {
+        "top_bridge": {"gene": "BRCA1", "ae": "NEUTROPENIA", "score": 0.630, "consistency": 25.2},
+        "biospecimen_egafile_reconciled": 679,
+        "longitudinal_pairs_dx_plus_relapse": 182,
+        "gene_drug_matches": [["TOP1", "FOLFIRI"], ["TOP1", "Topotecan"]],
+        "ega_large_file_outliers": 28,
+        "federation_path_intermediates": ["cohort:britroc1_hgsoc", "vault:sas_pds"]
+      }
+    },
+    "W4_patient_outliers": {
+      "nodes": 176, "edges": 180,
+      "methods": ["per-patient severe-AE burden (mean+3sigma)", "rare AE combinations", "per-trial 99pct ranking", "arm grade KL divergence", "OS event descriptive"],
+      "node_types": {"PatientAEBurdenScore": 100, "RareAEProfile": 50, "ArmGradeProfile": 26},
+      "key_findings": {
+        "top_patient": {"id": "patient:sas:Breast_Allianc_2002_194:1322_0", "severe_ae_count": 14, "z_score": 7.96},
+        "patients_over_3sigma": 122,
+        "rare_ae_profiles": 5287,
+        "top_kl_arm_pair": {"pair": "Breast_Allianc_2002_194:1 vs :8", "kl": 0.377},
+        "os_note": "descriptive only — no time-to-event data, no survival inference"
+      }
+    }
+  },
+  "constraints_honored": {
+    "additive_only": "crispro_kb_v3 (1,418 Qdrant points) untouched",
+    "no_patient_joins_across_endpoints": true,
+    "no_survival_inference": "OS event counts descriptive only",
+    "biospecimen_egafile_link_is_within_endpoint": "both are BriTROC; not a cross-endpoint patient join",
+    "no_fabrication": "all metrics computed from KG data"
+  },
+  "caveats": [
+    "GenomicAEBridge driver genes (BRCA1/CDK12/NF1/PIK3CA/TOP1) all recur 2.5% in MSK HGSOC cohort; bridge strength driven by cross-trial escalation consistency, not recurrence. RR component = 0 for these (AE terms have no DrugAESignal match).",
+    "SAS AE vocabulary is un-harmonized (e.g., multiple febrile-neutropenia spellings); co-occurrence/clique nodes reflect raw terms.",
+    "Louvain reports 1,984 communities but 1,971 are singletons/isolated AE terms; only ~13 communities have >=5 members.",
+    "Top arm escalation burden (Colorec_Amgen_2006_264:42, burden=1738) is just below the mean+2sigma outlier threshold (1766); flagged as high-burden, not statistical outlier."
+  ]
+}
