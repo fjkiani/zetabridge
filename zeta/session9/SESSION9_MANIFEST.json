@@ -1,0 +1,31 @@
+{
+  "session": 9,
+  "timestamp": "2026-07-22T18:51:55.448902Z",
+  "kg_stats": {
+    "entities": 22901,
+    "edges": 97134,
+    "session9_new_nodes": 2649,
+    "session9_new_edges": 5062
+  },
+  "new_node_types": {
+    "ArmAEProfile": 45,
+    "ClinicalTable": 388,
+    "DrugIntervention": 13,
+    "SerialEscalationSignal": 1945,
+    "DrugAESignal": 128,
+    "CrossTrialEscalationPattern": 104,
+    "AdverseEventTerm_MedDRA": 26
+  },
+  "key_findings": {
+    "panitumumab_rash_rr": 124.73,
+    "neutropenia_cross_trial_patients": 504,
+    "ae_terms_harmonized": 900,
+    "clinical_tables_indexed": 388,
+    "arms_drug_wired": 36
+  },
+  "neo4j_stats": {
+    "total_nodes": 26695,
+    "total_edges": 97678,
+    "session9_nodes": 2649
+  }
+}
