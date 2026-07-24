@@ -390,6 +390,35 @@ class EgaClient:
     AAI_PORT = 8443
     DATA_HOST = "ega.ebi.ac.uk"
     DATA_PORT = 8052
+    # Reachable OIDC + private-metadata surface (port 443). Used to confirm the
+    # DAC grant WITHOUT the (often-blocked) Data API port 8052.
+    IDP_TOKEN_URL = "https://idp.ega-archive.org/realms/EGA/protocol/openid-connect/token"
+
+    def _metadata_token(self) -> tuple[Optional[str], Optional[str]]:
+        """OIDC password-grant token scoped for the private metadata API."""
+        import httpx
+
+        creds = {"username": cfg.EGA_USERNAME, "password": cfg.EGA_PASSWORD}
+        if cfg.EGA_CREDENTIALS_FILE:
+            import json as _json
+
+            with open(cfg.EGA_CREDENTIALS_FILE) as fh:
+                creds = _json.load(fh)
+        try:
+            r = httpx.post(
+                self.IDP_TOKEN_URL,
+                data={
+                    "client_id": "metadata-api",
+                    "grant_type": "password",
+                    "username": creds["username"],
+                    "password": creds["password"],
+                },
+                timeout=CONNECT_TIMEOUT_S,
+            )
+            r.raise_for_status()
+            return r.json().get("access_token"), None
+        except Exception as exc:  # noqa: BLE001
+            return None, _reason(exc)
 
     def _port_open(self, host: str, port: int, timeout: float = 8.0) -> tuple[bool, str]:
         import socket
@@ -430,43 +459,50 @@ class EgaClient:
             f"{self.DATA_HOST}:{self.DATA_PORT}": {"open": data_ok, "detail": data_msg},
         }
 
-        # Auth + authorized-dataset listing via pyega3 (already a dependency).
+        # Auth + DAC-grant check via the REACHABLE OIDC + private-metadata API
+        # (port 443), independent of the Data API port 8052. This is the correct
+        # entitlement source and works even when 8052 is firewalled.
         auth_ok = False
-        authorized_datasets: list[str] = []
+        n_authorized = 0
         dataset_authorized = None
         auth_error = None
-        if not _lib_present("pyega3"):
-            auth_error = "pyega3 not installed"
-        elif not data_ok:
-            # pyega3 list-datasets hits the Data API port; if it's blocked, skip
-            # (it would just hang) and report the egress failure as the blocker.
-            auth_error = "skipped: Data API port unreachable (would time out)"
+        if not _lib_present("httpx"):
+            auth_error = "httpx not installed"
         else:
-            try:
-                import json as _json
+            import httpx
 
-                from pyega3 import pyega3 as _p3  # type: ignore
-
-                creds = {"username": cfg.EGA_USERNAME, "password": cfg.EGA_PASSWORD}
-                if cfg.EGA_CREDENTIALS_FILE:
-                    with open(cfg.EGA_CREDENTIALS_FILE) as fh:
-                        creds = _json.load(fh)
-                token = _p3.get_token(creds)  # type: ignore[attr-defined]
-                auth_ok = bool(token)
-                reply = _p3.api_list_authorized_datasets(token)  # type: ignore[attr-defined]
-                authorized_datasets = [str(x) for x in (reply or [])]
-                dataset_authorized = ds in authorized_datasets
-            except Exception as exc:  # noqa: BLE001
-                auth_error = _reason(exc)
+            token, tok_err = self._metadata_token()
+            if not token:
+                auth_error = tok_err or "token request failed"
+            else:
+                auth_ok = True
+                try:
+                    r = httpx.get(
+                        f"{self.META_BASE}/datasets",
+                        params={"authorized": "true"},
+                        headers={"Authorization": f"Bearer {token}"},
+                        timeout=CONNECT_TIMEOUT_S,
+                    )
+                    r.raise_for_status()
+                    grants = r.json() or []
+                    ids = [d.get("accession_id") for d in grants if isinstance(d, dict)]
+                    n_authorized = len(ids)
+                    dataset_authorized = ds in ids
+                    result["authorized_datasets"] = ids[:25]
+                except Exception as exc:  # noqa: BLE001
+                    auth_error = _reason(exc)
 
         result["auth_ok"] = auth_ok
-        result["n_authorized_datasets"] = len(authorized_datasets)
+        result["n_authorized_datasets"] = n_authorized
         result["dataset_authorized"] = dataset_authorized
         if auth_error:
             result["auth_error"] = auth_error
 
-        # Overall verdict: bytes are possible IFF data port open AND auth ok AND
-        # the target dataset is in the grant.
+        # Entitlement verdict (independent of transport): the account CAN be
+        # authorized for the dataset even when the byte-transfer port is blocked.
+        result["entitled"] = bool(auth_ok and dataset_authorized)
+        # Byte download is possible IFF entitled AND the Data API port is open
+        # from this host.
         can_download = bool(data_ok and auth_ok and dataset_authorized)
         result["can_download"] = can_download
         env.data = result
@@ -475,12 +511,19 @@ class EgaClient:
         else:
             env.status = "unreachable"
             reasons = []
-            if not data_ok:
-                reasons.append(f"data_port_blocked({self.DATA_HOST}:{self.DATA_PORT})")
-            if not auth_ok and data_ok:
+            if not auth_ok:
                 reasons.append("auth_failed")
-            if auth_ok and dataset_authorized is False:
+            elif dataset_authorized is False:
                 reasons.append(f"no_dac_grant_for:{ds}")
+            if not data_ok:
+                # Distinguish "entitled but transport blocked" from "not entitled".
+                if result["entitled"]:
+                    reasons.append(
+                        f"entitled_but_data_port_blocked({self.DATA_HOST}:{self.DATA_PORT}): "
+                        "bytes must be pulled from a host with open egress to this port"
+                    )
+                else:
+                    reasons.append(f"data_port_blocked({self.DATA_HOST}:{self.DATA_PORT})")
             env.error = "; ".join(reasons) or (auth_error or "unknown")
         env.latency_ms = round((time.time() - t0) * 1000, 1)
         return env
