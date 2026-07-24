@@ -1,4 +1,5 @@
 {
+  "_note": "Zeta Bridge MCP server config. Copy into your MCP client (Claude Desktop / IDE agent). Set `cwd` to the absolute path of zetabridge/backend. All values below are SERVER-SIDE only — the MCP process holds them; external agents never see them. NEO4J_* are required for the graph tools. The SOURCE_* vars are OPTIONAL for the live source tools: leave them unset and those endpoints honestly report 'unconfigured' (EGA metadata is public and works with no creds). NEVER commit real tokens here — fill them in your local copy only.",
   "mcpServers": {
     "zeta-graph": {
       "command": "python3",
@@ -7,7 +8,20 @@
       "env": {
         "NEO4J_URI": "neo4j+s://<host>.databases.neo4j.io",
         "NEO4J_USER": "<neo4j-user>",
-        "NEO4J_PASSWORD": "<neo4j-password>"
+        "NEO4J_PASSWORD": "<neo4j-password>",
+
+        "_live_source_secrets_note": "OPTIONAL — server-side only. Unset => endpoint reports 'unconfigured' (honest, not an error). Fill in your local copy; do not commit.",
+        "SYNAPSE_AUTH_TOKEN": "<synapse-personal-access-token-or-leave-blank>",
+        "SAS_CAS_HOST": "mpmprodvdmml.ondemand.sas.com",
+        "SAS_CAS_PORT": "443",
+        "SAS_CAS_PROTOCOL": "https",
+        "SAS_CAS_TOKEN": "<sas-cas-oauth-token-or-leave-blank>",
+        "SAS_CAS_USER": "<sas-user-or-leave-blank>",
+        "SAS_CAS_PASSWORD": "<sas-password-or-leave-blank>",
+        "SAS_CAS_CADATA": "<optional-path-to-CA-bundle-if-TLS-cert-issue>",
+        "EGA_USERNAME": "<ega-username-or-leave-blank>",
+        "EGA_PASSWORD": "<ega-password-or-leave-blank>",
+        "EGA_DEFAULT_DATASET": "EGAD00001011049"
       }
     }
   }

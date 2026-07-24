@@ -96,3 +96,12 @@ app.include_router(graph_router.router)
 from routers import signals as signals_router
 
 app.include_router(signals_router.router)
+
+# Live source extraction layer (Session 15) — authenticated /api/sources that
+# invokes the three LIVE source systems (Synapse / SAS Viya CAS / EGA) on demand
+# via SourceGateway. Read-only probes + targeted fetch; source credentials stay
+# server-side. Registered in BOTH store modes so external agents can extract
+# live regardless of USE_LEGACY_STORE.
+from routers import sources as sources_router
+
+app.include_router(sources_router.router)

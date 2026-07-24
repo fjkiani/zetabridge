@@ -23,6 +23,7 @@ import {
   ShieldAlert,
   Gem,
   Sparkles,
+  Radio,
 } from "lucide-react";
 import DashboardHome from "@/pages/dashboard-home";
 import CoPilot from "@/pages/copilot";
@@ -37,6 +38,8 @@ import Bridges from "@/pages/bridges";
 import Gaps from "@/pages/gaps";
 import Value from "@/pages/value";
 import Analyst from "@/pages/analyst";
+import Opportunities from "@/pages/opportunities";
+import LiveSources from "@/pages/live-sources";
 import QueryWorkbench from "@/pages/query-workbench";
 import Connectors from "@/pages/connectors";
 import Benchmarks from "@/pages/benchmarks";
@@ -75,6 +78,8 @@ function ZetaBridgeLogo({ collapsed }: { collapsed: boolean }) {
 
 const navItems = [
   { path: "/", label: "Overview", icon: LayoutDashboard },
+  { path: "/opportunities", label: "Opportunities", icon: Gem },
+  { path: "/live", label: "Live Extraction", icon: Radio },
   { path: "/signals", label: "Signal Intel", icon: Radar },
   { path: "/bridges", label: "Bridges", icon: GitFork },
   { path: "/gaps", label: "Blind Spots", icon: ShieldAlert },
@@ -164,6 +169,8 @@ function AppLayout() {
           <Route path="/insights" component={Insights} />
           <Route path="/signals/:slug" component={SignalDetail} />
           <Route path="/signals" component={SignalsHub} />
+          <Route path="/opportunities" component={Opportunities} />
+          <Route path="/live" component={LiveSources} />
           <Route path="/bridges" component={Bridges} />
           <Route path="/gaps" component={Gaps} />
           <Route path="/analyst" component={Analyst} />
