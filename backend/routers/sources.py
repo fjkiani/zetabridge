@@ -19,7 +19,8 @@ from __future__ import annotations
 import asyncio
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi.responses import StreamingResponse
 
 from config import cfg
 
@@ -102,3 +103,63 @@ async def ega_download_diagnostics(dataset: Optional[str] = None):
     OAuth2 auth, and whether the account has a DAC grant for ``dataset``.
     Transfers no bytes. ``data.can_download`` is the go/no-go for streaming."""
     return await _run(_get_gateway().ega.download_diagnostics, dataset)
+
+
+@router.get("/ega/file/{file_id}/download", dependencies=[Depends(require_api_key)])
+async def ega_file_download(file_id: str, request: Request):
+    """Stream an EGA file's raw bytes (``application/octet-stream``) server-side.
+
+    The EGA credentials stay entirely on the server; the caller never sees them.
+    HTTP ``Range`` is passed through to the EGA Data API, so callers can resume /
+    slice (206 Partial Content) exactly as the upstream supports. Honesty
+    contract: on any upstream failure we return a typed HTTP error (403/502/503/
+    504) — we never stream an HTML/JSON error body as if it were file bytes.
+
+    Enables the raw-BAM FIFO loop: GET here -> stream to disk -> QDNAseq -> rm.
+    """
+    gw = _get_gateway()
+    range_header = request.headers.get("range")
+
+    ok, meta, byte_iter, closer, error = await asyncio.to_thread(
+        gw.ega.open_byte_stream, file_id, range_header
+    )
+    if not ok:
+        reason = error or "unknown"
+        low = reason.lower()
+        if low.startswith("unconfigured"):
+            code = 503
+        elif low.startswith("not_found"):
+            code = 404
+        elif low.startswith("range_not_satisfiable"):
+            code = 416
+        elif low.startswith("auth"):
+            code = 403
+        elif low.startswith("timeout"):
+            code = 504
+        else:  # network / http / unexpected_content_type / tls / other
+            code = 502
+        raise HTTPException(status_code=code, detail=f"EGA download failed: {reason}")
+
+    def _iter():
+        try:
+            for chunk in byte_iter:
+                yield chunk
+        finally:
+            if closer:
+                closer()
+
+    # Byte-accurate headers so the caller sees a faithful proxy of the plaintext
+    # BAM. 206 + Content-Range when the caller asked for a partial range.
+    resp_headers = {"Accept-Ranges": meta.get("accept_ranges") or "bytes"}
+    if meta.get("content_length") is not None:
+        resp_headers["Content-Length"] = str(meta["content_length"])
+    if meta.get("content_range"):
+        resp_headers["Content-Range"] = meta["content_range"]
+    resp_headers["Content-Disposition"] = f'attachment; filename="{file_id}.bam"'
+
+    return StreamingResponse(
+        _iter(),
+        status_code=meta.get("status_code", 200),
+        media_type="application/octet-stream",
+        headers=resp_headers,
+    )

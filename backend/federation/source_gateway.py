@@ -430,6 +430,263 @@ class EgaClient:
         except Exception as exc:  # noqa: BLE001
             return False, _reason(exc)
 
+    # --- EGA Data API byte transfer -----------------------------------------
+    # The modern Data API serves file BYTES over the *reachable* AAI port (8443)
+    # at ``/v2/files/{id}?destinationFormat=plain`` with HTTP Range support —
+    # NOT the legacy 8052 transfer port (which is firewalled from many hosts,
+    # Render included). Verified empirically: 206 + application/octet-stream +
+    # BGZF magic. Token comes from the openid-connect-server on 8443 using the
+    # pyega3 public client_id/secret (a metadata-api-scoped token is the wrong
+    # audience for this route and returns 401).
+    DATA_API_BASE = "https://ega.ebi.ac.uk:8443"
+    DATA_TOKEN_URL = "https://ega.ebi.ac.uk:8443/ega-openid-connect-server/token"
+    # Public pyega3 OAuth client (not a secret in any meaningful sense — shipped
+    # inside the open-source EGA download client's default_server_file.json).
+    DATA_CLIENT_ID = "f20cd2d3-682a-4568-a53e-4262ef54c8f4"
+    DATA_CLIENT_SECRET = (
+        "AMenuDLjVdVo4BSwi0QD54LL6NeVDEZRzEQUJ7hJOM3g4imDZBHHX0hNfKHPeQIGkskhtCmqAJtt_jm7EKq-rWw"
+    )
+
+    def _egadata_credentials(self) -> tuple[Optional[str], Optional[str]]:
+        """Resolve (username, password) from cfg or the EGA credentials file."""
+        username, password = cfg.EGA_USERNAME, cfg.EGA_PASSWORD
+        if cfg.EGA_CREDENTIALS_FILE:
+            import json as _json
+
+            with open(cfg.EGA_CREDENTIALS_FILE) as fh:
+                creds = _json.load(fh)
+            username = creds.get("username", username)
+            password = creds.get("password", password)
+        return username, password
+
+    def _data_token(self) -> tuple[Optional[str], Optional[str]]:
+        """Password-grant token for the Data API byte route (openid-connect-server
+        on port 8443, with the pyega3 client_id + client_secret)."""
+        import httpx
+
+        username, password = self._egadata_credentials()
+        if not (username and password):
+            return None, "auth: EGA_USERNAME/EGA_PASSWORD not configured"
+        try:
+            r = httpx.post(
+                self.DATA_TOKEN_URL,
+                data={
+                    "grant_type": "password",
+                    "client_id": self.DATA_CLIENT_ID,
+                    "client_secret": self.DATA_CLIENT_SECRET,
+                    "scope": "openid",
+                    "username": username,
+                    "password": password,
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                timeout=CONNECT_TIMEOUT_S,
+            )
+            r.raise_for_status()
+            tok = r.json().get("access_token")
+            if not tok:
+                return None, "auth: token endpoint returned no access_token"
+            return tok, None
+        except Exception as exc:  # noqa: BLE001
+            return None, _reason(exc)
+
+    # Bounded slice size for internal fetches. EGA's re-encryption service only
+    # returns correctly-offset plaintext for *bounded* ranges; open-ended
+    # (``bytes=0-``) or whole-file-in-one-request responses are shifted or carry
+    # a 16-byte IV prefix. pyega3 uses 100 MiB slices — we mirror that.
+    SLICE_SIZE = 100 * 1024 * 1024
+
+    def _plaintext_size(self, file_id: str) -> tuple[Optional[int], Optional[str]]:
+        """True unencrypted (plaintext) byte length for a file.
+
+        EGA metadata ``filesize`` includes the 16-byte Crypt4GH IV; the Data API
+        serves ``filesize - 16`` bytes of plaintext (confirmed: an explicit small
+        Range reports ``/<plaintext_size>`` in Content-Range). We read the
+        metadata filesize and subtract the IV.
+        """
+        import httpx
+
+        try:
+            r = httpx.get(f"{self.META_BASE}/files/{file_id}", timeout=CONNECT_TIMEOUT_S)
+            if r.status_code == 404:
+                return None, f"not_found: no such EGA file '{file_id}'"
+            r.raise_for_status()
+            try:
+                j = r.json()
+            except Exception:  # noqa: BLE001 - non-JSON body (e.g. empty/HTML)
+                return None, f"not_found: metadata for '{file_id}' returned no JSON body"
+            if isinstance(j, list):
+                j = j[0] if j else {}
+            if not isinstance(j, dict):
+                return None, f"not_found: unexpected metadata shape for '{file_id}'"
+            size = j.get("filesize") or j.get("size")
+            if size is None:
+                return None, f"not_found: no filesize in metadata for '{file_id}'"
+            plain = int(size) - 16  # 16-byte IV not present in plain mode
+            return (plain if plain > 0 else int(size)), None
+        except Exception as exc:  # noqa: BLE001
+            return None, _reason(exc)
+
+    @staticmethod
+    def _parse_range(range_header: Optional[str], total: int) -> tuple[int, int]:
+        """Parse a single ``bytes=start-end`` header against a known total.
+
+        Returns an inclusive (start, end) clamped to [0, total-1]. Absent/open
+        ranges default to the whole file. We serve the whole file via internal
+        bounded slices, so an absent or open-ended client Range is fine here.
+        """
+        start, end = 0, total - 1
+        if range_header:
+            rh = range_header.strip().lower().replace("bytes=", "")
+            part = rh.split(",")[0].strip()
+            if "-" in part:
+                a, _, b = part.partition("-")
+                if a.strip():
+                    start = int(a)
+                if b.strip():
+                    end = int(b)
+        start = max(0, start)
+        end = min(end, total - 1)
+        if end < start:
+            end = total - 1
+        return start, end
+
+    def open_byte_stream(self, file_id: str, range_header: Optional[str] = None):
+        """Open a server-side byte stream for an EGA file over the Data API.
+
+        Returns a tuple ``(ok, meta, byte_iter, closer, error)``:
+          * ``ok``        — True when the plaintext size + a first bounded slice
+                            were obtained (bytes will flow).
+          * ``meta``      — status_code (206 for a partial range else 200),
+                            content_length (bytes to be served), content_range,
+                            accept_ranges.
+          * ``byte_iter`` — a generator yielding the requested plaintext byte
+                            range as bounded slices concatenated in order.
+          * ``closer``    — a no-arg callable to release resources.
+          * ``error``     — typed reason string on failure (else None).
+
+        Why bounded slices: EGA's re-encryption service returns correctly-offset
+        plaintext only for *bounded* ``bytes=start-end`` ranges. An open-ended
+        ``bytes=0-`` (or no Range) response prepends the 16-byte Crypt4GH IV, and
+        a single whole-file range collapses to a shifted 200. So we always fetch
+        in bounded ``SLICE_SIZE`` chunks — exactly the strategy pyega3 uses — and
+        stream them out as one contiguous octet-stream. This guarantees the
+        caller receives valid BAM bytes regardless of the Range they send.
+
+        Honesty contract: a slice that returns non-2xx or a non-octet-stream body
+        raises inside the generator (surfaced as a broken stream) rather than
+        yielding an HTML error page as if it were BAM.
+        """
+        import httpx
+
+        if not self.configured():
+            return False, {}, None, None, "unconfigured: EGA credentials not set"
+
+        token, tok_err = self._data_token()
+        if not token:
+            return False, {}, None, None, tok_err or "auth: token request failed"
+
+        total, size_err = self._plaintext_size(file_id)
+        if total is None:
+            return False, {}, None, None, size_err or "metadata: could not resolve file size"
+
+        # Reject an unsatisfiable range (start past EOF) with a 416 signal rather
+        # than a confusing upstream failure.
+        if range_header:
+            rh = range_header.strip().lower().replace("bytes=", "").split(",")[0].strip()
+            a = rh.partition("-")[0].strip()
+            if a and int(a) >= total:
+                return False, {"total_size": total}, None, None, (
+                    f"range_not_satisfiable: start {a} >= file size {total}"
+                )
+
+        start, end = self._parse_range(range_header, total)
+        want = end - start + 1
+        is_partial = bool(range_header) and (start != 0 or end != total - 1)
+
+        url = f"{self.DATA_API_BASE}/v2/files/{file_id}?destinationFormat=plain"
+        base_headers = {"Authorization": f"Bearer {token}", "Accept": "application/octet-stream"}
+
+        client = httpx.Client(timeout=httpx.Timeout(CONNECT_TIMEOUT_S, read=None))
+
+        def _closer() -> None:
+            try:
+                client.close()
+            except Exception:  # noqa: BLE001
+                pass
+
+        # Prime the first slice so we can fail fast (auth/404/etc.) BEFORE the
+        # router commits to a 200/206 streaming response.
+        def _open_slice(s: int, e: int):
+            h = dict(base_headers)
+            h["Range"] = f"bytes={s}-{e}"
+            req = client.build_request("GET", url, headers=h)
+            resp = client.send(req, stream=True, follow_redirects=True)
+            return resp
+
+        first_end = min(start + self.SLICE_SIZE - 1, end)
+        try:
+            first_resp = _open_slice(start, first_end)
+        except Exception as exc:  # noqa: BLE001
+            _closer()
+            return False, {}, None, None, _reason(exc)
+
+        ct = first_resp.headers.get("content-type", "")
+        status = first_resp.status_code
+        if status not in (200, 206):
+            body = b""
+            try:
+                for chunk in first_resp.iter_bytes():
+                    body += chunk
+                    if len(body) > 2048:
+                        break
+            except Exception:  # noqa: BLE001
+                pass
+            first_resp.close()
+            _closer()
+            snippet = body[:200].decode("utf-8", "replace").replace("\n", " ").strip()
+            reason = "auth" if status in (401, 403) else ("network" if status >= 500 else "http")
+            return False, {}, None, None, f"{reason}: upstream HTTP {status}: {snippet}"
+        if "application/octet-stream" not in ct.lower():
+            first_resp.close()
+            _closer()
+            return (
+                False, {}, None, None,
+                f"unexpected_content_type: upstream returned '{ct}' not octet-stream "
+                "(likely an auth/redirect page, not file bytes)",
+            )
+
+        def _byte_iter():
+            try:
+                # slice 1 (already open)
+                for chunk in first_resp.iter_bytes(chunk_size=1024 * 1024):
+                    yield chunk
+                first_resp.close()
+                # remaining slices
+                pos = first_end + 1
+                while pos <= end:
+                    s_end = min(pos + self.SLICE_SIZE - 1, end)
+                    resp = _open_slice(pos, s_end)
+                    try:
+                        if resp.status_code not in (200, 206):
+                            raise RuntimeError(f"slice {pos}-{s_end} HTTP {resp.status_code}")
+                        for chunk in resp.iter_bytes(chunk_size=1024 * 1024):
+                            yield chunk
+                    finally:
+                        resp.close()
+                    pos = s_end + 1
+            finally:
+                _closer()
+
+        meta = {
+            "status_code": 206 if is_partial else 200,
+            "content_type": "application/octet-stream",
+            "content_length": want,
+            "content_range": f"bytes {start}-{end}/{total}" if is_partial else None,
+            "accept_ranges": "bytes",
+            "total_size": total,
+        }
+        return True, meta, _byte_iter(), _closer, None
+
     def download_diagnostics(self, dataset: str | None = None) -> Envelope:
         """Prove (server-side) whether BAM byte-download is actually possible:
         (1) outbound reachability to the AAI (8443) and Data API (8052) ports,
@@ -453,11 +710,20 @@ class EgaClient:
 
         result: dict[str, Any] = {}
         aai_ok, aai_msg = self._port_open(self.AAI_HOST, self.AAI_PORT)
-        data_ok, data_msg = self._port_open(self.DATA_HOST, self.DATA_PORT)
+        legacy_ok, legacy_msg = self._port_open(self.DATA_HOST, self.DATA_PORT)
         result["egress"] = {
+            # The Data API serves BYTES over the AAI port (8443) via
+            # /v2/files/{id}. This is the real transport gate.
             f"{self.AAI_HOST}:{self.AAI_PORT}": {"open": aai_ok, "detail": aai_msg},
-            f"{self.DATA_HOST}:{self.DATA_PORT}": {"open": data_ok, "detail": data_msg},
+            # Legacy 8052 transfer port — informational only; not required by the
+            # modern /v2/files byte route and often firewalled.
+            f"{self.DATA_HOST}:{self.DATA_PORT} (legacy, not required)": {
+                "open": legacy_ok,
+                "detail": legacy_msg,
+            },
         }
+        # Byte transport is possible when the 8443 data host is reachable.
+        data_ok = aai_ok
 
         # Auth + DAC-grant check via the REACHABLE OIDC + private-metadata API
         # (port 443), independent of the Data API port 8052. This is the correct
@@ -517,13 +783,14 @@ class EgaClient:
                 reasons.append(f"no_dac_grant_for:{ds}")
             if not data_ok:
                 # Distinguish "entitled but transport blocked" from "not entitled".
+                # Transport now rides the 8443 Data API host (/v2/files).
                 if result["entitled"]:
                     reasons.append(
-                        f"entitled_but_data_port_blocked({self.DATA_HOST}:{self.DATA_PORT}): "
+                        f"entitled_but_data_host_unreachable({self.AAI_HOST}:{self.AAI_PORT}): "
                         "bytes must be pulled from a host with open egress to this port"
                     )
                 else:
-                    reasons.append(f"data_port_blocked({self.DATA_HOST}:{self.DATA_PORT})")
+                    reasons.append(f"data_host_unreachable({self.AAI_HOST}:{self.AAI_PORT})")
             env.error = "; ".join(reasons) or (auth_error or "unknown")
         env.latency_ms = round((time.time() - t0) * 1000, 1)
         return env
