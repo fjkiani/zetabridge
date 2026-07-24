@@ -102,3 +102,43 @@ async def ega_download_diagnostics(dataset: Optional[str] = None):
     OAuth2 auth, and whether the account has a DAC grant for ``dataset``.
     Transfers no bytes. ``data.can_download`` is the go/no-go for streaming."""
     return await _run(_get_gateway().ega.download_diagnostics, dataset)
+
+
+@router.get("/ega/file/{file_id}/size", dependencies=[Depends(require_api_key)])
+async def ega_file_size(file_id: str):
+    """Authenticated file-size lookup via the EGA Data API v2 (port 8443).
+
+    Unlike /ega/file/{id} (public metadata), this exercises the controlled-access
+    Data API with server-side credentials over the v2 API on 8443 (the reachable
+    port), so a 'live' status here proves the byte channel below authenticates.
+    """
+    return await _run(_get_gateway().ega.download_size, file_id)
+
+
+@router.get("/ega/file/{file_id}/download", dependencies=[Depends(require_api_key)])
+async def ega_file_download(file_id: str):
+    """Stream decrypted file bytes for ``file_id`` from the EGA Data API v2 (8443).
+
+    Server-side authenticated proxy: the caller supplies only X-Zeta-Api-Key and
+    never sees the EGA credentials. Returns application/octet-stream. Auth is
+    forced before the body starts, so auth/config failures return a typed JSON
+    error (503 unconfigured / 502 upstream) instead of a truncated stream.
+
+    Uses pyega3's v2 client (url_api https://ega.ebi.ac.uk:8443/v2), which is
+    reachable from Render; the legacy 8052 Data API path is firewall-blocked and
+    is NOT used here.
+    """
+    from fastapi.responses import StreamingResponse
+
+    gw = _get_gateway()
+    if not gw.ega.configured():
+        raise HTTPException(status_code=503, detail="EGA credentials not configured on server.")
+    try:
+        gen = await asyncio.to_thread(lambda: gw.ega.iter_file_bytes(file_id))
+    except RuntimeError as exc:
+        msg = str(exc)
+        code = 503 if msg.startswith("unconfigured") else 502
+        raise HTTPException(status_code=code, detail=f"EGA download failed: {msg}")
+
+    headers = {"Content-Disposition": f'attachment; filename="{file_id}"'}
+    return StreamingResponse(gen, media_type="application/octet-stream", headers=headers)
