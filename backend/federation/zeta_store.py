@@ -162,6 +162,82 @@ class ZetaStore:
         return genes
 
 
+    # ── SourceNode query surface (Session 5 ELT staging layer) ──────────
+    def source_nodes(
+        self,
+        endpoint: str | None = None,
+        table: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict]:
+        """Return raw SourceNode entities from the ELT staging layer.
+
+        Args:
+            endpoint: 'synapse' or 'pds' (or None for all)
+            table:    filter by _table attribute (e.g. 'pds_trial_schema')
+            limit:    cap result count
+        """
+        out = [e for e in self._entities if e.get("type") == "SourceNode"]
+        if endpoint:
+            out = [e for e in out if e.get("attributes", {}).get("_source_endpoint") == endpoint]
+        if table:
+            out = [e for e in out if e.get("attributes", {}).get("_table") == table]
+        if limit:
+            out = out[:limit]
+        return out
+
+    def schema_for_table(self, endpoint: str, table: str) -> dict | None:
+        """Return the schema SourceNode for a given endpoint+table, or None."""
+        schema_table = f"{endpoint}_table_schema" if endpoint == "pds" else f"msk_spectrum_{table.replace('msk_spectrum_','')}_schema"
+        # Try exact table match first
+        nodes = self.source_nodes(endpoint=endpoint, table=table)
+        if not nodes:
+            # Try schema-suffixed table
+            nodes = self.source_nodes(endpoint=endpoint, table=schema_table)
+        if not nodes:
+            # Fuzzy: any SourceNode whose _table contains 'schema' and the table name
+            keyword = table.replace("_schema", "").replace("msk_spectrum_", "")
+            nodes = [
+                e for e in self.source_nodes(endpoint=endpoint)
+                if "schema" in e.get("attributes", {}).get("_table", "")
+                and keyword in e.get("attributes", {}).get("_table", "")
+            ]
+        return nodes[0] if nodes else None
+
+    def raw_rows(self, endpoint: str, table: str, limit: int = 100) -> list[dict]:
+        """Return raw row SourceNodes for a given endpoint+table."""
+        nodes = self.source_nodes(endpoint=endpoint, table=table, limit=limit)
+        rows = []
+        for n in nodes:
+            raw_str = n.get("attributes", {}).get("_raw_payload", "{}")
+            try:
+                payload = json.loads(raw_str) if isinstance(raw_str, str) else raw_str
+            except Exception:
+                payload = {"raw": raw_str}
+            rows.append(payload)
+        return rows
+
+    def list_tables(self, endpoint: str) -> list[str]:
+        """Return distinct _table values for all SourceNodes of an endpoint."""
+        tables = sorted({
+            e.get("attributes", {}).get("_table", "")
+            for e in self.source_nodes(endpoint=endpoint)
+            if e.get("attributes", {}).get("_table", "")
+        })
+        return tables
+
+    def source_node_counts(self) -> dict:
+        """Return SourceNode counts by endpoint and table."""
+        from collections import Counter
+        sn = self.source_nodes()
+        by_ep = Counter(e.get("attributes", {}).get("_source_endpoint", "?") for e in sn)
+        by_table = Counter(e.get("attributes", {}).get("_table", "?") for e in sn)
+        return {
+            "total_source_nodes": len(sn),
+            "by_endpoint": dict(by_ep),
+            "by_table": dict(by_table),
+        }
+
+
 @lru_cache(maxsize=1)
 def get_zeta_store() -> ZetaStore:
     """Process-wide singleton (KG is large; load once)."""

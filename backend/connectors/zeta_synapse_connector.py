@@ -111,3 +111,34 @@ class ZetaSynapseConnector:
             "n_patients": len(patients),
             "genotyped_genes": sorted(self.list_genes().keys()),
         }
+
+    # ── ELT staging layer (Session 5) ────────────────────────────────────
+
+    def list_tables(self) -> list[str]:
+        """Return all distinct table names in the Synapse SourceNode staging layer."""
+        return self.store.list_tables(ENDPOINT)
+
+    def table_schema(self, table: str) -> dict | None:
+        """Return the schema SourceNode for a Synapse table, or None if not staged."""
+        node = self.store.schema_for_table(ENDPOINT, table)
+        if not node:
+            return None
+        import json
+        raw_str = node.get("attributes", {}).get("_raw_payload", "{}")
+        try:
+            return json.loads(raw_str) if isinstance(raw_str, str) else raw_str
+        except Exception:
+            return {"raw": raw_str}
+
+    def raw_rows(self, table: str, limit: int = 100) -> list[dict]:
+        """Return raw row payloads from a Synapse staging table."""
+        return self.store.raw_rows(ENDPOINT, table, limit=limit)
+
+    def source_node_summary(self) -> dict:
+        """Summary of all Synapse SourceNodes in the staging layer."""
+        counts = self.store.source_node_counts()
+        return {
+            "endpoint": ENDPOINT,
+            "total_source_nodes": counts["by_endpoint"].get(ENDPOINT, 0),
+            "tables": self.list_tables(),
+        }
