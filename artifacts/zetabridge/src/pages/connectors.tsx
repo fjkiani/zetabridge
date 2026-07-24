@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,10 @@ import {
   Loader2,
   Link2,
   FileJson,
+  Sparkles,
+  Wrench,
+  ArrowRight,
+  ExternalLink,
 } from "lucide-react";
 import {
   ENDPOINT_META,
@@ -50,6 +55,13 @@ import {
   type EndpointCode,
   type GNode,
 } from "@/lib/graphApi";
+import {
+  getGaps,
+  runSignalAgent,
+  graphFocusHref,
+  type GapItem,
+  type AgentResponse,
+} from "@/lib/signalsApi";
 
 const categoryIcons: Record<string, any> = {
   data_lake: HardDrive,
@@ -171,6 +183,9 @@ export default function Connectors() {
         </p>
       </div>
 
+      {/* Connection Guide — read-only FE copilot #2: blind-spot → fix */}
+      <ConnectionGuide />
+
       {/* Stats Summary */}
       {stats && (
         <div className="flex flex-wrap items-center gap-3" data-testid="connector-stats">
@@ -245,6 +260,231 @@ export default function Connectors() {
         </div>
       )}
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Connection Guide — read-only front-end copilot (#2)
+// Reads a blind spot (KBGap) the federation has quantified, asks the grounded
+// gap_auditor agent to explain it, and points the user at the mint-proposal
+// builder below as the additive fix affordance. Never writes to the graph.
+// ---------------------------------------------------------------------------
+
+// parse `#/connectors?gap=<slug>` deep-link (hash router, so read from hash)
+function parseGapParam(): string | null {
+  if (typeof window === "undefined") return null;
+  const hash = window.location.hash || "";
+  const qIdx = hash.indexOf("?");
+  if (qIdx === -1) return null;
+  const params = new URLSearchParams(hash.slice(qIdx + 1));
+  const g = params.get("gap");
+  return g ? decodeURIComponent(g) : null;
+}
+
+function ConnectionGuide() {
+  const [gaps, setGaps] = useState<GapItem[]>([]);
+  const [selected, setSelected] = useState<string>("");
+  const [loadingGaps, setLoadingGaps] = useState(true);
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState<AgentResponse | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  // load the quantified blind spots (works offline via snapshot)
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const r = await getGaps();
+        if (!alive) return;
+        setGaps(r.gaps);
+        // preselect from deep-link, else first gap
+        const fromUrl = parseGapParam();
+        const match = fromUrl && r.gaps.find((g) => g.slug === fromUrl);
+        setSelected(match ? match.slug : r.gaps[0]?.slug ?? "");
+      } catch (e) {
+        if (alive) setErr(`Could not load blind spots: ${String(e)}`);
+      } finally {
+        if (alive) setLoadingGaps(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const current = useMemo(() => gaps.find((g) => g.slug === selected) ?? null, [gaps, selected]);
+
+  const explain = useCallback(async () => {
+    setRunning(true);
+    setErr(null);
+    setResult(null);
+    try {
+      // grounded, server-side agent — rejects offline by design (no fabrication)
+      const res = await runSignalAgent({ agent: "gap_auditor", action: "list_gaps" });
+      setResult(res);
+    } catch (e) {
+      setErr(
+        "The Connection Guide agent runs grounded Cypher on the live backend. " +
+          "Set VITE_API_BASE + VITE_ZETA_API_KEY to enable it — blind-spot browsing works offline, live analysis does not.",
+      );
+    } finally {
+      setRunning(false);
+    }
+  }, []);
+
+  return (
+    <Card className="border-primary/20 bg-primary/[0.03]" data-testid="connection-guide">
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-start gap-2">
+          <div className="p-2 rounded-lg border border-primary/30 bg-primary/5 shrink-0">
+            <Sparkles className="w-4 h-4 text-primary" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+              Connection Guide
+              <Badge variant="outline" className="text-[9px] text-primary border-primary/40">
+                read-only copilot
+              </Badge>
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Pick a blind spot the federation has already quantified — the guide explains what pharma got wrong and
+              which connection closes it. Then draft an additive mint proposal below.
+            </p>
+          </div>
+        </div>
+
+        {loadingGaps ? (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" /> loading quantified blind spots…
+          </div>
+        ) : gaps.length === 0 ? (
+          <p className="text-xs text-muted-foreground">No blind spots available.</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 items-end">
+              <div className="space-y-1 min-w-0">
+                <label className="text-[11px] text-muted-foreground font-medium">Blind spot</label>
+                <Select value={selected} onValueChange={setSelected}>
+                  <SelectTrigger className="h-8 text-xs" data-testid="gap-select">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {gaps.map((g) => (
+                      <SelectItem key={g.slug} value={g.slug}>
+                        <span className="truncate">
+                          {(g.name || g.slug).slice(0, 60)}
+                          {g.gap_type ? ` · ${g.gap_type}` : ""}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                size="sm"
+                className="h-8 text-xs"
+                onClick={explain}
+                disabled={running || !selected}
+                data-testid="explain-gaps-btn"
+              >
+                {running ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
+                Explain the gaps
+              </Button>
+            </div>
+
+            {/* selected gap facts (grounded from getGaps, works offline) */}
+            {current && (
+              <div className="rounded-md border border-border/50 p-2.5 space-y-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {current.gap_type && (
+                    <Badge variant="outline" className="text-[9px] text-amber-400 border-amber-400/40">
+                      {current.gap_type}
+                    </Badge>
+                  )}
+                  {current.current_tier && (
+                    <Badge variant="outline" className="text-[9px]">
+                      tier: {current.current_tier}
+                    </Badge>
+                  )}
+                  <code className="text-[10px] text-muted-foreground truncate">{current.slug}</code>
+                </div>
+                {current.impact && (
+                  <p className="text-[11px] text-muted-foreground">
+                    <span className="text-foreground font-medium">Impact:</span> {current.impact}
+                  </p>
+                )}
+                {current.closes_gap && (
+                  <p className="text-[11px] text-muted-foreground flex items-start gap-1">
+                    <Wrench className="w-3 h-3 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>
+                      <span className="text-emerald-400 font-medium">Fix path:</span> {current.closes_gap}
+                    </span>
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* grounded agent narrative */}
+            {result && (
+              <div className="rounded-md border border-primary/20 bg-background/40 p-2.5 space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="outline" className="text-[9px] text-primary border-primary/40">
+                    gap_auditor
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className={`text-[9px] ${
+                      result.used_llm ? "text-violet-400 border-violet-400/40" : "text-muted-foreground"
+                    }`}
+                  >
+                    {result.used_llm ? "LLM narration" : "deterministic"}
+                  </Badge>
+                </div>
+                <p className="text-[11px] text-foreground/90 whitespace-pre-wrap">{result.summary}</p>
+                {result.grounding?.length > 0 && (
+                  <div>
+                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">
+                      Grounded in {result.grounding.length} graph node{result.grounding.length === 1 ? "" : "s"}
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {result.grounding.slice(0, 10).map((id) => (
+                        <a key={id} href={graphFocusHref(id)}>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] font-mono cursor-pointer hover:border-primary/50"
+                          >
+                            <span className="truncate max-w-[160px]">{id}</span>
+                            <ExternalLink className="w-2.5 h-2.5 ml-1 shrink-0" />
+                          </Badge>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <Link href="/gaps">
+                  <span className="text-[10px] text-primary hover:underline inline-flex items-center gap-1">
+                    see all blind spots <ArrowRight className="w-3 h-3" />
+                  </span>
+                </Link>
+              </div>
+            )}
+
+            {err && (
+              <div className="flex items-start gap-2 rounded-md border border-amber-400/30 bg-amber-400/5 px-2.5 py-2">
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-muted-foreground">{err}</p>
+              </div>
+            )}
+
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
+              <ArrowRight className="w-3 h-3" /> Ready to close it? Use{" "}
+              <span className="text-foreground font-medium">Add a connection</span> above to draft an additive mint
+              proposal (never a live write).
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
