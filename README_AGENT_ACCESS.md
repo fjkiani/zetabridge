@@ -343,3 +343,172 @@ offline fabrication); all data browsing works offline from the snapshot.
 `gaps` so the value surfaces render offline. Regenerate with
 `python scripts/s14/export_snapshot_v2.py`. The Session 13 snapshot is preserved
 as `graph-snapshot-v1.json`.
+
+---
+
+## Live source extraction (Session 15) — connect to the 3 source systems directly
+
+`/api/graph` and `/api/signals` read the **pre-extracted** federated graph.
+Session 15 adds a third router, **`/api/sources`**, that invokes the **live
+source systems on demand** so an agent can pull *fresh* records that were never
+ingested into Neo4j:
+
+| Endpoint | Live system | Client library | Auth |
+|---|---|---|---|
+| `A_MSK` | **Synapse** (Sage Bionetworks) | `synapseclient` | `SYNAPSE_AUTH_TOKEN` (server-side) |
+| `B_SAS` | **SAS Viya CAS** (`mpmprodvdmml.ondemand.sas.com`) | `swat` | `SAS_CAS_TOKEN` **or** `SAS_CAS_USER`+`SAS_CAS_PASSWORD` (server-side) |
+| `C_EGA` | **EGA** dataset `EGAD00001011049` (BriTROC) | EGA REST (public metadata) | none for metadata (`EGA_USERNAME`/`EGA_PASSWORD` only for controlled ops) |
+
+### One-key onboarding for an external agent
+
+You configure **one** thing to consume everything: the same
+`X-Zeta-Api-Key` you already use for `/api/graph`. **The three source tokens stay
+entirely server-side** — the backend holds them and extracts on your behalf; a
+caller never sees or sends them. This is a deliberate security choice: EGA is
+controlled-access human patient genomics, SAS CAS is a live clinical-trials
+warehouse, and Synapse holds MSK data — committing those tokens to source would
+put them in git history permanently. You get the same outcome ("connect once,
+extract live") with one scoped key instead of three raw credentials.
+
+### Honesty contract (the same no-fabrication guarantee as the graph)
+
+Every `/api/sources` response is a uniform **envelope**:
+
+```json
+{
+  "endpoint": "C_EGA",
+  "source": "ega",
+  "status": "live",                 // "live" | "unreachable" | "unconfigured"
+  "action": "list_files",
+  "latency_ms": 512.3,
+  "data": [ ... real rows ... ],    // present IFF status == "live", else null
+  "error": null,                    // typed reason when not live, else null
+  "grounding": { "dataset": "EGAD00001011049", "n_files": 3 }
+}
+```
+
+- `status: "live"` → real data returned; `data` is populated; `grounding` proves
+  what was touched (dataset id, syn id, caslib/table, row count).
+- `status: "unconfigured"` → the server has no token / the client lib is absent.
+  `data` is `null`. **Not an error, not fabricated** — just honest "not wired up here."
+- `status: "unreachable"` → a real connection was attempted and failed
+  (`auth`, `tls_ca_unavailable`, network/timeout). `data` is `null`; `error`
+  carries the typed reason.
+
+`data` is `null` on **every** non-live path — there is no snapshot substitution
+and no invented rows. A 24-case gateway contract-test suite asserts this
+invariant for all three clients (the analogue of the agent fabrication guard).
+
+### REST endpoints (`/api/sources`, `X-Zeta-Api-Key` required)
+
+| Method | Path | Params | Returns |
+|---|---|---|---|
+| GET | `/api/sources/health` | — | per-endpoint connect handshake + `configured?` flags (no data) |
+| GET | `/api/sources/synapse/whoami` | — | Synapse auth handshake (profile) |
+| GET | `/api/sources/synapse/entity/{syn_id}` | syn id in path | one Synapse entity's metadata |
+| GET | `/api/sources/synapse/table/{syn_id}` | `limit` (default 50) | real rows from a Synapse table |
+| GET | `/api/sources/sas/caslibs` | — | CAS caslibs visible to the session |
+| GET | `/api/sources/sas/adam` | `caslib`, `table`, `limit` | real ADaM rows (e.g. `ADAE`) |
+| GET | `/api/sources/ega/files` | `dataset` (default `EGAD00001011049`), `limit` | real EGA file accessions + sizes + MD5 |
+| GET | `/api/sources/ega/file/{file_id}` | file id in path | one EGA file's metadata |
+
+Same auth semantics as the rest of the API: **401** without/with a wrong key,
+**503** when the server has no `ZETA_GRAPH_API_KEY` configured (closed by default).
+
+```bash
+export API=http://localhost:8000 KEY=<ZETA_GRAPH_API_KEY>
+
+# which sources are wired up here?
+curl -s -H "X-Zeta-Api-Key: $KEY" "$API/api/sources/health"
+
+# live EGA extraction — works with NO source token (public metadata)
+curl -s -H "X-Zeta-Api-Key: $KEY" \
+  "$API/api/sources/ega/files?dataset=EGAD00001011049&limit=3"
+
+# live Synapse entity (returns status:"unconfigured" if SYNAPSE_AUTH_TOKEN unset)
+curl -s -H "X-Zeta-Api-Key: $KEY" "$API/api/sources/synapse/entity/syn25569736"
+
+# live SAS ADaM adverse-event slice (needs SAS_CAS creds server-side)
+curl -s -H "X-Zeta-Api-Key: $KEY" \
+  "$API/api/sources/sas/adam?caslib=CASUSER&table=ADAE&limit=20"
+```
+
+### New MCP live tools (alongside the 6 graph tools — 13 total)
+
+The `zeta-graph` MCP server now exposes seven live-extraction tools on the same
+stdio server and the same server-side credential surface:
+
+| Tool | Purpose |
+|---|---|
+| `list_sources()` | the 3 endpoints + their `configured?` / `live?` status |
+| `synapse_get_entity(syn_id)` | one Synapse entity's metadata (live) |
+| `synapse_query_table(syn_id, limit)` | real rows from a Synapse table (live) |
+| `sas_list_caslibs()` | CAS caslibs (live) |
+| `sas_query_adam(caslib, table, limit)` | real ADaM rows (live) |
+| `ega_list_files(dataset)` | real EGA file accessions/metadata (live; public) |
+| `ega_file_metadata(file_id)` | one EGA file's metadata (live) |
+
+Each returns the same envelope and the same typed-error behavior as the REST
+routes. Server-side source env vars go in your **local** `mcp.json` copy (see the
+`_live_source_secrets_note` block in `backend/mcp_server/mcp.json`) — leave any
+unset and that tool honestly reports `unconfigured`. EGA metadata works with no
+credentials at all.
+
+### Server-side secret configuration
+
+All source secrets are read from env in `backend/config.py` (all default empty):
+
+```
+SYNAPSE_AUTH_TOKEN=            # Synapse personal access token
+SAS_CAS_HOST=mpmprodvdmml.ondemand.sas.com
+SAS_CAS_PORT=443
+SAS_CAS_PROTOCOL=https
+SAS_CAS_TOKEN=                 # OAuth token  (or use USER/PASSWORD below)
+SAS_CAS_USER=
+SAS_CAS_PASSWORD=
+SAS_CAS_CADATA=                # optional CA bundle path if TLS cert issue
+EGA_USERNAME=                  # only for controlled ops; metadata is public
+EGA_PASSWORD=
+EGA_DEFAULT_DATASET=EGAD00001011049
+```
+
+- **Local:** put them in a git-ignored `.env` (see `.env.example`), never in a
+  committed file.
+- **Render:** the env var **names** are declared in `render.yaml` with
+  `sync: false`; set the **values** as Render dashboard secrets. Nothing sensitive
+  lives in the repo.
+
+### Tests
+
+```bash
+cd backend
+# gateway contract tests (mocked; no live creds needed) — includes no-fabrication guard
+python3 -m pytest federation/test_source_gateway.py -q
+# REST auth + envelope passthrough
+python3 -m pytest routers/test_sources_api.py -q
+# live smoke — hits the REAL sources and PRINTS what returned (visible proof).
+# EGA prints real accessions/sizes/MD5 with no creds; Synapse/SAS run wherever
+# their tokens are configured, otherwise skip honestly as "unconfigured".
+python3 federation/live_smoke.py
+```
+
+## Front-end (Session 15 additions)
+
+Two new opportunity surfaces on top of the Session 14 app:
+
+- **Live Extraction** (`/#/live`) — the **Live Extraction Console.** Three
+  endpoint cards (Synapse / SAS CAS / EGA), each with a **Connect** handshake and
+  a **Fetch** action (Synapse entity/table, SAS ADaM query, EGA file list). Renders
+  the real returned rows, a source badge (cyan/gold/purple), **latency**, and an
+  honest status chip (`live` / `unreachable: <reason>` / `unconfigured`). On
+  `unreachable`, it shows the real reason plus a clearly-labeled "view the
+  extracted equivalent in Graph Explorer" deep-link — **never** a silent snapshot swap.
+- **Opportunities** (`/#/opportunities`) — the **Opportunity board.** Fuses the
+  strongest signals + bridges + gaps into ranked cards, each with the concrete
+  finding, the supporting numbers, the blind spot it closes, a plain "why this is
+  worth money" line, and a live-provenance chip. Deep-links to `/signals/:slug`,
+  `/bridges`, `/gaps`, and `/live`.
+
+Unlike the data-browsing surfaces, `/live` is **live-only** by design (a live
+console must be live) — it requires the running backend and the `X-Zeta-Api-Key`;
+there is no offline snapshot fallback for live extraction.

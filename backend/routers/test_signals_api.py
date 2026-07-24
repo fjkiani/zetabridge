@@ -151,7 +151,17 @@ def test_router_detail_route_not_shadowed(client):
 # ── agents: grounded envelope + fabrication guard ──────────────────────────────
 
 def _run(coro):
-    return asyncio.get_event_loop().run_until_complete(coro)
+    # Robust to a closed/absent loop left by earlier async tests (e.g. the MCP
+    # stdio client test closes the loop). asyncio.get_event_loop() raises on
+    # Python 3.10+ when there is no current loop, so create a fresh one.
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_closed():
+            raise RuntimeError("event loop is closed")
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop.run_until_complete(coro)
 
 
 @requires_live
