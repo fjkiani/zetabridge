@@ -1,0 +1,108 @@
+{
+  "session": 12,
+  "stream": "session12_deep_traversal",
+  "mint_planner": "zeta_custodian_session12",
+  "branch": "zeta/session12-deep-traversal-agent-api",
+  "generated": "2026-07-23T13:33:56.499086+00:00",
+  "deliverable_1_agent_access_layer": {
+    "rest_router": "backend/routers/graph.py",
+    "query_core": "backend/federation/graph_service.py",
+    "read_only_guard": "backend/federation/cypher_guard.py",
+    "mcp_server": "backend/mcp_server/zeta_graph_mcp.py",
+    "mcp_manifest": "backend/mcp_server/mcp.json",
+    "agent_docs": "README_AGENT_ACCESS.md",
+    "tests": {
+      "cypher_guard": "59 passed",
+      "http_graph_api": "9 passed (live Neo4j)",
+      "mcp_e2e": "1 passed (live Neo4j)"
+    },
+    "security_model": "read-only enforced in APP layer (Aura cannot create DB roles); scoped API key via ZETA_GRAPH_API_KEY"
+  },
+  "deliverable_2_deep_traversal": {
+    "workers": {
+      "W0_cross_endpoint_paths": {
+        "nodes": 39,
+        "edges": 194,
+        "script": "workers/s12_w0_paths.py"
+      },
+      "W1_node_neighborhoods": {
+        "nodes": 11,
+        "edges": 11,
+        "script": "workers/s12_w1_neighborhoods.py"
+      },
+      "W2_structural_bridges": {
+        "nodes": 15,
+        "edges": 15,
+        "script": "workers/s12_w2_bridges.py"
+      },
+      "W3_reachability_metapaths": {
+        "nodes": 22,
+        "edges": 16,
+        "script": "workers/s12_w3_reachability.py"
+      },
+      "W4_deep_chains": {
+        "nodes": 100,
+        "edges": 399,
+        "script": "workers/s12_w4_deepchains.py"
+      }
+    },
+    "total_minted": {
+      "nodes": 187,
+      "edges": 635
+    },
+    "node_label_breakdown": {
+      "CrossEndpointPath": 36,
+      "CrossEndpointPathSummary": 3,
+      "NodeNeighborhood": 11,
+      "StructuralBridge": 15,
+      "ReachabilityProfile": 6,
+      "Metapath": 16,
+      "DeepChain": 100
+    },
+    "edge_relation_breakdown": {
+      "path_source": 36,
+      "path_target": 36,
+      "traverses": 122,
+      "neighborhood_of": 11,
+      "bridges_node": 15,
+      "instance_of_reachability": 16,
+      "deep_chain_of": 60,
+      "via_sample": 159,
+      "reaches_dataset": 60,
+      "chain_gene": 40,
+      "chain_ae": 40,
+      "via_specimen": 40
+    },
+    "key_findings": {
+      "W2_top_betweenness": "ega:dataset:EGAD00001011049 (0.6325) is dominant broker on pruned connective subgraph (3223 nodes/4496 edges, 157 articulation points)",
+      "W2_cross_endpoint_bridge_edges": "0 (no single edge is sole cross-endpoint connector => redundant, robust federation)",
+      "W3_reachability": "100% reachability in all 6 directed endpoint pairs within 6 hops",
+      "W4_longitudinal_chains": "60 chains, all reaching ega:dataset:EGAD00001011049",
+      "W4_genomic_bridge_chains": "40 chains, all with specimen provenance"
+    },
+    "schema_bugs_found_and_fixed": [
+      "W4: LongitudinalPair real data lives in attributes_json (subject_id/timepoints/sample_ids); ega:sample:* NOT linked to specimen:britroc1:* (parallel BriTROC reps). Chain honestly = pair->ega:sample->ega:dataset.",
+      "W1: arm.total_burden and PatientAEBurdenScore.z_score do NOT exist as top-level props; parsed attributes_json + used arm.n_patients ranking."
+    ]
+  },
+  "graph_state": {
+    "neo4j_before_session12": {
+      "nodes": 30717,
+      "edges": 102125
+    },
+    "neo4j_after_session12": {
+      "nodes": 30904,
+      "edges": 102760
+    },
+    "neo4j_label_less_nodes": 0,
+    "s11_labels_fixed": 611,
+    "kg_json_entities": 27110,
+    "kg_json_edges": 102230
+  },
+  "constraints_honored": {
+    "additive_only": true,
+    "qdrant_crispro_kb_v3_untouched": "no Qdrant writes issued this session (provably untouched); live count not re-verified (no API key in env)",
+    "no_cross_endpoint_patient_joins": true,
+    "no_survival_inference": true
+  }
+}
