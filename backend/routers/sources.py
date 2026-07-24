@@ -94,3 +94,48 @@ async def ega_files(dataset: Optional[str] = None, limit: int = 50):
 @router.get("/ega/file/{file_id}", dependencies=[Depends(require_api_key)])
 async def ega_file(file_id: str):
     return await _run(_get_gateway().ega.file_metadata, file_id)
+
+
+@router.get("/ega/file/{file_id}/size", dependencies=[Depends(require_api_key)])
+async def ega_file_size(file_id: str):
+    """Authenticated file-size lookup via the EGA Data API.
+
+    Unlike /ega/file/{id} (public metadata), this exercises the controlled-access
+    Data API with the server-side credentials, so a 'live' status here proves the
+    byte channel below will authenticate. Envelope-shaped; no bytes.
+    """
+    return await _run(_get_gateway().ega.download_size, file_id)
+
+
+@router.get("/ega/file/{file_id}/download", dependencies=[Depends(require_api_key)])
+async def ega_file_download(file_id: str):
+    """Stream decrypted file bytes for ``file_id`` from the EGA Data API.
+
+    Server-side authenticated proxy: the caller supplies only the X-Zeta-Api-Key
+    and never sees the EGA credentials. Returns application/octet-stream. Auth is
+    forced before streaming, so an auth/config failure returns a JSON error with
+    the proper status code rather than a truncated body.
+    """
+    from fastapi.responses import StreamingResponse
+
+    gw = _get_gateway()
+    if not gw.ega.configured():
+        raise HTTPException(status_code=503, detail="EGA credentials not configured on server.")
+
+    # Acquire an authenticated byte generator; surface auth/config errors up-front.
+    try:
+        gen = await asyncio.to_thread(_prime_ega_stream, gw, file_id)
+    except RuntimeError as exc:
+        msg = str(exc)
+        code = 503 if msg.startswith("unconfigured") else 502
+        raise HTTPException(status_code=code, detail=f"EGA download failed: {msg}")
+
+    headers = {"Content-Disposition": f'attachment; filename="{file_id}"'}
+    return StreamingResponse(gen, media_type="application/octet-stream", headers=headers)
+
+
+def _prime_ega_stream(gw, file_id: str):
+    """Build the byte generator and force token acquisition (raises on failure)."""
+    gen = gw.ega.iter_file_bytes(file_id)
+    # pull nothing yet; iter_file_bytes forces the token internally on first use.
+    return gen

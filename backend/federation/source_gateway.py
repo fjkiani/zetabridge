@@ -383,6 +383,89 @@ class EgaClient:
         env.latency_ms = round((time.time() - t0) * 1000, 1)
         return env
 
+    # --- content download (the "later phase") ------------------------------
+    # Server-side authenticated byte transfer. Credentials stay in cfg/env and
+    # are never returned to the caller. We reuse the battle-tested pyega3 client
+    # (auth token flow, retry/resume, correct current Data API host+port) rather
+    # than hand-rolling the OAuth + slicing, which drifts when EGA changes ports.
+    def _pyega3_data_client(self):
+        """Build an authenticated pyega3 DataClient from server-side creds.
+
+        Returns (data_client, file_id_ok) or raises. Credentials come from
+        cfg.EGA_CREDENTIALS_FILE if set, else cfg.EGA_USERNAME/PASSWORD.
+        """
+        from pyega3.libs.auth_client import AuthClient
+        from pyega3.libs.credentials import Credentials
+        from pyega3.libs.data_client import DataClient
+        from pyega3.libs.server_config import ServerConfig
+
+        if cfg.EGA_CREDENTIALS_FILE:
+            creds = Credentials.from_file(cfg.EGA_CREDENTIALS_FILE)
+        else:
+            creds = Credentials(username=cfg.EGA_USERNAME, password=cfg.EGA_PASSWORD)
+
+        server_config = ServerConfig.from_file(ServerConfig.default_config_path())
+        standard_headers = {"Client-Version": "zetabridge-proxy", "Session-Id": "zetabridge"}
+        auth_client = AuthClient(server_config.url_auth, server_config.client_secret, standard_headers)
+        auth_client.credentials = creds
+        data_client = DataClient(
+            server_config.url_api,
+            server_config.url_api_ticket,
+            server_config.url_api_stats,
+            auth_client,
+            standard_headers,
+            connections=1,
+            metadata_url=server_config.url_api_metadata,
+            api_version=server_config.api_version,
+        )
+        return data_client
+
+    def download_size(self, file_id: str) -> Envelope:
+        """Authenticated file size lookup via the Data API (proves auth works)."""
+        action = "download_size"
+        env = self._envelope(action)
+        env.grounding = {"file_id": file_id}
+        if not self.configured():
+            env.status, env.error = "unconfigured", "EGA credentials not set server-side"
+            return env
+        if not _lib_present("pyega3"):
+            env.status, env.error = "unconfigured", "pyega3 not installed"
+            return env
+        t0 = time.time()
+        try:
+            dc = self._pyega3_data_client()
+            meta = dc.get_json(f"/files/{file_id}")
+            size = None
+            if isinstance(meta, dict):
+                size = meta.get("fileSize") or meta.get("unencryptedSize") or meta.get("size")
+            env.status = "live"
+            env.data = {"file_id": file_id, "size_bytes": size, "raw": meta}
+            env.grounding["size_bytes"] = size
+        except Exception as exc:  # noqa: BLE001
+            env.status, env.error = "unreachable", _reason(exc)
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
+    def iter_file_bytes(self, file_id: str, chunk_size: int = 8 * 1024 * 1024):
+        """Yield decrypted file bytes for ``file_id`` from the EGA Data API.
+
+        Generator for streaming straight to an HTTP response. Auth is server-side.
+        Raises on misconfiguration/auth so the route can surface a typed error
+        *before* the response body starts. destinationFormat=plain -> unencrypted.
+        """
+        if not self.configured():
+            raise RuntimeError("unconfigured: EGA credentials not set server-side")
+        if not _lib_present("pyega3"):
+            raise RuntimeError("unconfigured: pyega3 not installed")
+        dc = self._pyega3_data_client()
+        # Force token acquisition now so an auth failure raises before streaming.
+        _ = dc.auth_client.token
+        path = f"/files/{file_id}?destinationFormat=plain"
+        with dc.get_stream(path) as r:
+            for chunk in r.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    yield chunk
+
 
 def _reason(exc: Exception) -> str:
     """Map an exception to a short, honest, typed reason string."""
