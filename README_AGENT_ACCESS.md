@@ -242,3 +242,104 @@ backend is reachable, the app queries live Neo4j. If they are unset or the API i
 unreachable, it transparently falls back to a bundled real export at
 `public/graph-snapshot/graph-snapshot.json` (regenerate with
 `python scripts/s13/export_snapshot.py`) so the UI is fully browsable offline.
+
+---
+
+## Signal intelligence API (Session 14)
+
+A second read-only router, `/api/signals`, turns the graph into ranked,
+**grounded** intelligence. Every value is precomputed on a node/edge and traced
+back in the response — nothing is re-derived or fabricated. Auth is the same
+`X-Zeta-Api-Key` header as `/api/graph`, and it loads in both store modes.
+
+### Endpoints
+
+| Method | Path | Returns |
+|---|---|---|
+| GET | `/api/signals/health` | liveness |
+| GET | `/api/signals/overview` | totals, endpoints, reachability headline, top broker, signal counts, blind-spot count |
+| GET | `/api/signals/top?family=<f>&limit=<n>` | ranked signals for a family (`all` interleaves families round-robin) |
+| GET | `/api/signals/bridges` | genomic→AE cross-endpoint bridges |
+| GET | `/api/signals/gaps` | quantified blind spots (KBGaps) |
+| POST | `/api/signals/agent` | run a grounded agent (see below) |
+| GET | `/api/signals/{slug}` | full attributes + connecting subgraph for one signal |
+
+Families: `all`, `drug_ae`, `pharmacovig`, `genomic_bridge`, `cross_trial`,
+`outlier`. Each is ranked by its **native** metric (`rate_ratio`, `ror`,
+`bridge_score`, `consistency_score`, `rate_ratio`) plus a clearly-labeled derived
+`strength_derived ∈ [0,1]` for cross-family ordering only.
+
+### curl examples
+
+```bash
+export API=http://localhost:8000 KEY=<ZETA_GRAPH_API_KEY>
+
+# overview (the value numbers)
+curl -s -H "X-Zeta-Api-Key: $KEY" "$API/api/signals/overview"
+
+# strongest genomic→AE bridges
+curl -s -H "X-Zeta-Api-Key: $KEY" "$API/api/signals/bridges"
+
+# top 5 pharmacovigilance (ROR) signals
+curl -s -H "X-Zeta-Api-Key: $KEY" "$API/api/signals/top?family=pharmacovig&limit=5"
+
+# run the gap auditor (grounded; returns grounding[] node ids)
+curl -s -H "X-Zeta-Api-Key: $KEY" -H "Content-Type: application/json" \
+  -d '{"agent":"gap_auditor","action":"list_gaps"}' \
+  "$API/api/signals/agent"
+```
+
+### The 3 backend agents (`POST /api/signals/agent`)
+
+Body: `{ "agent": <name>, "action"?: str, "family"?: str, "slug"?: str, "limit"?: int }`.
+Response envelope: `{ agent, status, benchmark, summary, findings, grounding[], used_llm, ... }`.
+
+- **`signal_miner`** — rank/explain signals, drug-toxicity profiles.
+- **`bridge_hunter`** — find/explain genomic→AE bridges.
+- **`gap_auditor`** — surface blind spots and what closing each unlocks.
+
+Narration via Groq is optional (`GROQ_API_KEY`, `GROQ_MODEL` default
+`llama-3.3-70b-versatile`) and **never invents numbers**; with no key the
+deterministic summary is returned and `used_llm=false`. A fabrication-guard test
+fails the build if a narrative contains a number not present in the grounded facts.
+
+### Tests
+
+```bash
+# signals service values + agent fabrication guard (needs live Neo4j + ZETA_GRAPH_API_KEY)
+pytest backend/routers/test_signals_api.py -q
+```
+
+---
+
+## Front-end (Session 14 additions)
+
+Session 14 adds the value/intelligence surfaces and two read-only copilots on top
+of the Session 13 app.
+
+### New surfaces
+
+- **Signal Intel** (`/#/signals`) — ranked hub across all five families with a
+  value strip (nodes, edges, signals, blind spots, reachability). Each card shows
+  the native metric and the labeled derived strength, and links to a per-slug page.
+- **Signal detail** (`/#/signals/<slug>`) — full attributes, a focused subgraph of
+  the connecting nodes/edges, and an "Open in Graph Explorer" deep-link.
+- **Bridges** (`/#/bridges`) — genomic→AE cross-endpoint bridges (MSK gene ↔ SAS
+  adverse event) with a network view and the strongest-bridge spotlight.
+- **Blind Spots** (`/#/gaps`) — the quantified KBGaps (what pharma got wrong),
+  each with impact, fix path, and a "draft a fix proposal" link into Connectors.
+- **Value / Moat** (`/#/value`) — the acquisition thesis wired to live numbers.
+- **Insight Analyst** (`/#/analyst`) — chat copilot #1; routes a question to the
+  right backend agent and renders grounded findings + graph deep-links.
+- **Connection Guide** (in `/#/connectors`) — copilot #2; pick a blind spot
+  (deep-linkable via `#/connectors?gap=<slug>`), get a grounded `gap_auditor`
+  explanation, then draft an additive mint proposal as the fix.
+
+The two chat copilots require the live backend (grounded server-side Cypher, no
+offline fabrication); all data browsing works offline from the snapshot.
+
+**Snapshot v2.** `public/graph-snapshot/graph-snapshot.json` is now
+`schema_version: 2` — a superset that adds `overview`, `signals`, `bridges`, and
+`gaps` so the value surfaces render offline. Regenerate with
+`python scripts/s14/export_snapshot_v2.py`. The Session 13 snapshot is preserved
+as `graph-snapshot-v1.json`.
