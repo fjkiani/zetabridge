@@ -89,3 +89,10 @@ else:
 from routers import graph as graph_router
 
 app.include_router(graph_router.router)
+
+# Signal-Intelligence layer (Session 14) — read-only /api/signals over the
+# federated Neo4j KG + the 3 signal agents. Registered in BOTH store modes so
+# the value surfaces work regardless of USE_LEGACY_STORE.
+from routers import signals as signals_router
+
+app.include_router(signals_router.router)

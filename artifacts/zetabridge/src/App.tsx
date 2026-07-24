@@ -18,6 +18,11 @@ import {
   FlaskConical,
   ChevronLeft,
   ChevronRight,
+  Radar,
+  GitFork,
+  ShieldAlert,
+  Gem,
+  Sparkles,
 } from "lucide-react";
 import DashboardHome from "@/pages/dashboard-home";
 import CoPilot from "@/pages/copilot";
@@ -26,6 +31,12 @@ import CatalogExplorer from "@/pages/catalog-explorer";
 import LineageGraph from "@/pages/lineage-graph";
 import GraphExplorer from "@/pages/graph-explorer";
 import Insights from "@/pages/insights";
+import SignalsHub from "@/pages/signals-hub";
+import SignalDetail from "@/pages/signal-detail";
+import Bridges from "@/pages/bridges";
+import Gaps from "@/pages/gaps";
+import Value from "@/pages/value";
+import Analyst from "@/pages/analyst";
 import QueryWorkbench from "@/pages/query-workbench";
 import Connectors from "@/pages/connectors";
 import Benchmarks from "@/pages/benchmarks";
@@ -64,6 +75,11 @@ function ZetaBridgeLogo({ collapsed }: { collapsed: boolean }) {
 
 const navItems = [
   { path: "/", label: "Overview", icon: LayoutDashboard },
+  { path: "/signals", label: "Signal Intel", icon: Radar },
+  { path: "/bridges", label: "Bridges", icon: GitFork },
+  { path: "/gaps", label: "Blind Spots", icon: ShieldAlert },
+  { path: "/analyst", label: "Insight Analyst", icon: Sparkles },
+  { path: "/value", label: "Value / Moat", icon: Gem },
   { path: "/copilot", label: "Co-Pilot", icon: MessageSquare },
   { path: "/agents", label: "Agents", icon: Bot },
   { path: "/catalog", label: "Catalog", icon: Database },
@@ -146,6 +162,12 @@ function AppLayout() {
           <Route path="/catalog" component={CatalogExplorer} />
           <Route path="/graph" component={GraphExplorer} />
           <Route path="/insights" component={Insights} />
+          <Route path="/signals/:slug" component={SignalDetail} />
+          <Route path="/signals" component={SignalsHub} />
+          <Route path="/bridges" component={Bridges} />
+          <Route path="/gaps" component={Gaps} />
+          <Route path="/analyst" component={Analyst} />
+          <Route path="/value" component={Value} />
           <Route path="/lineage" component={LineageGraph} />
           <Route path="/query" component={QueryWorkbench} />
           <Route path="/connectors" component={Connectors} />
