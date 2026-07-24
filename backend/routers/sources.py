@@ -163,3 +163,77 @@ async def ega_file_download(file_id: str, request: Request):
         media_type="application/octet-stream",
         headers=resp_headers,
     )
+
+
+# --- ICGC ARGO (D_ARGO) ----------------------------------------------------
+# Overture SONG/SCORE, DACO controlled-access genomics. The download path is a
+# TOKEN-HANDOFF: this router mints a short-lived pre-signed URL; the caller then
+# streams bytes DIRECTLY from object storage. We never proxy whole BAM/CRAM
+# files through this backend (that would reintroduce the dyno bandwidth wall).
+def _argo_http_error(env_dict: dict) -> None:
+    """Map a non-live ARGO envelope to a typed HTTP error (raises)."""
+    if env_dict.get("status") == "live":
+        return
+    reason = (env_dict.get("error") or "unknown").lower()
+    if reason.startswith("unconfigured"):
+        code = 503
+    elif "not_found" in reason:
+        code = 404
+    elif reason.startswith("forbidden") or "daco" in reason:
+        code = 403
+    elif reason.startswith("auth") or "401" in reason:
+        code = 401
+    elif reason.startswith("timeout"):
+        code = 504
+    else:  # network / http / other
+        code = 502
+    raise HTTPException(status_code=code, detail=f"ARGO {env_dict.get('action')} failed: {env_dict.get('error')}")
+
+
+@router.get("/argo/health", dependencies=[Depends(require_api_key)])
+async def argo_health():
+    """Token-configured flag + a cheap SCORE liveness ping. No data extraction."""
+    gw = _get_gateway()
+    env = await _run(gw.argo.storage_alive)
+    return {
+        "endpoint": "D_ARGO",
+        "source": "argo",
+        "configured": gw.argo.configured(),
+        "status": env.get("status"),
+        "latency_ms": env.get("latency_ms"),
+        "error": env.get("error"),
+    }
+
+
+@router.get("/argo/entities", dependencies=[Depends(require_api_key)])
+async def argo_entities(
+    project: Optional[str] = None,
+    access: Optional[str] = None,
+    file_type: Optional[str] = None,
+    size: int = 50,
+):
+    """List/search the SCORE object registry. ``file_type`` filters on extension
+    (e.g. ``cram``, ``bam``, ``vcf``); ``access`` on ``controlled``/``open``."""
+    return await _run(_get_gateway().argo.list_entities, project, access, file_type, size)
+
+
+@router.get("/argo/entity/{object_id}", dependencies=[Depends(require_api_key)])
+async def argo_entity(object_id: str):
+    """One object's registry metadata + derived donor/sample/experiment fields."""
+    env = await _run(_get_gateway().argo.entity_metadata, object_id)
+    _argo_http_error(env)
+    return env
+
+
+@router.get("/argo/download-url/{object_id}", dependencies=[Depends(require_api_key)])
+async def argo_download_url(object_id: str, offset: int = 0, length: int = -1):
+    """Mint a short-lived pre-signed SCORE download URL for a controlled object.
+
+    Returns the envelope with ``data.parts[].url`` — the caller/worker streams
+    bytes DIRECTLY from ``data.object_host`` (object storage), NOT through this
+    backend. Requires the DACO token; an invalid/non-entitled token yields 401.
+    Honesty contract: no bytes are transferred here, and no URL is returned on a
+    failure path (``data`` is null)."""
+    env = await _run(_get_gateway().argo.resolve_download, object_id, offset, length)
+    _argo_http_error(env)
+    return env

@@ -350,9 +350,12 @@ def test_envelope_to_dict_is_plain():
 
 
 # ── facade wiring ────────────────────────────────────────────────────────────
-def test_gateway_from_env_wires_three_clients():
+def test_gateway_from_env_wires_all_clients():
     gw = SourceGateway.from_env()
     assert gw.synapse.endpoint == "A_MSK" and gw.synapse.source == "synapse"
     assert gw.sas.endpoint == "B_SAS" and gw.sas.source == "sas_cas"
     assert gw.ega.endpoint == "C_EGA" and gw.ega.source == "ega"
-    assert sg.ENDPOINT_OF_SOURCE == {"synapse": "A_MSK", "sas_cas": "B_SAS", "ega": "C_EGA"}
+    assert gw.argo.endpoint == "D_ARGO" and gw.argo.source == "argo"
+    assert sg.ENDPOINT_OF_SOURCE == {
+        "synapse": "A_MSK", "sas_cas": "B_SAS", "ega": "C_EGA", "argo": "D_ARGO",
+    }

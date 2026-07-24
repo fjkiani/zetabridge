@@ -6,6 +6,7 @@ the federated knowledge graph:
     A_MSK  -> Synapse            (synapseclient, personal-access JWT)
     B_SAS  -> SAS Viya CAS       (swat, Project Data Sphere clinical warehouse)
     C_EGA  -> EGA                (pyega3 / EGA REST, controlled-access genomics)
+    D_ARGO -> ICGC ARGO          (Overture SONG/SCORE REST, DACO controlled genomics)
 
 Design contract (this is the whole point of the module):
   * Every method returns a uniform ``Envelope`` dict — never a raw client object,
@@ -39,7 +40,7 @@ except ImportError:  # pragma: no cover - import-path shim
     from config import cfg
 
 
-ENDPOINT_OF_SOURCE = {"synapse": "A_MSK", "sas_cas": "B_SAS", "ega": "C_EGA"}
+ENDPOINT_OF_SOURCE = {"synapse": "A_MSK", "sas_cas": "B_SAS", "ega": "C_EGA", "argo": "D_ARGO"}
 
 # per-call bounds — keep live extraction cheap and safe
 DEFAULT_ROW_CAP = 50
@@ -813,6 +814,303 @@ def _reason(exc: Exception) -> str:
 
 
 # ---------------------------------------------------------------------------
+# ICGC ARGO (D_ARGO) — Overture SONG/SCORE; DACO controlled-access genomics
+# ---------------------------------------------------------------------------
+class ArgoClient:
+    """Read-only connector to the ICGC ARGO data platform (Overture stack).
+
+    Transport contract (verified by probe, Session 16):
+      * Metadata + object registry live at ``{API_BASE}/storage-api`` (SONG/SCORE).
+      * ``resolve_download`` mints a short-lived **pre-signed URL** to object
+        storage (``object.genomeinformatics.org``). Bytes are streamed DIRECTLY
+        from object storage by the caller/worker — they are *never* proxied
+        through this backend (that would reintroduce the dyno bandwidth
+        bottleneck). This method returns the URL spec only, not bytes.
+      * Controlled data requires a DACO-approved token (``ICGC_ARGO_TOKEN``).
+        Without it, download resolution returns 401 -> typed ``unreachable:auth``.
+
+    Honesty contract is identical to the other clients: ``data`` is ``None`` on
+    every non-live path; the token never appears in an envelope.
+    """
+
+    source = "argo"
+    endpoint = "D_ARGO"
+
+    def __init__(self) -> None:
+        self._api_base = (getattr(cfg, "ICGC_ARGO_API_BASE", "") or "https://api.platform.icgc-argo.org").rstrip("/")
+        self._object_host = getattr(cfg, "ICGC_ARGO_OBJECT_HOST", "") or "object.genomeinformatics.org"
+
+    def configured(self) -> bool:
+        return bool(getattr(cfg, "ICGC_ARGO_TOKEN", ""))
+
+    def _envelope(self, action: str) -> Envelope:
+        return Envelope(endpoint=self.endpoint, source=self.source, status="", action=action)
+
+    def _headers(self) -> dict[str, str]:
+        return {"Authorization": f"Bearer {cfg.ICGC_ARGO_TOKEN}"}
+
+    def _guard(self, action: str, *, need_token: bool) -> Optional[Envelope]:
+        """Return an unconfigured envelope if we can't even attempt the call.
+
+        ``need_token``: some registry reads are public; controlled-data download
+        resolution requires the DACO token. Missing httpx is always unconfigured.
+        """
+        if not _lib_present("httpx"):
+            env = self._envelope(action)
+            env.status, env.error = "unconfigured", "httpx not installed"
+            return env
+        if need_token and not self.configured():
+            env = self._envelope(action)
+            env.status, env.error = "unconfigured", "ICGC_ARGO_TOKEN not set"
+            return env
+        return None
+
+    @staticmethod
+    def _parse_filename(file_name: str) -> dict[str, Any]:
+        """Derive donor/sample/experiment/workflow from the ARGO filename convention.
+
+        Convention observed in the registry:
+            {PROJECT}.{DONOR:DO*}.{SAMPLE:SA*}.{experiment}.{date}.{workflow}.{...}.{ext}
+        e.g. ``PTC-SA.DO233995.SA607369.wxs.20210127.aln.cram``
+        Returns only the parts it can confidently identify (no fabrication).
+        """
+        parts = file_name.split(".")
+        out: dict[str, Any] = {}
+        if parts:
+            out["project_code"] = parts[0]
+        donor = next((p for p in parts if p.startswith("DO") and p[2:3].isdigit()), None)
+        sample = next((p for p in parts if p.startswith("SA") and p[2:3].isdigit()), None)
+        if donor:
+            out["donor_id"] = donor
+        if sample:
+            out["sample_id"] = sample
+        experiment = next((p for p in parts if p.lower() in {"wgs", "wxs", "rna-seq", "rna_seq"}), None)
+        if experiment:
+            out["experiment"] = experiment.lower()
+        date = next((p for p in parts if len(p) == 8 and p.isdigit()), None)
+        if date:
+            out["date"] = date
+        out["extension"] = parts[-1] if len(parts) > 1 else None
+        return out
+
+    def _slim_entity(self, e: dict[str, Any]) -> dict[str, Any]:
+        """Real registry fields + derived relationships. No fabricated values."""
+        fn = e.get("fileName", "") or ""
+        slim = {
+            "object_id": e.get("id"),
+            "file_name": fn,
+            "gnos_id": e.get("gnosId"),
+            "project_code": e.get("projectCode"),
+            "access": e.get("access"),
+        }
+        slim.update({k: v for k, v in self._parse_filename(fn).items() if k not in slim or slim.get(k) is None})
+        return slim
+
+    def list_entities(
+        self,
+        project: str | None = None,
+        access: str | None = None,
+        file_type: str | None = None,
+        size: int | None = None,
+    ) -> Envelope:
+        """List/search the SCORE object registry (``/storage-api/entities``).
+
+        Registry listing works without the token; controlled *content* still
+        requires the token at download-resolution time. ``file_type`` filters
+        client-side on the filename extension (e.g. ``bam``, ``cram``, ``vcf``).
+        """
+        action = "list_entities"
+        n = _clamp_limit(size)
+        env = self._envelope(action)
+        env.grounding = {"project": project, "access": access, "file_type": file_type, "size": n}
+        guard = self._guard(action, need_token=False)
+        if guard:
+            guard.grounding = env.grounding
+            return guard
+        import httpx
+
+        filtering = bool(project or access or file_type)
+        page_size = 500 if filtering else n  # registry pages; big pages when filtering
+        max_pages = 10 if filtering else 1   # bounded scan so a rare type still fills n
+        ft = file_type.lower().lstrip(".") if file_type else None
+        t0 = time.time()
+        try:
+            headers = self._headers() if self.configured() else {}
+            rows: list[dict[str, Any]] = []
+            total = None
+            with httpx.Client(timeout=CONNECT_TIMEOUT_S, follow_redirects=True) as client:
+                for page in range(max_pages):
+                    r = client.get(
+                        f"{self._api_base}/storage-api/entities",
+                        params={"size": page_size, "page": page},
+                        headers=headers,
+                    )
+                    r.raise_for_status()
+                    payload = r.json()
+                    if total is None and isinstance(payload, dict):
+                        total = payload.get("totalElements")
+                    content = payload.get("content", []) if isinstance(payload, dict) else payload
+                    if not content:
+                        break
+                    for e in content:
+                        x = self._slim_entity(e)
+                        if project and (x.get("project_code") or "").upper() != project.upper():
+                            continue
+                        if access and (x.get("access") or "").lower() != access.lower():
+                            continue
+                        if ft and (x.get("extension") or "").lower() != ft:
+                            continue
+                        rows.append(x)
+                        if len(rows) >= n:
+                            break
+                    if len(rows) >= n or len(content) < page_size:
+                        break
+            rows = rows[:n]
+            env.status = "live"
+            env.data = {
+                "total_in_registry": total,
+                "n_returned": len(rows),
+                "pages_scanned": page + 1,
+                "entities": rows,
+            }
+            env.grounding["n_returned"] = len(rows)
+        except Exception as exc:  # noqa: BLE001 - typed, honest failure
+            env.status, env.error = "unreachable", _reason(exc)
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
+    def entity_metadata(self, object_id: str) -> Envelope:
+        """Fetch one object's registry metadata + derived relationships."""
+        action = "entity_metadata"
+        env = self._envelope(action)
+        env.grounding = {"object_id": object_id}
+        guard = self._guard(action, need_token=False)
+        if guard:
+            guard.grounding = env.grounding
+            return guard
+        import httpx
+
+        t0 = time.time()
+        try:
+            headers = self._headers() if self.configured() else {}
+            r = httpx.get(
+                f"{self._api_base}/storage-api/entities/{object_id}",
+                headers=headers,
+                timeout=CONNECT_TIMEOUT_S,
+                follow_redirects=True,
+            )
+            if r.status_code == 404:
+                env.status, env.error = "unreachable", f"not_found: object {object_id}"
+                env.latency_ms = round((time.time() - t0) * 1000, 1)
+                return env
+            r.raise_for_status()
+            env.status = "live"
+            env.data = self._slim_entity(r.json())
+        except Exception as exc:  # noqa: BLE001
+            env.status, env.error = "unreachable", _reason(exc)
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
+    def resolve_download(self, object_id: str, offset: int = 0, length: int = -1) -> Envelope:
+        """Mint a short-lived pre-signed SCORE download URL (controlled data).
+
+        Returns the SCORE spec (objectId, objectMd5, parts[].url) — the caller
+        then streams bytes DIRECTLY from object storage. This method never
+        transfers bytes through the backend. Requires the DACO token; a
+        non-entitled/invalid token yields ``unreachable:auth`` (upstream 401).
+        """
+        action = "resolve_download"
+        env = self._envelope(action)
+        env.grounding = {"object_id": object_id, "offset": offset, "length": length}
+        guard = self._guard(action, need_token=True)
+        if guard:
+            guard.grounding = env.grounding
+            return guard
+        import httpx
+
+        t0 = time.time()
+        try:
+            r = httpx.get(
+                f"{self._api_base}/storage-api/download/{object_id}",
+                params={"offset": offset, "length": length, "external": "true"},
+                headers=self._headers(),
+                timeout=CONNECT_TIMEOUT_S,
+                follow_redirects=True,
+            )
+            if r.status_code == 401:
+                env.status, env.error = "unreachable", "auth: 401 invalid or expired ICGC_ARGO_TOKEN"
+                env.latency_ms = round((time.time() - t0) * 1000, 1)
+                return env
+            if r.status_code == 403:
+                env.status, env.error = "unreachable", "forbidden: token lacks DACO controlled-data access"
+                env.latency_ms = round((time.time() - t0) * 1000, 1)
+                return env
+            if r.status_code == 404:
+                env.status, env.error = "unreachable", f"not_found: object {object_id}"
+                env.latency_ms = round((time.time() - t0) * 1000, 1)
+                return env
+            r.raise_for_status()
+            spec = r.json()
+            parts = spec.get("parts", []) or []
+            # Expose the pre-signed URL(s) + host so the worker streams direct-from-S3.
+            slim_parts = [
+                {
+                    "partNumber": p.get("partNumber"),
+                    "offset": p.get("offset"),
+                    "partSize": p.get("partSize"),
+                    "url": p.get("url"),
+                }
+                for p in parts
+            ]
+            host = None
+            if slim_parts and slim_parts[0].get("url"):
+                try:
+                    host = slim_parts[0]["url"].split("/")[2]
+                except Exception:  # noqa: BLE001
+                    host = None
+            env.status = "live"
+            env.data = {
+                "object_id": spec.get("objectId"),
+                "object_md5": spec.get("objectMd5"),
+                "object_size": spec.get("objectSize"),
+                "object_host": host or self._object_host,
+                "n_parts": len(slim_parts),
+                "parts": slim_parts,
+                "transport": "direct-from-object-storage; stream parts[].url directly, do not proxy through ZetaBridge",
+            }
+            env.grounding["object_host"] = host or self._object_host
+            env.grounding["n_parts"] = len(slim_parts)
+        except Exception as exc:  # noqa: BLE001
+            env.status, env.error = "unreachable", _reason(exc)
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
+    def storage_alive(self) -> Envelope:
+        """Cheap SCORE liveness probe (``/storage-api/download/ping``); no data."""
+        action = "storage_alive"
+        env = self._envelope(action)
+        guard = self._guard(action, need_token=False)
+        if guard:
+            return guard
+        import httpx
+
+        t0 = time.time()
+        try:
+            r = httpx.get(
+                f"{self._api_base}/storage-api/download/ping",
+                timeout=CONNECT_TIMEOUT_S,
+                follow_redirects=True,
+            )
+            r.raise_for_status()
+            env.status = "live"
+            env.data = {"ping": "ok"}
+        except Exception as exc:  # noqa: BLE001
+            env.status, env.error = "unreachable", _reason(exc)
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
+
+# ---------------------------------------------------------------------------
 # Gateway facade
 # ---------------------------------------------------------------------------
 class SourceGateway:
@@ -822,6 +1120,7 @@ class SourceGateway:
         self.synapse = SynapseClient()
         self.sas = SasCasClient()
         self.ega = EgaClient()
+        self.argo = ArgoClient()
 
     @classmethod
     def from_env(cls) -> "SourceGateway":
@@ -837,6 +1136,7 @@ class SourceGateway:
         syn = self.synapse.whoami()
         sas = self.sas.list_caslibs()
         ega = self.ega.list_files(limit=1)
+        argo = self.argo.storage_alive()
 
         def _slim(env: Envelope, extra_configured: bool) -> dict[str, Any]:
             d = env.to_dict()
@@ -854,6 +1154,7 @@ class SourceGateway:
                 _slim(syn, self.synapse.configured()),
                 _slim(sas, self.sas.configured()),
                 _slim(ega, self.ega.configured()),
+                _slim(argo, self.argo.configured()),
             ],
-            "any_live": any(e.status == "live" for e in (syn, sas, ega)),
+            "any_live": any(e.status == "live" for e in (syn, sas, ega, argo)),
         }

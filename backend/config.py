@@ -70,6 +70,13 @@ class Config:
     EGA_PASSWORD = os.environ.get("EGA_PASSWORD", "")
     EGA_CREDENTIALS_FILE = os.environ.get("EGA_CREDENTIALS_FILE", "")
     EGA_DEFAULT_DATASET = os.environ.get("EGA_DEFAULT_DATASET", "EGAD00001011049")
+    # D_ARGO — ICGC ARGO (Overture SONG/SCORE). DACO-approved controlled-access
+    # token; server-side only, never returned to callers. Bytes stream DIRECTLY
+    # from ICGC_ARGO_OBJECT_HOST via short-lived pre-signed URLs — never proxied
+    # through this backend.
+    ICGC_ARGO_TOKEN = os.environ.get("ICGC_ARGO_TOKEN", "")
+    ICGC_ARGO_API_BASE = os.environ.get("ICGC_ARGO_API_BASE", "https://api.platform.icgc-argo.org")
+    ICGC_ARGO_OBJECT_HOST = os.environ.get("ICGC_ARGO_OBJECT_HOST", "object.genomeinformatics.org")
 
 
 cfg = Config()
