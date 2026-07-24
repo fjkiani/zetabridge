@@ -1,0 +1,3704 @@
+{
+  "results": {
+    "worker": "w0_cross_endpoint_paths",
+    "pairs": {
+      "A_MSK->B_SAS": {
+        "n_paths": 40,
+        "min_hops": 3,
+        "max_hops": 3,
+        "top_rel_sequences": [
+          [
+            "HARBORS_MUTATION->SPECIMEN_OF->BRIDGE_EDGE",
+            40
+          ]
+        ],
+        "example": [
+          "genomicfeature:msk:mut:ARID3A",
+          "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2002_200"
+        ]
+      },
+      "A_MSK->C_EGA": {
+        "n_paths": 40,
+        "min_hops": 5,
+        "max_hops": 6,
+        "top_rel_sequences": [
+          [
+            "HARBORS_MUTATION->SPECIMEN_OF->PART_OF->RELATES->RELATES->RELATES",
+            30
+          ],
+          [
+            "BRIDGE_EDGE->BRIDGE_EDGE->RELATES->RELATES->RELATES",
+            10
+          ]
+        ],
+        "example": [
+          "genomicfeature:msk:mut:BRCA1",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095048"
+        ]
+      },
+      "B_SAS->C_EGA": {
+        "n_paths": 40,
+        "min_hops": 5,
+        "max_hops": 5,
+        "top_rel_sequences": [
+          [
+            "DRAWN_FROM->BRIDGE_EDGE->RELATES->RELATES->RELATES",
+            24
+          ],
+          [
+            "BRIDGE_EDGE->PART_OF->RELATES->RELATES->RELATES",
+            16
+          ]
+        ],
+        "example": [
+          "trial:sas:Breast_Allianc_2002_194",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095048"
+        ]
+      }
+    },
+    "n_paths_minted": 36,
+    "n_nodes": 39,
+    "n_edges": 194
+  },
+  "nodes": [
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:0",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:ARID3A -> trial:sas:Breast_Allianc_2002_200 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:ARID3A",
+        "target_node": "trial:sas:Breast_Allianc_2002_200",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:ARID3A",
+          "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2002_200"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704221+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:1",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:ARID3A -> trial:sas:Breast_Allianc_2006_216 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:ARID3A",
+        "target_node": "trial:sas:Breast_Allianc_2006_216",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:ARID3A",
+          "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2006_216"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704269+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:2",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:ARID3A -> trial:sas:Breast_Allianc_2008_158 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:ARID3A",
+        "target_node": "trial:sas:Breast_Allianc_2008_158",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:ARID3A",
+          "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2008_158"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704281+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:3",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:ARID3A -> trial:sas:Breast_Allianc_2009_162 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:ARID3A",
+        "target_node": "trial:sas:Breast_Allianc_2009_162",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:ARID3A",
+          "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2009_162"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704292+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:4",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:ARID3A -> trial:sas:Breast_Allianc_2002_194 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:ARID3A",
+        "target_node": "trial:sas:Breast_Allianc_2002_194",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:ARID3A",
+          "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2002_194"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704302+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:5",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:BRAF -> trial:sas:Breast_Allianc_2002_200 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:BRAF",
+        "target_node": "trial:sas:Breast_Allianc_2002_200",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRAF",
+          "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2002_200"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704311+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:6",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:BRAF -> trial:sas:Breast_Allianc_2006_216 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:BRAF",
+        "target_node": "trial:sas:Breast_Allianc_2006_216",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRAF",
+          "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2006_216"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704320+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:7",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:BRAF -> trial:sas:Breast_Allianc_2008_158 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:BRAF",
+        "target_node": "trial:sas:Breast_Allianc_2008_158",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRAF",
+          "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2008_158"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704330+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:8",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:BRAF -> trial:sas:Breast_Allianc_2009_162 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:BRAF",
+        "target_node": "trial:sas:Breast_Allianc_2009_162",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRAF",
+          "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2009_162"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704339+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:9",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:BRAF -> trial:sas:Breast_Allianc_2002_194 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:BRAF",
+        "target_node": "trial:sas:Breast_Allianc_2002_194",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRAF",
+          "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2002_194"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704349+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:10",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:BRCA1 -> trial:sas:Breast_Allianc_2002_200 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:BRCA1",
+        "target_node": "trial:sas:Breast_Allianc_2002_200",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRCA1",
+          "biospecimen:msk:SHAH_H001753_T04_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2002_200"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704366+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:B_SAS:11",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->B_SAS path genomicfeature:msk:mut:BRCA1 -> trial:sas:Breast_Allianc_2006_216 (3 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "source_node": "genomicfeature:msk:mut:BRCA1",
+        "target_node": "trial:sas:Breast_Allianc_2006_216",
+        "hops": 3,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRCA1",
+          "biospecimen:msk:SHAH_H001753_T04_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "trial:sas:Breast_Allianc_2006_216"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "BRIDGE_EDGE"
+        ],
+        "n_intermediate": 2
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704376+00:00"
+    },
+    {
+      "id": "xpathsummary:s12:A_MSK:B_SAS",
+      "type": "CrossEndpointPathSummary",
+      "name": "A_MSK<->B_SAS traversal summary",
+      "label": "CrossEndpointPathSummary",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "B_SAS",
+        "n_distinct_paths": 40,
+        "min_hops": 3,
+        "max_hops": 3,
+        "dominant_rel_sequences": [
+          [
+            "HARBORS_MUTATION->SPECIMEN_OF->BRIDGE_EDGE",
+            40
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704387+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:0",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:BRCA1 -> ega:file:EGAF00008095048 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:BRCA1",
+        "target_node": "ega:file:EGAF00008095048",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRCA1",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095048"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354704+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:1",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:BRCA1 -> ega:file:EGAF00008095049 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:BRCA1",
+        "target_node": "ega:file:EGAF00008095049",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRCA1",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095049"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354749+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:2",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:BRCA1 -> ega:file:EGAF00008095050 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:BRCA1",
+        "target_node": "ega:file:EGAF00008095050",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRCA1",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095050"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354760+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:3",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:BRCA1 -> ega:file:EGAF00008095051 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:BRCA1",
+        "target_node": "ega:file:EGAF00008095051",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRCA1",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095051"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354774+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:4",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:BRCA1 -> ega:file:EGAF00008095047 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:BRCA1",
+        "target_node": "ega:file:EGAF00008095047",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:BRCA1",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095047"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354794+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:5",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:CDK12 -> ega:file:EGAF00008095048 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:CDK12",
+        "target_node": "ega:file:EGAF00008095048",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:CDK12",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095048"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354813+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:6",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:CDK12 -> ega:file:EGAF00008095049 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:CDK12",
+        "target_node": "ega:file:EGAF00008095049",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:CDK12",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095049"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354828+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:7",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:CDK12 -> ega:file:EGAF00008095050 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:CDK12",
+        "target_node": "ega:file:EGAF00008095050",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:CDK12",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095050"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354844+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:8",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:CDK12 -> ega:file:EGAF00008095051 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:CDK12",
+        "target_node": "ega:file:EGAF00008095051",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:CDK12",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095051"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354861+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:9",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:CDK12 -> ega:file:EGAF00008095047 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:CDK12",
+        "target_node": "ega:file:EGAF00008095047",
+        "hops": 5,
+        "node_chain": [
+          "genomicfeature:msk:mut:CDK12",
+          "ae:pt:neutropenia",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095047"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354875+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:10",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:ARID3A -> ega:file:EGAF00008095048 (6 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:ARID3A",
+        "target_node": "ega:file:EGAF00008095048",
+        "hops": 6,
+        "node_chain": [
+          "genomicfeature:msk:mut:ARID3A",
+          "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095048"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 5
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354887+00:00"
+    },
+    {
+      "id": "xpath:s12:A_MSK:C_EGA:11",
+      "type": "CrossEndpointPath",
+      "name": "A_MSK->C_EGA path genomicfeature:msk:mut:ARID3A -> ega:file:EGAF00008095049 (6 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "source_node": "genomicfeature:msk:mut:ARID3A",
+        "target_node": "ega:file:EGAF00008095049",
+        "hops": 6,
+        "node_chain": [
+          "genomicfeature:msk:mut:ARID3A",
+          "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095049"
+        ],
+        "rel_sequence": [
+          "HARBORS_MUTATION",
+          "SPECIMEN_OF",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 5
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354901+00:00"
+    },
+    {
+      "id": "xpathsummary:s12:A_MSK:C_EGA",
+      "type": "CrossEndpointPathSummary",
+      "name": "A_MSK<->C_EGA traversal summary",
+      "label": "CrossEndpointPathSummary",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "A_MSK",
+        "endpoint_b": "C_EGA",
+        "n_distinct_paths": 40,
+        "min_hops": 5,
+        "max_hops": 6,
+        "dominant_rel_sequences": [
+          [
+            "HARBORS_MUTATION->SPECIMEN_OF->PART_OF->RELATES->RELATES->RELATES",
+            30
+          ],
+          [
+            "BRIDGE_EDGE->BRIDGE_EDGE->RELATES->RELATES->RELATES",
+            10
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354922+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:0",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_194 -> ega:file:EGAF00008095048 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_194",
+        "target_node": "ega:file:EGAF00008095048",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_194",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095048"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287758+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:1",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_194 -> ega:file:EGAF00008095049 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_194",
+        "target_node": "ega:file:EGAF00008095049",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_194",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095049"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287796+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:2",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_194 -> ega:file:EGAF00008095050 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_194",
+        "target_node": "ega:file:EGAF00008095050",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_194",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095050"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287828+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:3",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_194 -> ega:file:EGAF00008095051 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_194",
+        "target_node": "ega:file:EGAF00008095051",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_194",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095051"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287841+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:4",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_194 -> ega:file:EGAF00008095047 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_194",
+        "target_node": "ega:file:EGAF00008095047",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_194",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095047"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287854+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:5",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_200 -> ega:file:EGAF00008095048 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_200",
+        "target_node": "ega:file:EGAF00008095048",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_200",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095048"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287868+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:6",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_200 -> ega:file:EGAF00008095049 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_200",
+        "target_node": "ega:file:EGAF00008095049",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_200",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095049"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287887+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:7",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_200 -> ega:file:EGAF00008095050 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_200",
+        "target_node": "ega:file:EGAF00008095050",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_200",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095050"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287904+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:8",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_200 -> ega:file:EGAF00008095051 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_200",
+        "target_node": "ega:file:EGAF00008095051",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_200",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095051"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287918+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:9",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2002_200 -> ega:file:EGAF00008095047 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2002_200",
+        "target_node": "ega:file:EGAF00008095047",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2002_200",
+          "cohort:msk_spectrum_hgsoc",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095047"
+        ],
+        "rel_sequence": [
+          "BRIDGE_EDGE",
+          "PART_OF",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287931+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:10",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2006_216 -> ega:file:EGAF00008095048 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2006_216",
+        "target_node": "ega:file:EGAF00008095048",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2006_216",
+          "vault:sas_pds",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095048"
+        ],
+        "rel_sequence": [
+          "DRAWN_FROM",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287941+00:00"
+    },
+    {
+      "id": "xpath:s12:B_SAS:C_EGA:11",
+      "type": "CrossEndpointPath",
+      "name": "B_SAS->C_EGA path trial:sas:Breast_Allianc_2006_216 -> ega:file:EGAF00008095049 (5 hops)",
+      "label": "CrossEndpointPath",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "source_node": "trial:sas:Breast_Allianc_2006_216",
+        "target_node": "ega:file:EGAF00008095049",
+        "hops": 5,
+        "node_chain": [
+          "trial:sas:Breast_Allianc_2006_216",
+          "vault:sas_pds",
+          "vault:synapse_msk_spectrum",
+          "disease:hgsoc",
+          "ega:dataset:EGAD00001011049",
+          "ega:file:EGAF00008095049"
+        ],
+        "rel_sequence": [
+          "DRAWN_FROM",
+          "BRIDGE_EDGE",
+          "RELATES",
+          "RELATES",
+          "RELATES"
+        ],
+        "n_intermediate": 4
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287954+00:00"
+    },
+    {
+      "id": "xpathsummary:s12:B_SAS:C_EGA",
+      "type": "CrossEndpointPathSummary",
+      "name": "B_SAS<->C_EGA traversal summary",
+      "label": "CrossEndpointPathSummary",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "endpoint_a": "B_SAS",
+        "endpoint_b": "C_EGA",
+        "n_distinct_paths": 40,
+        "min_hops": 5,
+        "max_hops": 5,
+        "dominant_rel_sequences": [
+          [
+            "DRAWN_FROM->BRIDGE_EDGE->RELATES->RELATES->RELATES",
+            24
+          ],
+          [
+            "BRIDGE_EDGE->PART_OF->RELATES->RELATES->RELATES",
+            16
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287967+00:00"
+    }
+  ],
+  "edges": [
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:0",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:ARID3A",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704245+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:0",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2002_200",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704248+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:0",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704251+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:0",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704254+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:1",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:ARID3A",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704271+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:1",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2006_216",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704274+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:1",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704276+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:1",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704279+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:2",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:ARID3A",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704283+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:2",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2008_158",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704285+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:2",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704287+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:2",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704289+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:3",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:ARID3A",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704294+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:3",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2009_162",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704295+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:3",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704298+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:3",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704299+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:4",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:ARID3A",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704304+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:4",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2002_194",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704306+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:4",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704307+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:4",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704309+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:5",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRAF",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704313+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:5",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2002_200",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704315+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:5",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704316+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:5",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704318+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:6",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRAF",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704322+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:6",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2006_216",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704324+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:6",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704325+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:6",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704327+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:7",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRAF",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704332+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:7",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2008_158",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704333+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:7",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704335+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:7",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704337+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:8",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRAF",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704341+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:8",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2009_162",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704343+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:8",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704345+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:8",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704346+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:9",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRAF",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704350+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:9",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2002_194",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704357+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:9",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704358+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:9",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704363+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:10",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRCA1",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704367+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:10",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2002_200",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704369+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:10",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H001753_T04_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704371+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:10",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704373+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:11",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRCA1",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704377+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:11",
+      "relation": "path_target",
+      "target": "trial:sas:Breast_Allianc_2006_216",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704379+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:11",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H001753_T04_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704381+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:B_SAS:11",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:33.704382+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:0",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRCA1",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354733+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:0",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095048",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354736+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:0",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354739+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:0",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354741+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:0",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354742+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:0",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354746+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:1",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRCA1",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354751+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:1",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354752+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:1",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354754+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:1",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354755+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:1",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354756+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:1",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354758+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:2",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRCA1",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354762+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:2",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095050",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354763+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:2",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354764+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:2",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354766+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:2",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354767+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:2",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354771+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:3",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRCA1",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354775+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:3",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095051",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354777+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:3",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354779+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:3",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354789+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:3",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354790+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:3",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354792+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:4",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:BRCA1",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354795+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:4",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095047",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354797+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:4",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354799+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:4",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354800+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:4",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354805+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:4",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354811+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:5",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:CDK12",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354815+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:5",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095048",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354816+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:5",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354818+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:5",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354819+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:5",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354820+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:5",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354822+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:6",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:CDK12",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354830+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:6",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354832+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:6",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354834+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:6",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354835+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:6",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354837+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:6",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354839+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:7",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:CDK12",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354845+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:7",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095050",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354847+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:7",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354849+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:7",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354853+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:7",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354855+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:7",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354856+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:8",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:CDK12",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354863+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:8",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095051",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354865+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:8",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354866+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:8",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354868+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:8",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354869+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:8",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354871+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:9",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:CDK12",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354877+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:9",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095047",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354878+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:9",
+      "relation": "traverses",
+      "target": "ae:pt:neutropenia",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354880+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:9",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354882+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:9",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354884+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:9",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354885+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:10",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:ARID3A",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354889+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:10",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095048",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354891+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:10",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354893+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:10",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354894+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:10",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354896+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:10",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354897+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:10",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354898+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:11",
+      "relation": "path_source",
+      "target": "genomicfeature:msk:mut:ARID3A",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354905+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:11",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354907+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:11",
+      "relation": "traverses",
+      "target": "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354909+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:11",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354910+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:11",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354912+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:11",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354916+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:A_MSK:C_EGA:11",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:43:50.354917+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:0",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_194",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287782+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:0",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095048",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287785+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:0",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287788+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:0",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287789+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:0",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287791+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:0",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287792+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:1",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_194",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287808+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:1",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287810+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:1",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287812+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:1",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287813+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:1",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287815+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:1",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287817+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:2",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_194",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287830+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:2",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095050",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287831+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:2",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287834+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:2",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287835+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:2",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287837+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:2",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287839+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:3",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_194",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287843+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:3",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095051",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287844+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:3",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287846+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:3",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287848+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:3",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287849+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:3",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287852+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:4",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_194",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287856+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:4",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095047",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287858+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:4",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287860+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:4",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287862+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:4",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287863+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:4",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287865+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:5",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_200",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287869+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:5",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095048",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287871+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:5",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287873+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:5",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287874+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:5",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287879+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:5",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287885+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:6",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_200",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287893+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:6",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287895+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:6",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287897+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:6",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287899+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:6",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287900+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:6",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287902+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:7",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_200",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287906+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:7",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095050",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287907+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:7",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287909+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:7",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287914+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:7",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287915+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:7",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287916+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:8",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_200",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287922+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:8",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095051",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287923+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:8",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287924+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:8",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287926+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:8",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287927+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:8",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287929+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:9",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2002_200",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287932+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:9",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095047",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287933+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:9",
+      "relation": "traverses",
+      "target": "cohort:msk_spectrum_hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287935+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:9",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287936+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:9",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287937+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:9",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287939+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:10",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2006_216",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287942+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:10",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095048",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287943+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:10",
+      "relation": "traverses",
+      "target": "vault:sas_pds",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287947+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:10",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287949+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:10",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287950+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:10",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287952+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:11",
+      "relation": "path_source",
+      "target": "trial:sas:Breast_Allianc_2006_216",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287955+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:11",
+      "relation": "path_target",
+      "target": "ega:file:EGAF00008095049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287957+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:11",
+      "relation": "traverses",
+      "target": "vault:sas_pds",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287959+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:11",
+      "relation": "traverses",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287960+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:11",
+      "relation": "traverses",
+      "target": "disease:hgsoc",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287961+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "xpath:s12:B_SAS:C_EGA:11",
+      "relation": "traverses",
+      "target": "ega:dataset:EGAD00001011049",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T07:44:04.287963+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    }
+  ]
+}

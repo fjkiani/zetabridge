@@ -1,0 +1,2090 @@
+{
+  "results": {
+    "worker": "w1_neighborhoods",
+    "neighborhoods": [
+      {
+        "seed": "arm:sas:Breast_Allianc_2002_200:37",
+        "kind": "largest_arm",
+        "seed_endpoint": "B_SAS",
+        "n_nodes": 400,
+        "n_edges": 795,
+        "endpoints_touched": {
+          "B_SAS": 397
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "ENROLLED_IN",
+            395
+          ],
+          [
+            "ASSIGNED_ARM",
+            395
+          ],
+          [
+            "ARM_OF",
+            1
+          ],
+          [
+            "has_ae_profile",
+            1
+          ],
+          [
+            "HAS_CENTRALITY_SCORE",
+            1
+          ]
+        ]
+      },
+      {
+        "seed": "arm:sas:Breast_Allianc_2002_200:1",
+        "kind": "largest_arm",
+        "seed_endpoint": "B_SAS",
+        "n_nodes": 400,
+        "n_edges": 796,
+        "endpoints_touched": {
+          "B_SAS": 398
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "ENROLLED_IN",
+            396
+          ],
+          [
+            "ASSIGNED_ARM",
+            396
+          ],
+          [
+            "ARM_OF",
+            1
+          ],
+          [
+            "has_ae_profile",
+            1
+          ],
+          [
+            "HAS_CENTRALITY_SCORE",
+            1
+          ]
+        ]
+      },
+      {
+        "seed": "arm:sas:Breast_Allianc_2002_194:5",
+        "kind": "largest_arm",
+        "seed_endpoint": "B_SAS",
+        "n_nodes": 400,
+        "n_edges": 796,
+        "endpoints_touched": {
+          "B_SAS": 398
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "ENROLLED_IN",
+            396
+          ],
+          [
+            "ASSIGNED_ARM",
+            396
+          ],
+          [
+            "ARM_OF",
+            1
+          ],
+          [
+            "has_ae_profile",
+            1
+          ],
+          [
+            "HAS_CENTRALITY_SCORE",
+            1
+          ]
+        ]
+      },
+      {
+        "seed": "patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_194_1322_0",
+        "kind": "top_ae_burden_patient",
+        "seed_endpoint": null,
+        "n_nodes": 18,
+        "n_edges": 18,
+        "endpoints_touched": {
+          "B_SAS": 3
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "EXPERIENCED_AE",
+            14
+          ],
+          [
+            "ENROLLED_IN",
+            1
+          ],
+          [
+            "ASSIGNED_ARM",
+            1
+          ],
+          [
+            "HAS_BURDEN_SCORE",
+            1
+          ],
+          [
+            "ARM_OF",
+            1
+          ]
+        ]
+      },
+      {
+        "seed": "patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_200_1623_0",
+        "kind": "top_ae_burden_patient",
+        "seed_endpoint": null,
+        "n_nodes": 18,
+        "n_edges": 18,
+        "endpoints_touched": {
+          "B_SAS": 3
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "EXPERIENCED_AE",
+            14
+          ],
+          [
+            "ENROLLED_IN",
+            1
+          ],
+          [
+            "ASSIGNED_ARM",
+            1
+          ],
+          [
+            "HAS_BURDEN_SCORE",
+            1
+          ],
+          [
+            "ARM_OF",
+            1
+          ]
+        ]
+      },
+      {
+        "seed": "patient_ae_burden:s11:patient_sas_Breast_Pfizer_2006_112_A6181094_27",
+        "kind": "top_ae_burden_patient",
+        "seed_endpoint": null,
+        "n_nodes": 28,
+        "n_edges": 27,
+        "endpoints_touched": {
+          "B_SAS": 2
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "EXPERIENCED_AE",
+            25
+          ],
+          [
+            "ENROLLED_IN",
+            1
+          ],
+          [
+            "HAS_BURDEN_SCORE",
+            1
+          ]
+        ]
+      },
+      {
+        "seed": "genomicfeature:msk:mut:ARID3A",
+        "kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 7,
+        "n_edges": 6,
+        "endpoints_touched": {
+          "A_MSK": 7
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "HARBORS_MUTATION",
+            4
+          ],
+          [
+            "SPECIMEN_OF",
+            1
+          ],
+          [
+            "HARBORS_CNA",
+            1
+          ]
+        ]
+      },
+      {
+        "seed": "genomicfeature:msk:mut:BRAF",
+        "kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 7,
+        "n_edges": 6,
+        "endpoints_touched": {
+          "A_MSK": 7
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "HARBORS_MUTATION",
+            4
+          ],
+          [
+            "SPECIMEN_OF",
+            1
+          ],
+          [
+            "HARBORS_CNA",
+            1
+          ]
+        ]
+      },
+      {
+        "seed": "genomicfeature:msk:mut:BRCA1",
+        "kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 400,
+        "n_edges": 628,
+        "endpoints_touched": {
+          "A_MSK": 8,
+          "B_SAS": 343
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "EXPERIENCED_AE",
+            495
+          ],
+          [
+            "CO_ESCALATES_WITH",
+            60
+          ],
+          [
+            "BRIDGE_EDGE",
+            37
+          ],
+          [
+            "HAS_BRIDGE_SCORE",
+            11
+          ],
+          [
+            "BRIDGES_TO_AE",
+            11
+          ]
+        ]
+      },
+      {
+        "seed": "genomicfeature:msk:mut:CDK12",
+        "kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 400,
+        "n_edges": 699,
+        "endpoints_touched": {
+          "A_MSK": 9,
+          "B_SAS": 345
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "EXPERIENCED_AE",
+            574
+          ],
+          [
+            "CO_ESCALATES_WITH",
+            59
+          ],
+          [
+            "BRIDGE_EDGE",
+            43
+          ],
+          [
+            "maps_to_meddra",
+            6
+          ],
+          [
+            "HAS_BRIDGE_SCORE",
+            4
+          ]
+        ]
+      },
+      {
+        "seed": "genomicfeature:msk:mut:EPHA3",
+        "kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 7,
+        "n_edges": 6,
+        "endpoints_touched": {
+          "A_MSK": 7
+        },
+        "n_boundary_crossing_edges": 0,
+        "rel_mix_top": [
+          [
+            "HARBORS_MUTATION",
+            4
+          ],
+          [
+            "SPECIMEN_OF",
+            1
+          ],
+          [
+            "HARBORS_CNA",
+            1
+          ]
+        ]
+      }
+    ],
+    "n_nodes": 11,
+    "n_edges": 11
+  },
+  "nodes": [
+    {
+      "id": "neighborhood:s12:arm_sas_Breast_Allianc_2002_200_37",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of arm:sas:Breast_Allianc_2002_200:37",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "arm:sas:Breast_Allianc_2002_200:37",
+        "seed_kind": "largest_arm",
+        "seed_endpoint": "B_SAS",
+        "n_nodes": 400,
+        "n_edges": 795,
+        "endpoints_touched": {
+          "B_SAS": 397
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "arm:sas:Breast_Allianc_2002_200:37",
+          "trial:sas:Breast_Allianc_2002_200",
+          "arm_ae_profile:sas:Breast_Allianc_2002_200:37_0",
+          "centrality:pagerank:s11:6",
+          "community:louvain:s11:13",
+          "patient:sas:Breast_Allianc_2002_200:1_0",
+          "patient:sas:Breast_Allianc_2002_200:2_0",
+          "patient:sas:Breast_Allianc_2002_200:6_0",
+          "patient:sas:Breast_Allianc_2002_200:10_0",
+          "patient:sas:Breast_Allianc_2002_200:12_0",
+          "patient:sas:Breast_Allianc_2002_200:15_0",
+          "patient:sas:Breast_Allianc_2002_200:16_0",
+          "patient:sas:Breast_Allianc_2002_200:20_0",
+          "patient:sas:Breast_Allianc_2002_200:21_0",
+          "patient:sas:Breast_Allianc_2002_200:22_0",
+          "patient:sas:Breast_Allianc_2002_200:26_0",
+          "patient:sas:Breast_Allianc_2002_200:29_0",
+          "patient:sas:Breast_Allianc_2002_200:34_0",
+          "patient:sas:Breast_Allianc_2002_200:36_0",
+          "patient:sas:Breast_Allianc_2002_200:39_0",
+          "patient:sas:Breast_Allianc_2002_200:51_0",
+          "patient:sas:Breast_Allianc_2002_200:53_0",
+          "patient:sas:Breast_Allianc_2002_200:54_0",
+          "patient:sas:Breast_Allianc_2002_200:60_0",
+          "patient:sas:Breast_Allianc_2002_200:63_0",
+          "patient:sas:Breast_Allianc_2002_200:64_0",
+          "patient:sas:Breast_Allianc_2002_200:81_0",
+          "patient:sas:Breast_Allianc_2002_200:89_0",
+          "patient:sas:Breast_Allianc_2002_200:90_0",
+          "patient:sas:Breast_Allianc_2002_200:91_0",
+          "patient:sas:Breast_Allianc_2002_200:102_0",
+          "patient:sas:Breast_Allianc_2002_200:110_0",
+          "patient:sas:Breast_Allianc_2002_200:113_0",
+          "patient:sas:Breast_Allianc_2002_200:114_0",
+          "patient:sas:Breast_Allianc_2002_200:115_0",
+          "patient:sas:Breast_Allianc_2002_200:126_0",
+          "patient:sas:Breast_Allianc_2002_200:128_0",
+          "patient:sas:Breast_Allianc_2002_200:130_0",
+          "patient:sas:Breast_Allianc_2002_200:142_0",
+          "patient:sas:Breast_Allianc_2002_200:149_0",
+          "patient:sas:Breast_Allianc_2002_200:150_0",
+          "patient:sas:Breast_Allianc_2002_200:168_0",
+          "patient:sas:Breast_Allianc_2002_200:173_0",
+          "patient:sas:Breast_Allianc_2002_200:179_0",
+          "patient:sas:Breast_Allianc_2002_200:181_0",
+          "patient:sas:Breast_Allianc_2002_200:182_0",
+          "patient:sas:Breast_Allianc_2002_200:188_0",
+          "patient:sas:Breast_Allianc_2002_200:198_0",
+          "patient:sas:Breast_Allianc_2002_200:200_0",
+          "patient:sas:Breast_Allianc_2002_200:206_0",
+          "patient:sas:Breast_Allianc_2002_200:223_0",
+          "patient:sas:Breast_Allianc_2002_200:226_0",
+          "patient:sas:Breast_Allianc_2002_200:231_0",
+          "patient:sas:Breast_Allianc_2002_200:232_0",
+          "patient:sas:Breast_Allianc_2002_200:238_0",
+          "patient:sas:Breast_Allianc_2002_200:244_0",
+          "patient:sas:Breast_Allianc_2002_200:245_0",
+          "patient:sas:Breast_Allianc_2002_200:259_0",
+          "patient:sas:Breast_Allianc_2002_200:274_0",
+          "patient:sas:Breast_Allianc_2002_200:282_0",
+          "patient:sas:Breast_Allianc_2002_200:285_0",
+          "patient:sas:Breast_Allianc_2002_200:288_0",
+          "patient:sas:Breast_Allianc_2002_200:289_0",
+          "patient:sas:Breast_Allianc_2002_200:291_0",
+          "patient:sas:Breast_Allianc_2002_200:294_0",
+          "patient:sas:Breast_Allianc_2002_200:306_0",
+          "patient:sas:Breast_Allianc_2002_200:308_0",
+          "patient:sas:Breast_Allianc_2002_200:309_0",
+          "patient:sas:Breast_Allianc_2002_200:313_0",
+          "patient:sas:Breast_Allianc_2002_200:319_0",
+          "patient:sas:Breast_Allianc_2002_200:322_0",
+          "patient:sas:Breast_Allianc_2002_200:328_0",
+          "patient:sas:Breast_Allianc_2002_200:337_0",
+          "patient:sas:Breast_Allianc_2002_200:343_0",
+          "patient:sas:Breast_Allianc_2002_200:344_0",
+          "patient:sas:Breast_Allianc_2002_200:363_0",
+          "patient:sas:Breast_Allianc_2002_200:365_0",
+          "patient:sas:Breast_Allianc_2002_200:368_0",
+          "patient:sas:Breast_Allianc_2002_200:369_0",
+          "patient:sas:Breast_Allianc_2002_200:371_0",
+          "patient:sas:Breast_Allianc_2002_200:395_0",
+          "patient:sas:Breast_Allianc_2002_200:404_0",
+          "patient:sas:Breast_Allianc_2002_200:417_0",
+          "patient:sas:Breast_Allianc_2002_200:422_0",
+          "patient:sas:Breast_Allianc_2002_200:432_0",
+          "patient:sas:Breast_Allianc_2002_200:433_0",
+          "patient:sas:Breast_Allianc_2002_200:436_0",
+          "patient:sas:Breast_Allianc_2002_200:439_0",
+          "patient:sas:Breast_Allianc_2002_200:443_0",
+          "patient:sas:Breast_Allianc_2002_200:447_0",
+          "patient:sas:Breast_Allianc_2002_200:456_0",
+          "patient:sas:Breast_Allianc_2002_200:457_0",
+          "patient:sas:Breast_Allianc_2002_200:466_0",
+          "patient:sas:Breast_Allianc_2002_200:468_0",
+          "patient:sas:Breast_Allianc_2002_200:470_0",
+          "patient:sas:Breast_Allianc_2002_200:474_0",
+          "patient:sas:Breast_Allianc_2002_200:477_0",
+          "patient:sas:Breast_Allianc_2002_200:479_0",
+          "patient:sas:Breast_Allianc_2002_200:481_0",
+          "patient:sas:Breast_Allianc_2002_200:483_0",
+          "patient:sas:Breast_Allianc_2002_200:487_0",
+          "patient:sas:Breast_Allianc_2002_200:495_0",
+          "patient:sas:Breast_Allianc_2002_200:497_0",
+          "patient:sas:Breast_Allianc_2002_200:501_0",
+          "patient:sas:Breast_Allianc_2002_200:503_0",
+          "patient:sas:Breast_Allianc_2002_200:506_0",
+          "patient:sas:Breast_Allianc_2002_200:510_0",
+          "patient:sas:Breast_Allianc_2002_200:511_0",
+          "patient:sas:Breast_Allianc_2002_200:512_0",
+          "patient:sas:Breast_Allianc_2002_200:539_0",
+          "patient:sas:Breast_Allianc_2002_200:540_0",
+          "patient:sas:Breast_Allianc_2002_200:545_0",
+          "patient:sas:Breast_Allianc_2002_200:549_0",
+          "patient:sas:Breast_Allianc_2002_200:553_0",
+          "patient:sas:Breast_Allianc_2002_200:574_0",
+          "patient:sas:Breast_Allianc_2002_200:576_0",
+          "patient:sas:Breast_Allianc_2002_200:579_0",
+          "patient:sas:Breast_Allianc_2002_200:591_0",
+          "patient:sas:Breast_Allianc_2002_200:592_0",
+          "patient:sas:Breast_Allianc_2002_200:593_0",
+          "patient:sas:Breast_Allianc_2002_200:594_0",
+          "patient:sas:Breast_Allianc_2002_200:601_0",
+          "patient:sas:Breast_Allianc_2002_200:606_0",
+          "patient:sas:Breast_Allianc_2002_200:616_0",
+          "patient:sas:Breast_Allianc_2002_200:620_0",
+          "patient:sas:Breast_Allianc_2002_200:622_0",
+          "patient:sas:Breast_Allianc_2002_200:629_0",
+          "patient:sas:Breast_Allianc_2002_200:643_0",
+          "patient:sas:Breast_Allianc_2002_200:647_0",
+          "patient:sas:Breast_Allianc_2002_200:671_0",
+          "patient:sas:Breast_Allianc_2002_200:672_0",
+          "patient:sas:Breast_Allianc_2002_200:683_0",
+          "patient:sas:Breast_Allianc_2002_200:685_0",
+          "patient:sas:Breast_Allianc_2002_200:697_0",
+          "patient:sas:Breast_Allianc_2002_200:699_0",
+          "patient:sas:Breast_Allianc_2002_200:701_0",
+          "patient:sas:Breast_Allianc_2002_200:706_0",
+          "patient:sas:Breast_Allianc_2002_200:712_0",
+          "patient:sas:Breast_Allianc_2002_200:718_0",
+          "patient:sas:Breast_Allianc_2002_200:721_0",
+          "patient:sas:Breast_Allianc_2002_200:725_0",
+          "patient:sas:Breast_Allianc_2002_200:727_0",
+          "patient:sas:Breast_Allianc_2002_200:730_0",
+          "patient:sas:Breast_Allianc_2002_200:733_0",
+          "patient:sas:Breast_Allianc_2002_200:734_0",
+          "patient:sas:Breast_Allianc_2002_200:739_0",
+          "patient:sas:Breast_Allianc_2002_200:741_0",
+          "patient:sas:Breast_Allianc_2002_200:749_0",
+          "patient:sas:Breast_Allianc_2002_200:751_0",
+          "patient:sas:Breast_Allianc_2002_200:753_0",
+          "patient:sas:Breast_Allianc_2002_200:757_0",
+          "patient:sas:Breast_Allianc_2002_200:788_0",
+          "patient:sas:Breast_Allianc_2002_200:792_0",
+          "patient:sas:Breast_Allianc_2002_200:800_0",
+          "patient:sas:Breast_Allianc_2002_200:802_0",
+          "patient:sas:Breast_Allianc_2002_200:819_0",
+          "patient:sas:Breast_Allianc_2002_200:825_0",
+          "patient:sas:Breast_Allianc_2002_200:836_0",
+          "patient:sas:Breast_Allianc_2002_200:846_0",
+          "patient:sas:Breast_Allianc_2002_200:849_0",
+          "patient:sas:Breast_Allianc_2002_200:851_0",
+          "patient:sas:Breast_Allianc_2002_200:860_0",
+          "patient:sas:Breast_Allianc_2002_200:864_0",
+          "patient:sas:Breast_Allianc_2002_200:877_0",
+          "patient:sas:Breast_Allianc_2002_200:878_0",
+          "patient:sas:Breast_Allianc_2002_200:879_0",
+          "patient:sas:Breast_Allianc_2002_200:886_0",
+          "patient:sas:Breast_Allianc_2002_200:896_0",
+          "patient:sas:Breast_Allianc_2002_200:899_0",
+          "patient:sas:Breast_Allianc_2002_200:913_0",
+          "patient:sas:Breast_Allianc_2002_200:917_0",
+          "patient:sas:Breast_Allianc_2002_200:918_0",
+          "patient:sas:Breast_Allianc_2002_200:920_0",
+          "patient:sas:Breast_Allianc_2002_200:928_0",
+          "patient:sas:Breast_Allianc_2002_200:936_0",
+          "patient:sas:Breast_Allianc_2002_200:941_0",
+          "patient:sas:Breast_Allianc_2002_200:944_0",
+          "patient:sas:Breast_Allianc_2002_200:948_0",
+          "patient:sas:Breast_Allianc_2002_200:955_0",
+          "patient:sas:Breast_Allianc_2002_200:958_0",
+          "patient:sas:Breast_Allianc_2002_200:964_0",
+          "patient:sas:Breast_Allianc_2002_200:965_0",
+          "patient:sas:Breast_Allianc_2002_200:966_0",
+          "patient:sas:Breast_Allianc_2002_200:967_0",
+          "patient:sas:Breast_Allianc_2002_200:971_0",
+          "patient:sas:Breast_Allianc_2002_200:984_0",
+          "patient:sas:Breast_Allianc_2002_200:989_0",
+          "patient:sas:Breast_Allianc_2002_200:998_0",
+          "patient:sas:Breast_Allianc_2002_200:1012_0",
+          "patient:sas:Breast_Allianc_2002_200:1024_0",
+          "patient:sas:Breast_Allianc_2002_200:1025_0",
+          "patient:sas:Breast_Allianc_2002_200:1030_0",
+          "patient:sas:Breast_Allianc_2002_200:1035_0",
+          "patient:sas:Breast_Allianc_2002_200:1039_0",
+          "patient:sas:Breast_Allianc_2002_200:1054_0",
+          "patient:sas:Breast_Allianc_2002_200:1062_0",
+          "patient:sas:Breast_Allianc_2002_200:1068_0",
+          "patient:sas:Breast_Allianc_2002_200:1070_0",
+          "patient:sas:Breast_Allianc_2002_200:1073_0",
+          "patient:sas:Breast_Allianc_2002_200:1078_0"
+        ],
+        "rel_mix": [
+          [
+            "ENROLLED_IN",
+            395
+          ],
+          [
+            "ASSIGNED_ARM",
+            395
+          ],
+          [
+            "ARM_OF",
+            1
+          ],
+          [
+            "has_ae_profile",
+            1
+          ],
+          [
+            "HAS_CENTRALITY_SCORE",
+            1
+          ],
+          [
+            "MEMBER_OF_COMMUNITY",
+            1
+          ],
+          [
+            "has_arm_ae_profile",
+            1
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:21.949205+00:00"
+    },
+    {
+      "id": "neighborhood:s12:arm_sas_Breast_Allianc_2002_200_1",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of arm:sas:Breast_Allianc_2002_200:1",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "arm:sas:Breast_Allianc_2002_200:1",
+        "seed_kind": "largest_arm",
+        "seed_endpoint": "B_SAS",
+        "n_nodes": 400,
+        "n_edges": 796,
+        "endpoints_touched": {
+          "B_SAS": 398
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "arm:sas:Breast_Allianc_2002_200:1",
+          "trial:sas:Breast_Allianc_2002_200",
+          "arm_ae_profile:sas:Breast_Allianc_2002_200:1_0",
+          "centrality:pagerank:s11:7",
+          "patient:sas:Breast_Allianc_2002_200:8_0",
+          "patient:sas:Breast_Allianc_2002_200:18_0",
+          "patient:sas:Breast_Allianc_2002_200:30_0",
+          "patient:sas:Breast_Allianc_2002_200:33_0",
+          "patient:sas:Breast_Allianc_2002_200:40_0",
+          "patient:sas:Breast_Allianc_2002_200:42_0",
+          "patient:sas:Breast_Allianc_2002_200:44_0",
+          "patient:sas:Breast_Allianc_2002_200:48_0",
+          "patient:sas:Breast_Allianc_2002_200:57_0",
+          "patient:sas:Breast_Allianc_2002_200:61_0",
+          "patient:sas:Breast_Allianc_2002_200:68_0",
+          "patient:sas:Breast_Allianc_2002_200:70_0",
+          "patient:sas:Breast_Allianc_2002_200:75_0",
+          "patient:sas:Breast_Allianc_2002_200:77_0",
+          "patient:sas:Breast_Allianc_2002_200:78_0",
+          "patient:sas:Breast_Allianc_2002_200:82_0",
+          "patient:sas:Breast_Allianc_2002_200:84_0",
+          "patient:sas:Breast_Allianc_2002_200:99_0",
+          "patient:sas:Breast_Allianc_2002_200:103_0",
+          "patient:sas:Breast_Allianc_2002_200:104_0",
+          "patient:sas:Breast_Allianc_2002_200:111_0",
+          "patient:sas:Breast_Allianc_2002_200:124_0",
+          "patient:sas:Breast_Allianc_2002_200:125_0",
+          "patient:sas:Breast_Allianc_2002_200:132_0",
+          "patient:sas:Breast_Allianc_2002_200:134_0",
+          "patient:sas:Breast_Allianc_2002_200:140_0",
+          "patient:sas:Breast_Allianc_2002_200:143_0",
+          "patient:sas:Breast_Allianc_2002_200:144_0",
+          "patient:sas:Breast_Allianc_2002_200:151_0",
+          "patient:sas:Breast_Allianc_2002_200:152_0",
+          "patient:sas:Breast_Allianc_2002_200:158_0",
+          "patient:sas:Breast_Allianc_2002_200:163_0",
+          "patient:sas:Breast_Allianc_2002_200:165_0",
+          "patient:sas:Breast_Allianc_2002_200:167_0",
+          "patient:sas:Breast_Allianc_2002_200:171_0",
+          "patient:sas:Breast_Allianc_2002_200:174_0",
+          "patient:sas:Breast_Allianc_2002_200:176_0",
+          "patient:sas:Breast_Allianc_2002_200:180_0",
+          "patient:sas:Breast_Allianc_2002_200:183_0",
+          "patient:sas:Breast_Allianc_2002_200:184_0",
+          "patient:sas:Breast_Allianc_2002_200:202_0",
+          "patient:sas:Breast_Allianc_2002_200:214_0",
+          "patient:sas:Breast_Allianc_2002_200:218_0",
+          "patient:sas:Breast_Allianc_2002_200:219_0",
+          "patient:sas:Breast_Allianc_2002_200:220_0",
+          "patient:sas:Breast_Allianc_2002_200:222_0",
+          "patient:sas:Breast_Allianc_2002_200:224_0",
+          "patient:sas:Breast_Allianc_2002_200:225_0",
+          "patient:sas:Breast_Allianc_2002_200:233_0",
+          "patient:sas:Breast_Allianc_2002_200:251_0",
+          "patient:sas:Breast_Allianc_2002_200:257_0",
+          "patient:sas:Breast_Allianc_2002_200:261_0",
+          "patient:sas:Breast_Allianc_2002_200:269_0",
+          "patient:sas:Breast_Allianc_2002_200:270_0",
+          "patient:sas:Breast_Allianc_2002_200:271_0",
+          "patient:sas:Breast_Allianc_2002_200:275_0",
+          "patient:sas:Breast_Allianc_2002_200:283_0",
+          "patient:sas:Breast_Allianc_2002_200:284_0",
+          "patient:sas:Breast_Allianc_2002_200:286_0",
+          "patient:sas:Breast_Allianc_2002_200:290_0",
+          "patient:sas:Breast_Allianc_2002_200:302_0",
+          "patient:sas:Breast_Allianc_2002_200:304_0",
+          "patient:sas:Breast_Allianc_2002_200:305_0",
+          "patient:sas:Breast_Allianc_2002_200:310_0",
+          "patient:sas:Breast_Allianc_2002_200:321_0",
+          "patient:sas:Breast_Allianc_2002_200:325_0",
+          "patient:sas:Breast_Allianc_2002_200:326_0",
+          "patient:sas:Breast_Allianc_2002_200:329_0",
+          "patient:sas:Breast_Allianc_2002_200:332_0",
+          "patient:sas:Breast_Allianc_2002_200:335_0",
+          "patient:sas:Breast_Allianc_2002_200:336_0",
+          "patient:sas:Breast_Allianc_2002_200:340_0",
+          "patient:sas:Breast_Allianc_2002_200:351_0",
+          "patient:sas:Breast_Allianc_2002_200:354_0",
+          "patient:sas:Breast_Allianc_2002_200:357_0",
+          "patient:sas:Breast_Allianc_2002_200:359_0",
+          "patient:sas:Breast_Allianc_2002_200:361_0",
+          "patient:sas:Breast_Allianc_2002_200:374_0",
+          "patient:sas:Breast_Allianc_2002_200:377_0",
+          "patient:sas:Breast_Allianc_2002_200:379_0",
+          "patient:sas:Breast_Allianc_2002_200:381_0",
+          "patient:sas:Breast_Allianc_2002_200:388_0",
+          "patient:sas:Breast_Allianc_2002_200:393_0",
+          "patient:sas:Breast_Allianc_2002_200:396_0",
+          "patient:sas:Breast_Allianc_2002_200:399_0",
+          "patient:sas:Breast_Allianc_2002_200:403_0",
+          "patient:sas:Breast_Allianc_2002_200:406_0",
+          "patient:sas:Breast_Allianc_2002_200:410_0",
+          "patient:sas:Breast_Allianc_2002_200:416_0",
+          "patient:sas:Breast_Allianc_2002_200:418_0",
+          "patient:sas:Breast_Allianc_2002_200:421_0",
+          "patient:sas:Breast_Allianc_2002_200:438_0",
+          "patient:sas:Breast_Allianc_2002_200:441_0",
+          "patient:sas:Breast_Allianc_2002_200:451_0",
+          "patient:sas:Breast_Allianc_2002_200:458_0",
+          "patient:sas:Breast_Allianc_2002_200:476_0",
+          "patient:sas:Breast_Allianc_2002_200:484_0",
+          "patient:sas:Breast_Allianc_2002_200:499_0",
+          "patient:sas:Breast_Allianc_2002_200:508_0",
+          "patient:sas:Breast_Allianc_2002_200:517_0",
+          "patient:sas:Breast_Allianc_2002_200:519_0",
+          "patient:sas:Breast_Allianc_2002_200:522_0",
+          "patient:sas:Breast_Allianc_2002_200:528_0",
+          "patient:sas:Breast_Allianc_2002_200:530_0",
+          "patient:sas:Breast_Allianc_2002_200:535_0",
+          "patient:sas:Breast_Allianc_2002_200:547_0",
+          "patient:sas:Breast_Allianc_2002_200:550_0",
+          "patient:sas:Breast_Allianc_2002_200:555_0",
+          "patient:sas:Breast_Allianc_2002_200:558_0",
+          "patient:sas:Breast_Allianc_2002_200:559_0",
+          "patient:sas:Breast_Allianc_2002_200:570_0",
+          "patient:sas:Breast_Allianc_2002_200:580_0",
+          "patient:sas:Breast_Allianc_2002_200:590_0",
+          "patient:sas:Breast_Allianc_2002_200:595_0",
+          "patient:sas:Breast_Allianc_2002_200:598_0",
+          "patient:sas:Breast_Allianc_2002_200:603_0",
+          "patient:sas:Breast_Allianc_2002_200:604_0",
+          "patient:sas:Breast_Allianc_2002_200:607_0",
+          "patient:sas:Breast_Allianc_2002_200:608_0",
+          "patient:sas:Breast_Allianc_2002_200:609_0",
+          "patient:sas:Breast_Allianc_2002_200:610_0",
+          "patient:sas:Breast_Allianc_2002_200:615_0",
+          "patient:sas:Breast_Allianc_2002_200:618_0",
+          "patient:sas:Breast_Allianc_2002_200:632_0",
+          "patient:sas:Breast_Allianc_2002_200:639_0",
+          "patient:sas:Breast_Allianc_2002_200:641_0",
+          "patient:sas:Breast_Allianc_2002_200:642_0",
+          "patient:sas:Breast_Allianc_2002_200:646_0",
+          "patient:sas:Breast_Allianc_2002_200:649_0",
+          "patient:sas:Breast_Allianc_2002_200:664_0",
+          "patient:sas:Breast_Allianc_2002_200:667_0",
+          "patient:sas:Breast_Allianc_2002_200:674_0",
+          "patient:sas:Breast_Allianc_2002_200:684_0",
+          "patient:sas:Breast_Allianc_2002_200:687_0",
+          "patient:sas:Breast_Allianc_2002_200:689_0",
+          "patient:sas:Breast_Allianc_2002_200:698_0",
+          "patient:sas:Breast_Allianc_2002_200:700_0",
+          "patient:sas:Breast_Allianc_2002_200:709_0",
+          "patient:sas:Breast_Allianc_2002_200:714_0",
+          "patient:sas:Breast_Allianc_2002_200:746_0",
+          "patient:sas:Breast_Allianc_2002_200:747_0",
+          "patient:sas:Breast_Allianc_2002_200:750_0",
+          "patient:sas:Breast_Allianc_2002_200:762_0",
+          "patient:sas:Breast_Allianc_2002_200:763_0",
+          "patient:sas:Breast_Allianc_2002_200:766_0",
+          "patient:sas:Breast_Allianc_2002_200:777_0",
+          "patient:sas:Breast_Allianc_2002_200:779_0",
+          "patient:sas:Breast_Allianc_2002_200:787_0",
+          "patient:sas:Breast_Allianc_2002_200:789_0",
+          "patient:sas:Breast_Allianc_2002_200:790_0",
+          "patient:sas:Breast_Allianc_2002_200:798_0",
+          "patient:sas:Breast_Allianc_2002_200:801_0",
+          "patient:sas:Breast_Allianc_2002_200:807_0",
+          "patient:sas:Breast_Allianc_2002_200:813_0",
+          "patient:sas:Breast_Allianc_2002_200:817_0",
+          "patient:sas:Breast_Allianc_2002_200:821_0",
+          "patient:sas:Breast_Allianc_2002_200:833_0",
+          "patient:sas:Breast_Allianc_2002_200:840_0",
+          "patient:sas:Breast_Allianc_2002_200:845_0",
+          "patient:sas:Breast_Allianc_2002_200:848_0",
+          "patient:sas:Breast_Allianc_2002_200:853_0",
+          "patient:sas:Breast_Allianc_2002_200:854_0",
+          "patient:sas:Breast_Allianc_2002_200:865_0",
+          "patient:sas:Breast_Allianc_2002_200:869_0",
+          "patient:sas:Breast_Allianc_2002_200:870_0",
+          "patient:sas:Breast_Allianc_2002_200:871_0",
+          "patient:sas:Breast_Allianc_2002_200:885_0",
+          "patient:sas:Breast_Allianc_2002_200:900_0",
+          "patient:sas:Breast_Allianc_2002_200:904_0",
+          "patient:sas:Breast_Allianc_2002_200:914_0",
+          "patient:sas:Breast_Allianc_2002_200:915_0",
+          "patient:sas:Breast_Allianc_2002_200:916_0",
+          "patient:sas:Breast_Allianc_2002_200:926_0",
+          "patient:sas:Breast_Allianc_2002_200:929_0",
+          "patient:sas:Breast_Allianc_2002_200:932_0",
+          "patient:sas:Breast_Allianc_2002_200:939_0",
+          "patient:sas:Breast_Allianc_2002_200:942_0",
+          "patient:sas:Breast_Allianc_2002_200:946_0",
+          "patient:sas:Breast_Allianc_2002_200:947_0",
+          "patient:sas:Breast_Allianc_2002_200:950_0",
+          "patient:sas:Breast_Allianc_2002_200:961_0",
+          "patient:sas:Breast_Allianc_2002_200:968_0",
+          "patient:sas:Breast_Allianc_2002_200:970_0",
+          "patient:sas:Breast_Allianc_2002_200:976_0",
+          "patient:sas:Breast_Allianc_2002_200:992_0",
+          "patient:sas:Breast_Allianc_2002_200:1000_0",
+          "patient:sas:Breast_Allianc_2002_200:1001_0",
+          "patient:sas:Breast_Allianc_2002_200:1003_0",
+          "patient:sas:Breast_Allianc_2002_200:1009_0",
+          "patient:sas:Breast_Allianc_2002_200:1013_0",
+          "patient:sas:Breast_Allianc_2002_200:1015_0",
+          "patient:sas:Breast_Allianc_2002_200:1016_0",
+          "patient:sas:Breast_Allianc_2002_200:1019_0",
+          "patient:sas:Breast_Allianc_2002_200:1023_0",
+          "patient:sas:Breast_Allianc_2002_200:1029_0",
+          "patient:sas:Breast_Allianc_2002_200:1031_0"
+        ],
+        "rel_mix": [
+          [
+            "ENROLLED_IN",
+            396
+          ],
+          [
+            "ASSIGNED_ARM",
+            396
+          ],
+          [
+            "ARM_OF",
+            1
+          ],
+          [
+            "has_ae_profile",
+            1
+          ],
+          [
+            "HAS_CENTRALITY_SCORE",
+            1
+          ],
+          [
+            "has_arm_ae_profile",
+            1
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.105173+00:00"
+    },
+    {
+      "id": "neighborhood:s12:arm_sas_Breast_Allianc_2002_194_5",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of arm:sas:Breast_Allianc_2002_194:5",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "arm:sas:Breast_Allianc_2002_194:5",
+        "seed_kind": "largest_arm",
+        "seed_endpoint": "B_SAS",
+        "n_nodes": 400,
+        "n_edges": 796,
+        "endpoints_touched": {
+          "B_SAS": 398
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "arm:sas:Breast_Allianc_2002_194:5",
+          "trial:sas:Breast_Allianc_2002_194",
+          "arm_ae_profile:sas:Breast_Allianc_2002_194:5_0",
+          "centrality:pagerank:s11:26",
+          "patient:sas:Breast_Allianc_2002_194:1504_0",
+          "patient:sas:Breast_Allianc_2002_194:1711_0",
+          "patient:sas:Breast_Allianc_2002_194:1437_0",
+          "patient:sas:Breast_Allianc_2002_194:2027_0",
+          "patient:sas:Breast_Allianc_2002_194:1387_0",
+          "patient:sas:Breast_Allianc_2002_194:324_0",
+          "patient:sas:Breast_Allianc_2002_194:1560_0",
+          "patient:sas:Breast_Allianc_2002_194:4_0",
+          "patient:sas:Breast_Allianc_2002_194:1726_0",
+          "patient:sas:Breast_Allianc_2002_194:2417_0",
+          "patient:sas:Breast_Allianc_2002_194:2628_0",
+          "patient:sas:Breast_Allianc_2002_194:2651_0",
+          "patient:sas:Breast_Allianc_2002_194:2021_0",
+          "patient:sas:Breast_Allianc_2002_194:2276_0",
+          "patient:sas:Breast_Allianc_2002_194:1316_0",
+          "patient:sas:Breast_Allianc_2002_194:153_0",
+          "patient:sas:Breast_Allianc_2002_194:1266_0",
+          "patient:sas:Breast_Allianc_2002_194:2421_0",
+          "patient:sas:Breast_Allianc_2002_194:2844_0",
+          "patient:sas:Breast_Allianc_2002_194:1101_0",
+          "patient:sas:Breast_Allianc_2002_194:3102_0",
+          "patient:sas:Breast_Allianc_2002_194:1328_0",
+          "patient:sas:Breast_Allianc_2002_194:1785_0",
+          "patient:sas:Breast_Allianc_2002_194:1806_0",
+          "patient:sas:Breast_Allianc_2002_194:1205_0",
+          "patient:sas:Breast_Allianc_2002_194:1509_0",
+          "patient:sas:Breast_Allianc_2002_194:1760_0",
+          "patient:sas:Breast_Allianc_2002_194:2917_0",
+          "patient:sas:Breast_Allianc_2002_194:3054_0",
+          "patient:sas:Breast_Allianc_2002_194:3095_0",
+          "patient:sas:Breast_Allianc_2002_194:259_0",
+          "patient:sas:Breast_Allianc_2002_194:465_0",
+          "patient:sas:Breast_Allianc_2002_194:3155_0",
+          "patient:sas:Breast_Allianc_2002_194:621_0",
+          "patient:sas:Breast_Allianc_2002_194:1398_0",
+          "patient:sas:Breast_Allianc_2002_194:2546_0",
+          "patient:sas:Breast_Allianc_2002_194:1906_0",
+          "patient:sas:Breast_Allianc_2002_194:570_0",
+          "patient:sas:Breast_Allianc_2002_194:2762_0",
+          "patient:sas:Breast_Allianc_2002_194:1417_0",
+          "patient:sas:Breast_Allianc_2002_194:1050_0",
+          "patient:sas:Breast_Allianc_2002_194:545_0",
+          "patient:sas:Breast_Allianc_2002_194:752_0",
+          "patient:sas:Breast_Allianc_2002_194:3138_0",
+          "patient:sas:Breast_Allianc_2002_194:1546_0",
+          "patient:sas:Breast_Allianc_2002_194:176_0",
+          "patient:sas:Breast_Allianc_2002_194:1315_0",
+          "patient:sas:Breast_Allianc_2002_194:154_0",
+          "patient:sas:Breast_Allianc_2002_194:1534_0",
+          "patient:sas:Breast_Allianc_2002_194:1278_0",
+          "patient:sas:Breast_Allianc_2002_194:1645_0",
+          "patient:sas:Breast_Allianc_2002_194:2933_0",
+          "patient:sas:Breast_Allianc_2002_194:776_0",
+          "patient:sas:Breast_Allianc_2002_194:1106_0",
+          "patient:sas:Breast_Allianc_2002_194:2831_0",
+          "patient:sas:Breast_Allianc_2002_194:53_0",
+          "patient:sas:Breast_Allianc_2002_194:2779_0",
+          "patient:sas:Breast_Allianc_2002_194:1422_0",
+          "patient:sas:Breast_Allianc_2002_194:707_0",
+          "patient:sas:Breast_Allianc_2002_194:1727_0",
+          "patient:sas:Breast_Allianc_2002_194:2818_0",
+          "patient:sas:Breast_Allianc_2002_194:6_0",
+          "patient:sas:Breast_Allianc_2002_194:2978_0",
+          "patient:sas:Breast_Allianc_2002_194:185_0",
+          "patient:sas:Breast_Allianc_2002_194:895_0",
+          "patient:sas:Breast_Allianc_2002_194:2372_0",
+          "patient:sas:Breast_Allianc_2002_194:1082_0",
+          "patient:sas:Breast_Allianc_2002_194:3057_0",
+          "patient:sas:Breast_Allianc_2002_194:298_0",
+          "patient:sas:Breast_Allianc_2002_194:1026_0",
+          "patient:sas:Breast_Allianc_2002_194:1712_0",
+          "patient:sas:Breast_Allianc_2002_194:378_0",
+          "patient:sas:Breast_Allianc_2002_194:1830_0",
+          "patient:sas:Breast_Allianc_2002_194:1543_0",
+          "patient:sas:Breast_Allianc_2002_194:2620_0",
+          "patient:sas:Breast_Allianc_2002_194:1395_0",
+          "patient:sas:Breast_Allianc_2002_194:243_0",
+          "patient:sas:Breast_Allianc_2002_194:99_0",
+          "patient:sas:Breast_Allianc_2002_194:1968_0",
+          "patient:sas:Breast_Allianc_2002_194:284_0",
+          "patient:sas:Breast_Allianc_2002_194:3083_0",
+          "patient:sas:Breast_Allianc_2002_194:2061_0",
+          "patient:sas:Breast_Allianc_2002_194:1173_0",
+          "patient:sas:Breast_Allianc_2002_194:1766_0",
+          "patient:sas:Breast_Allianc_2002_194:1721_0",
+          "patient:sas:Breast_Allianc_2002_194:2983_0",
+          "patient:sas:Breast_Allianc_2002_194:947_0",
+          "patient:sas:Breast_Allianc_2002_194:1481_0",
+          "patient:sas:Breast_Allianc_2002_194:2624_0",
+          "patient:sas:Breast_Allianc_2002_194:2753_0",
+          "patient:sas:Breast_Allianc_2002_194:114_0",
+          "patient:sas:Breast_Allianc_2002_194:1054_0",
+          "patient:sas:Breast_Allianc_2002_194:3084_0",
+          "patient:sas:Breast_Allianc_2002_194:1512_0",
+          "patient:sas:Breast_Allianc_2002_194:1751_0",
+          "patient:sas:Breast_Allianc_2002_194:212_0",
+          "patient:sas:Breast_Allianc_2002_194:1668_0",
+          "patient:sas:Breast_Allianc_2002_194:191_0",
+          "patient:sas:Breast_Allianc_2002_194:1798_0",
+          "patient:sas:Breast_Allianc_2002_194:1641_0",
+          "patient:sas:Breast_Allianc_2002_194:2612_0",
+          "patient:sas:Breast_Allianc_2002_194:2285_0",
+          "patient:sas:Breast_Allianc_2002_194:2169_0",
+          "patient:sas:Breast_Allianc_2002_194:2099_0",
+          "patient:sas:Breast_Allianc_2002_194:2639_0",
+          "patient:sas:Breast_Allianc_2002_194:1937_0",
+          "patient:sas:Breast_Allianc_2002_194:2773_0",
+          "patient:sas:Breast_Allianc_2002_194:1371_0",
+          "patient:sas:Breast_Allianc_2002_194:1460_0",
+          "patient:sas:Breast_Allianc_2002_194:2028_0",
+          "patient:sas:Breast_Allianc_2002_194:453_0",
+          "patient:sas:Breast_Allianc_2002_194:697_0",
+          "patient:sas:Breast_Allianc_2002_194:2822_0",
+          "patient:sas:Breast_Allianc_2002_194:2641_0",
+          "patient:sas:Breast_Allianc_2002_194:184_0",
+          "patient:sas:Breast_Allianc_2002_194:1400_0",
+          "patient:sas:Breast_Allianc_2002_194:1345_0",
+          "patient:sas:Breast_Allianc_2002_194:2062_0",
+          "patient:sas:Breast_Allianc_2002_194:1114_0",
+          "patient:sas:Breast_Allianc_2002_194:167_0",
+          "patient:sas:Breast_Allianc_2002_194:771_0",
+          "patient:sas:Breast_Allianc_2002_194:1860_0",
+          "patient:sas:Breast_Allianc_2002_194:2805_0",
+          "patient:sas:Breast_Allianc_2002_194:2179_0",
+          "patient:sas:Breast_Allianc_2002_194:780_0",
+          "patient:sas:Breast_Allianc_2002_194:35_0",
+          "patient:sas:Breast_Allianc_2002_194:1661_0",
+          "patient:sas:Breast_Allianc_2002_194:2084_0",
+          "patient:sas:Breast_Allianc_2002_194:1742_0",
+          "patient:sas:Breast_Allianc_2002_194:773_0",
+          "patient:sas:Breast_Allianc_2002_194:1213_0",
+          "patient:sas:Breast_Allianc_2002_194:222_0",
+          "patient:sas:Breast_Allianc_2002_194:1037_0",
+          "patient:sas:Breast_Allianc_2002_194:2402_0",
+          "patient:sas:Breast_Allianc_2002_194:2459_0",
+          "patient:sas:Breast_Allianc_2002_194:51_0",
+          "patient:sas:Breast_Allianc_2002_194:149_0",
+          "patient:sas:Breast_Allianc_2002_194:767_0",
+          "patient:sas:Breast_Allianc_2002_194:2395_0",
+          "patient:sas:Breast_Allianc_2002_194:2557_0",
+          "patient:sas:Breast_Allianc_2002_194:883_0",
+          "patient:sas:Breast_Allianc_2002_194:455_0",
+          "patient:sas:Breast_Allianc_2002_194:256_0",
+          "patient:sas:Breast_Allianc_2002_194:3164_0",
+          "patient:sas:Breast_Allianc_2002_194:128_0",
+          "patient:sas:Breast_Allianc_2002_194:1601_0",
+          "patient:sas:Breast_Allianc_2002_194:2615_0",
+          "patient:sas:Breast_Allianc_2002_194:2300_0",
+          "patient:sas:Breast_Allianc_2002_194:885_0",
+          "patient:sas:Breast_Allianc_2002_194:1842_0",
+          "patient:sas:Breast_Allianc_2002_194:1824_0",
+          "patient:sas:Breast_Allianc_2002_194:1164_0",
+          "patient:sas:Breast_Allianc_2002_194:333_0",
+          "patient:sas:Breast_Allianc_2002_194:410_0",
+          "patient:sas:Breast_Allianc_2002_194:1072_0",
+          "patient:sas:Breast_Allianc_2002_194:1346_0",
+          "patient:sas:Breast_Allianc_2002_194:122_0",
+          "patient:sas:Breast_Allianc_2002_194:2754_0",
+          "patient:sas:Breast_Allianc_2002_194:2581_0",
+          "patient:sas:Breast_Allianc_2002_194:1137_0",
+          "patient:sas:Breast_Allianc_2002_194:1886_0",
+          "patient:sas:Breast_Allianc_2002_194:784_0",
+          "patient:sas:Breast_Allianc_2002_194:1819_0",
+          "patient:sas:Breast_Allianc_2002_194:1991_0",
+          "patient:sas:Breast_Allianc_2002_194:2709_0",
+          "patient:sas:Breast_Allianc_2002_194:2579_0",
+          "patient:sas:Breast_Allianc_2002_194:918_0",
+          "patient:sas:Breast_Allianc_2002_194:2001_0",
+          "patient:sas:Breast_Allianc_2002_194:625_0",
+          "patient:sas:Breast_Allianc_2002_194:147_0",
+          "patient:sas:Breast_Allianc_2002_194:2746_0",
+          "patient:sas:Breast_Allianc_2002_194:3005_0",
+          "patient:sas:Breast_Allianc_2002_194:1467_0",
+          "patient:sas:Breast_Allianc_2002_194:1097_0",
+          "patient:sas:Breast_Allianc_2002_194:3123_0",
+          "patient:sas:Breast_Allianc_2002_194:816_0",
+          "patient:sas:Breast_Allianc_2002_194:88_0",
+          "patient:sas:Breast_Allianc_2002_194:2816_0",
+          "patient:sas:Breast_Allianc_2002_194:1311_0",
+          "patient:sas:Breast_Allianc_2002_194:1365_0",
+          "patient:sas:Breast_Allianc_2002_194:291_0",
+          "patient:sas:Breast_Allianc_2002_194:1478_0",
+          "patient:sas:Breast_Allianc_2002_194:608_0",
+          "patient:sas:Breast_Allianc_2002_194:1228_0",
+          "patient:sas:Breast_Allianc_2002_194:2783_0",
+          "patient:sas:Breast_Allianc_2002_194:2066_0",
+          "patient:sas:Breast_Allianc_2002_194:180_0",
+          "patient:sas:Breast_Allianc_2002_194:422_0",
+          "patient:sas:Breast_Allianc_2002_194:656_0",
+          "patient:sas:Breast_Allianc_2002_194:2781_0",
+          "patient:sas:Breast_Allianc_2002_194:1828_0",
+          "patient:sas:Breast_Allianc_2002_194:436_0",
+          "patient:sas:Breast_Allianc_2002_194:1960_0",
+          "patient:sas:Breast_Allianc_2002_194:1178_0",
+          "patient:sas:Breast_Allianc_2002_194:878_0",
+          "patient:sas:Breast_Allianc_2002_194:2716_0"
+        ],
+        "rel_mix": [
+          [
+            "ENROLLED_IN",
+            396
+          ],
+          [
+            "ASSIGNED_ARM",
+            396
+          ],
+          [
+            "ARM_OF",
+            1
+          ],
+          [
+            "has_ae_profile",
+            1
+          ],
+          [
+            "HAS_CENTRALITY_SCORE",
+            1
+          ],
+          [
+            "has_arm_ae_profile",
+            1
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.262368+00:00"
+    },
+    {
+      "id": "neighborhood:s12:patient_ae_burden_s11_patient_sas_Breast_Allianc_2002_194_1322_0",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_194_1322_0",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_194_1322_0",
+        "seed_kind": "top_ae_burden_patient",
+        "seed_endpoint": null,
+        "n_nodes": 18,
+        "n_edges": 18,
+        "endpoints_touched": {
+          "B_SAS": 3
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_194_1322_0",
+          "patient:sas:Breast_Allianc_2002_194:1322_0",
+          "trial:sas:Breast_Allianc_2002_194",
+          "arm:sas:Breast_Allianc_2002_194:6",
+          "ae:meddra:10021099",
+          "ae:meddra:90004070",
+          "ae:meddra:10016288",
+          "ae:meddra:10042128",
+          "ae:meddra:10020637",
+          "ae:meddra:10018876",
+          "ae:meddra:10035755",
+          "ae:meddra:10024285",
+          "ae:meddra:10013972",
+          "ae:meddra:10029363",
+          "ae:meddra:10016256",
+          "ae:meddra:10024119",
+          "ae:meddra:10020942",
+          "ae:meddra:10035528"
+        ],
+        "rel_mix": [
+          [
+            "EXPERIENCED_AE",
+            14
+          ],
+          [
+            "ENROLLED_IN",
+            1
+          ],
+          [
+            "ASSIGNED_ARM",
+            1
+          ],
+          [
+            "HAS_BURDEN_SCORE",
+            1
+          ],
+          [
+            "ARM_OF",
+            1
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.391184+00:00"
+    },
+    {
+      "id": "neighborhood:s12:patient_ae_burden_s11_patient_sas_Breast_Allianc_2002_200_1623_0",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_200_1623_0",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_200_1623_0",
+        "seed_kind": "top_ae_burden_patient",
+        "seed_endpoint": null,
+        "n_nodes": 18,
+        "n_edges": 18,
+        "endpoints_touched": {
+          "B_SAS": 3
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_200_1623_0",
+          "patient:sas:Breast_Allianc_2002_200:1623_0",
+          "trial:sas:Breast_Allianc_2002_200",
+          "arm:sas:Breast_Allianc_2002_200:37",
+          "ae:meddra:10021099",
+          "ae:meddra:90004070",
+          "ae:meddra:10016288",
+          "ae:meddra:10042128",
+          "ae:meddra:10020637",
+          "ae:meddra:10018876",
+          "ae:meddra:10035755",
+          "ae:meddra:10024285",
+          "ae:meddra:10013972",
+          "ae:meddra:10029363",
+          "ae:meddra:10016256",
+          "ae:meddra:10024119",
+          "ae:meddra:10020942",
+          "ae:meddra:10035528"
+        ],
+        "rel_mix": [
+          [
+            "EXPERIENCED_AE",
+            14
+          ],
+          [
+            "ENROLLED_IN",
+            1
+          ],
+          [
+            "ASSIGNED_ARM",
+            1
+          ],
+          [
+            "HAS_BURDEN_SCORE",
+            1
+          ],
+          [
+            "ARM_OF",
+            1
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.517732+00:00"
+    },
+    {
+      "id": "neighborhood:s12:patient_ae_burden_s11_patient_sas_Breast_Pfizer_2006_112_A6181094_27",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of patient_ae_burden:s11:patient_sas_Breast_Pfizer_2006_112_A6181094_27",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "patient_ae_burden:s11:patient_sas_Breast_Pfizer_2006_112_A6181094_27",
+        "seed_kind": "top_ae_burden_patient",
+        "seed_endpoint": null,
+        "n_nodes": 28,
+        "n_edges": 27,
+        "endpoints_touched": {
+          "B_SAS": 2
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "patient_ae_burden:s11:patient_sas_Breast_Pfizer_2006_112_A6181094_27",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_27",
+          "trial:sas:Breast_Pfizer_2006_112",
+          "ae:pt:chest_pain",
+          "ae:pt:dizziness",
+          "ae:pt:hyperhidrosis",
+          "ae:pt:dyspnoea",
+          "ae:pt:oedema_peripheral",
+          "ae:pt:hypokalaemia",
+          "ae:pt:dehydration",
+          "ae:pt:lethargy",
+          "ae:pt:confusional_state",
+          "ae:pt:febrile_neutropenia",
+          "ae:pt:white_blood_cell_count_decreased",
+          "ae:pt:abdominal_pain",
+          "ae:pt:convulsion",
+          "ae:pt:back_pain",
+          "ae:pt:decreased_appetite",
+          "ae:pt:muscular_weakness",
+          "ae:pt:sinus_tachycardia",
+          "ae:pt:arthralgia",
+          "ae:pt:vomiting",
+          "ae:pt:tumour_pain",
+          "ae:pt:nausea",
+          "ae:pt:infection",
+          "ae:pt:hypotension",
+          "ae:pt:lip_ulceration",
+          "ae:pt:headache"
+        ],
+        "rel_mix": [
+          [
+            "EXPERIENCED_AE",
+            25
+          ],
+          [
+            "ENROLLED_IN",
+            1
+          ],
+          [
+            "HAS_BURDEN_SCORE",
+            1
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.645854+00:00"
+    },
+    {
+      "id": "neighborhood:s12:genomicfeature_msk_mut_ARID3A",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of genomicfeature:msk:mut:ARID3A",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "genomicfeature:msk:mut:ARID3A",
+        "seed_kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 7,
+        "n_edges": 6,
+        "endpoints_touched": {
+          "A_MSK": 7
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "genomicfeature:msk:mut:ARID3A",
+          "biospecimen:msk:SHAH_H000013_T17_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "genomicfeature:msk:mut:NF1",
+          "genomicfeature:msk:mut:SDHA",
+          "genomicfeature:msk:mut:TP53",
+          "genomicfeature:msk:cna:BRCA1_loss"
+        ],
+        "rel_mix": [
+          [
+            "HARBORS_MUTATION",
+            4
+          ],
+          [
+            "SPECIMEN_OF",
+            1
+          ],
+          [
+            "HARBORS_CNA",
+            1
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.774697+00:00"
+    },
+    {
+      "id": "neighborhood:s12:genomicfeature_msk_mut_BRAF",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of genomicfeature:msk:mut:BRAF",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "genomicfeature:msk:mut:BRAF",
+        "seed_kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 7,
+        "n_edges": 6,
+        "endpoints_touched": {
+          "A_MSK": 7
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "genomicfeature:msk:mut:BRAF",
+          "biospecimen:msk:SHAH_H000338_T05_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "genomicfeature:msk:mut:JARID2",
+          "genomicfeature:msk:mut:KMT2C",
+          "genomicfeature:msk:mut:TP53",
+          "genomicfeature:msk:cna:BRCA1_loss"
+        ],
+        "rel_mix": [
+          [
+            "HARBORS_MUTATION",
+            4
+          ],
+          [
+            "SPECIMEN_OF",
+            1
+          ],
+          [
+            "HARBORS_CNA",
+            1
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.897695+00:00"
+    },
+    {
+      "id": "neighborhood:s12:genomicfeature_msk_mut_BRCA1",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of genomicfeature:msk:mut:BRCA1",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "genomicfeature:msk:mut:BRCA1",
+        "seed_kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 400,
+        "n_edges": 628,
+        "endpoints_touched": {
+          "A_MSK": 8,
+          "B_SAS": 343
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "genomicfeature:msk:mut:BRCA1",
+          "biospecimen:msk:SHAH_H001753_T04_01_WG01",
+          "ae:pt:neutropenia_febrile",
+          "ae:pt:neutropenia",
+          "ae:pt:febrile_neutropenia",
+          "ae:pt:anemia_hemoglobin",
+          "ae:pt:afebrile_neutropenia",
+          "ae:pt:thrombocytopenia",
+          "ae:pt:anc_neutropenia",
+          "ae:pt:febril_neutropenia",
+          "ae:pt:anemia_intermittent",
+          "ae:pt:anemia",
+          "genomic_ae_bridge:s11:BRCA1:NEUTROPENIA",
+          "genomic_ae_bridge:s11:BRCA1:ANEMIA",
+          "genomic_ae_bridge:s11:BRCA1:THROMBOCYTOPENIA",
+          "genomic_ae_bridge:s11:BRCA1:NEUTROPENIA_-_FEBRIL",
+          "genomic_ae_bridge:s11:BRCA1:FEBRILE_NEUTROPENIA",
+          "genomic_ae_bridge:s11:BRCA1:ANEMIA_(HEMOGLOBIN)",
+          "genomic_ae_bridge:s11:BRCA1:AFEBRILE_NEUTROPENIA",
+          "genomic_ae_bridge:s11:BRCA1:ANC_(NEUTROPENIA)",
+          "genomic_ae_bridge:s11:BRCA1:FEBRIL_NEUTROPENIA",
+          "genomic_ae_bridge:s11:BRCA1:ANEMIA_(INTERMITTENT",
+          "cohort:msk_spectrum_hgsoc",
+          "genomicfeature:msk:mut:TP53",
+          "genomicfeature:msk:cna:BRCA1_loss",
+          "genomicfeature:msk:cna:BRCA2_loss",
+          "patient:sas:Colorec_Amgen_2005_262:249273010",
+          "patient:sas:Colorec_Amgen_2006_263:201716001",
+          "patient:sas:Colorec_Amgen_2006_264:211703030",
+          "patient:sas:Colorec_Amgen_2006_264:212201014",
+          "patient:sas:Colorec_Amgen_2006_264:213507014",
+          "patient:sas:HeadNe_Amgen_2007_265:221601006",
+          "patient:sas:HeadNe_Amgen_2007_265:221601008",
+          "genomicfeature:msk:mut:CDK12",
+          "escalation_syndrome:s11:0",
+          "escalation_syndrome:s11:1",
+          "escalation_syndrome:s11:2",
+          "escalation_syndrome:s11:3",
+          "escalation_syndrome:s11:4",
+          "escalation_syndrome:s11:5",
+          "escalation_syndrome:s11:6",
+          "escalation_syndrome:s11:7",
+          "escalation_syndrome:s11:8",
+          "escalation_syndrome:s11:9",
+          "escalation_syndrome:s11:10",
+          "escalation_syndrome:s11:11",
+          "escalation_syndrome:s11:12",
+          "escalation_syndrome:s11:13",
+          "escalation_syndrome:s11:14",
+          "escalation_syndrome:s11:15",
+          "escalation_syndrome:s11:16",
+          "escalation_syndrome:s11:17",
+          "escalation_syndrome:s11:18",
+          "escalation_syndrome:s11:19",
+          "vault:synapse_msk_spectrum",
+          "ae:pt:decreased_neutrophils",
+          "ae:pt:neutropaenia",
+          "ae:pt:neutropeny",
+          "ae:pt:low_anc",
+          "ae:pt:neutrophil_count_decreased",
+          "cross_trial_esc:NEUTROPENIA",
+          "centrality:pagerank:s11:42",
+          "centrality:pagerank_signal:s11:7",
+          "genomic_ae_bridge:s11:CDK12:NEUTROPENIA",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_12",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_55",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_154",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_155",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_156",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_157",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_158",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_162",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_165",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_166",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_176",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_62",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_64",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_74",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_75",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_76",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_82",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_192",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_193",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_195",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_200",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_218",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_226",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_101",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_105",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_122",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_132",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_133",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_3",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_6",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_7",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_11",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_17",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_19",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_54",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_56",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_59",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_61",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_66",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_68",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_69",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_70",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_108",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_109",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_111",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_112",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_115",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_121",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_125",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_163",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_165",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_167",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_168",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_170",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_171",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_175",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_179",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_180",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_181",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_221",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_222",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_224",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_228",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_229",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_234",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_238",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_242",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_245",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_23",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_25",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_31",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_33",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_34",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_35",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_75",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_78",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_80",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_83",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_84",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_86",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_89",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_92",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_127",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_130",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_134",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_135",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_139",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_186",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_188",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_191",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_194",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_195",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_198",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_246",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_39",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_40",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_42",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_44",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_45",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_47",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_48",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_94",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_96",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_98",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_99",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_102",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_103",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_107",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_142",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_143",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_144",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_145",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_148",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_151",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_155",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_203",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_205",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_209",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_210",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_215",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_216",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_10",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_34",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_40",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_44",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_109",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_115",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_116",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_117",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_52",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_54",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_66",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_67",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_69",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_70",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_71"
+        ],
+        "rel_mix": [
+          [
+            "EXPERIENCED_AE",
+            495
+          ],
+          [
+            "CO_ESCALATES_WITH",
+            60
+          ],
+          [
+            "BRIDGE_EDGE",
+            37
+          ],
+          [
+            "HAS_BRIDGE_SCORE",
+            11
+          ],
+          [
+            "BRIDGES_TO_AE",
+            11
+          ],
+          [
+            "maps_to_meddra",
+            5
+          ],
+          [
+            "HARBORS_MUTATION",
+            2
+          ],
+          [
+            "HARBORS_CNA",
+            2
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:23.032170+00:00"
+    },
+    {
+      "id": "neighborhood:s12:genomicfeature_msk_mut_CDK12",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of genomicfeature:msk:mut:CDK12",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "genomicfeature:msk:mut:CDK12",
+        "seed_kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 400,
+        "n_edges": 699,
+        "endpoints_touched": {
+          "A_MSK": 9,
+          "B_SAS": 345
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "genomicfeature:msk:mut:CDK12",
+          "biospecimen:msk:SHAH_H000340_T05_01_WG01",
+          "ae:pt:neutropenia_febrile",
+          "ae:pt:increased_fatigue",
+          "ae:pt:neutropenia",
+          "ae:pt:febrile_neutropenia",
+          "ae:pt:intermittent_fatigue",
+          "ae:pt:fatigue",
+          "ae:pt:afebrile_neutropenia",
+          "ae:pt:fatigue_intermittent",
+          "ae:pt:fatigue_asthenia",
+          "ae:pt:anc_neutropenia",
+          "ae:pt:fatigue_worsening",
+          "ae:pt:febril_neutropenia",
+          "ae:pt:fatigue_intermittant",
+          "ae:pt:intermittant_fatigue",
+          "genomic_ae_bridge:s11:CDK12:NEUTROPENIA",
+          "genomic_ae_bridge:s11:CDK12:FATIGUE",
+          "cohort:msk_spectrum_hgsoc",
+          "genomicfeature:msk:mut:TP53",
+          "genomicfeature:msk:cna:BRCA1_loss",
+          "genomicfeature:msk:cna:BRCA2_loss",
+          "patient:sas:Colorec_Amgen_2005_262:249273010",
+          "patient:sas:Colorec_Amgen_2006_263:201716001",
+          "patient:sas:Colorec_Amgen_2006_264:211703030",
+          "patient:sas:Colorec_Amgen_2006_264:212201014",
+          "patient:sas:Colorec_Amgen_2006_264:213507014",
+          "patient:sas:HeadNe_Amgen_2007_265:221601006",
+          "patient:sas:HeadNe_Amgen_2007_265:221601008",
+          "genomicfeature:msk:mut:BRCA1",
+          "genomic_ae_bridge:s11:BRCA1:NEUTROPENIA_-_FEBRIL",
+          "escalation_syndrome:s11:0",
+          "escalation_syndrome:s11:1",
+          "escalation_syndrome:s11:2",
+          "escalation_syndrome:s11:3",
+          "escalation_syndrome:s11:4",
+          "escalation_syndrome:s11:5",
+          "escalation_syndrome:s11:6",
+          "escalation_syndrome:s11:7",
+          "escalation_syndrome:s11:8",
+          "escalation_syndrome:s11:9",
+          "escalation_syndrome:s11:10",
+          "escalation_syndrome:s11:11",
+          "escalation_syndrome:s11:12",
+          "escalation_syndrome:s11:13",
+          "escalation_syndrome:s11:14",
+          "escalation_syndrome:s11:15",
+          "escalation_syndrome:s11:16",
+          "escalation_syndrome:s11:17",
+          "escalation_syndrome:s11:18",
+          "escalation_syndrome:s11:19",
+          "patient:sas:Colorec_Amgen_2005_262:249101002",
+          "patient:sas:Colorec_Amgen_2005_262:249226008",
+          "patient:sas:Colorec_Amgen_2005_262:249263005",
+          "patient:sas:Colorec_Amgen_2006_264:215008002",
+          "patient:sas:Colorec_Amgen_2006_264:215011007",
+          "genomicfeature:msk:mut:NF1",
+          "vault:synapse_msk_spectrum",
+          "ae:pt:decreased_neutrophils",
+          "ae:pt:neutropaenia",
+          "ae:pt:neutropeny",
+          "ae:pt:low_anc",
+          "ae:pt:neutrophil_count_decreased",
+          "cross_trial_esc:NEUTROPENIA",
+          "centrality:pagerank:s11:42",
+          "centrality:pagerank_signal:s11:7",
+          "genomic_ae_bridge:s11:BRCA1:NEUTROPENIA",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_12",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_55",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_154",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_155",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_156",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_157",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_158",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_162",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_165",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_166",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_176",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_62",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_64",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_74",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_75",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_76",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_82",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_192",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_193",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_195",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_200",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_218",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_226",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_101",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_105",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_122",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_132",
+          "patient:sas:Breast_Pfizer_2006_111:A6181107_133",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_3",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_6",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_7",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_11",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_17",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_19",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_54",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_56",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_59",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_61",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_66",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_68",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_69",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_70",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_108",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_109",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_111",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_112",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_115",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_121",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_125",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_163",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_165",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_167",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_168",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_170",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_171",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_175",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_179",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_180",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_181",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_221",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_222",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_224",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_228",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_229",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_234",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_238",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_242",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_245",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_23",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_25",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_31",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_33",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_34",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_35",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_75",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_78",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_80",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_83",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_84",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_86",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_89",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_92",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_127",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_130",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_134",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_135",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_139",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_186",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_188",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_191",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_194",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_195",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_198",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_246",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_39",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_40",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_42",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_44",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_45",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_47",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_48",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_94",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_96",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_98",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_99",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_102",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_103",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_107",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_142",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_143",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_144",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_145",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_148",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_151",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_155",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_203",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_205",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_209",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_210",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_215",
+          "patient:sas:Breast_Pfizer_2006_112:A6181094_216",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_10",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_34",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_40",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_44",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_109",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_115",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_116",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_117",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_52",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_54",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_66",
+          "patient:sas:Breast_Pfizer_2007_113:A6181099_67"
+        ],
+        "rel_mix": [
+          [
+            "EXPERIENCED_AE",
+            574
+          ],
+          [
+            "CO_ESCALATES_WITH",
+            59
+          ],
+          [
+            "BRIDGE_EDGE",
+            43
+          ],
+          [
+            "maps_to_meddra",
+            6
+          ],
+          [
+            "HAS_BRIDGE_SCORE",
+            4
+          ],
+          [
+            "BRIDGES_TO_AE",
+            4
+          ],
+          [
+            "HARBORS_MUTATION",
+            2
+          ],
+          [
+            "HARBORS_CNA",
+            2
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:23.165937+00:00"
+    },
+    {
+      "id": "neighborhood:s12:genomicfeature_msk_mut_EPHA3",
+      "type": "NodeNeighborhood",
+      "name": "2-hop neighborhood of genomicfeature:msk:mut:EPHA3",
+      "label": "NodeNeighborhood",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "seed": "genomicfeature:msk:mut:EPHA3",
+        "seed_kind": "genomic_driver",
+        "seed_endpoint": "A_MSK",
+        "n_nodes": 7,
+        "n_edges": 6,
+        "endpoints_touched": {
+          "A_MSK": 7
+        },
+        "n_boundary_crossing_edges": 0,
+        "member_ids": [
+          "genomicfeature:msk:mut:EPHA3",
+          "biospecimen:msk:SHAH_H000036_T06_01_WG01",
+          "cohort:msk_spectrum_hgsoc",
+          "genomicfeature:msk:mut:NOTCH2",
+          "genomicfeature:msk:mut:PBRM1",
+          "genomicfeature:msk:mut:TP53",
+          "genomicfeature:msk:cna:BRCA1_loss"
+        ],
+        "rel_mix": [
+          [
+            "HARBORS_MUTATION",
+            4
+          ],
+          [
+            "SPECIMEN_OF",
+            1
+          ],
+          [
+            "HARBORS_CNA",
+            1
+          ]
+        ]
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:23.339117+00:00"
+    }
+  ],
+  "edges": [
+    {
+      "source": "neighborhood:s12:arm_sas_Breast_Allianc_2002_200_37",
+      "relation": "neighborhood_of",
+      "target": "arm:sas:Breast_Allianc_2002_200:37",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:21.949245+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:arm_sas_Breast_Allianc_2002_200_1",
+      "relation": "neighborhood_of",
+      "target": "arm:sas:Breast_Allianc_2002_200:1",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.105199+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:arm_sas_Breast_Allianc_2002_194_5",
+      "relation": "neighborhood_of",
+      "target": "arm:sas:Breast_Allianc_2002_194:5",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.262398+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:patient_ae_burden_s11_patient_sas_Breast_Allianc_2002_194_1322_0",
+      "relation": "neighborhood_of",
+      "target": "patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_194_1322_0",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.391210+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:patient_ae_burden_s11_patient_sas_Breast_Allianc_2002_200_1623_0",
+      "relation": "neighborhood_of",
+      "target": "patient_ae_burden:s11:patient_sas_Breast_Allianc_2002_200_1623_0",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.517769+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:patient_ae_burden_s11_patient_sas_Breast_Pfizer_2006_112_A6181094_27",
+      "relation": "neighborhood_of",
+      "target": "patient_ae_burden:s11:patient_sas_Breast_Pfizer_2006_112_A6181094_27",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.645882+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:genomicfeature_msk_mut_ARID3A",
+      "relation": "neighborhood_of",
+      "target": "genomicfeature:msk:mut:ARID3A",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.774727+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:genomicfeature_msk_mut_BRAF",
+      "relation": "neighborhood_of",
+      "target": "genomicfeature:msk:mut:BRAF",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:22.897722+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:genomicfeature_msk_mut_BRCA1",
+      "relation": "neighborhood_of",
+      "target": "genomicfeature:msk:mut:BRCA1",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:23.032198+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:genomicfeature_msk_mut_CDK12",
+      "relation": "neighborhood_of",
+      "target": "genomicfeature:msk:mut:CDK12",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:23.165964+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "neighborhood:s12:genomicfeature_msk_mut_EPHA3",
+      "relation": "neighborhood_of",
+      "target": "genomicfeature:msk:mut:EPHA3",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:23.339140+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    }
+  ]
+}

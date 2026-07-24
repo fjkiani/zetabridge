@@ -1,0 +1,78 @@
+{
+  "session": 11,
+  "timestamp": "2026-07-23T06:44:23.537013Z",
+  "kg_before": {
+    "entities": 26312,
+    "edges": 98609
+  },
+  "kg_after": {
+    "entities": 26923,
+    "edges": 101595
+  },
+  "added": {
+    "nodes": 611,
+    "edges": 2986
+  },
+  "per_worker": {
+    "w0": {
+      "nodes": 108,
+      "edges": 350
+    },
+    "w1": {
+      "nodes": 67,
+      "edges": 222
+    },
+    "w2": {
+      "nodes": 34,
+      "edges": 959
+    },
+    "w3": {
+      "nodes": 232,
+      "edges": 1295
+    },
+    "w4": {
+      "nodes": 176,
+      "edges": 180
+    }
+  },
+  "new_node_types": {
+    "GraphCentralityScore": 90,
+    "GraphCommunity": 13,
+    "StructuralGap": 5,
+    "AEOutlierSignal": 39,
+    "ToxicitySyndrome": 20,
+    "DrugToxicityProfile": 2,
+    "ArmEscalationBurden": 10,
+    "DrugClassEscalationProfile": 4,
+    "EscalationSyndrome": 20,
+    "GenomicAEBridge": 20,
+    "FederationPathNode": 2,
+    "EGAFileOutlier": 28,
+    "LongitudinalPair": 182,
+    "PatientAEBurdenScore": 100,
+    "RareAEProfile": 50,
+    "ArmGradeProfile": 26
+  },
+  "new_edge_relations": {
+    "has_centrality_score": 90,
+    "member_of_community": 260,
+    "is_outlier_signal": 45,
+    "co_occurs_with": 175,
+    "has_toxicity_profile": 2,
+    "has_escalation_burden": 8,
+    "co_escalates_with": 931,
+    "has_bridge_score": 20,
+    "bridges_to_ae": 20,
+    "is_federation_bridge": 2,
+    "is_file_outlier": 28,
+    "part_of_longitudinal_pair": 544,
+    "gene_drug_target_match": 2,
+    "same_file_as": 679,
+    "has_burden_score": 100,
+    "has_rare_ae_profile": 50,
+    "grade_profile_divergence": 30
+  },
+  "dropped_dangling_edges": 0,
+  "skipped_existing_nodes": 0,
+  "skipped_existing_edges": 0
+}
