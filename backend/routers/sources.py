@@ -94,3 +94,11 @@ async def ega_files(dataset: Optional[str] = None, limit: int = 50):
 @router.get("/ega/file/{file_id}", dependencies=[Depends(require_api_key)])
 async def ega_file(file_id: str):
     return await _run(_get_gateway().ega.file_metadata, file_id)
+
+
+@router.get("/ega/download-diagnostics", dependencies=[Depends(require_api_key)])
+async def ega_download_diagnostics(dataset: Optional[str] = None):
+    """Gate check for byte-download: server-side egress to the EGA Data API port,
+    OAuth2 auth, and whether the account has a DAC grant for ``dataset``.
+    Transfers no bytes. ``data.can_download`` is the go/no-go for streaming."""
+    return await _run(_get_gateway().ega.download_diagnostics, dataset)

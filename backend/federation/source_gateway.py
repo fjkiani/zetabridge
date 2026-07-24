@@ -383,6 +383,108 @@ class EgaClient:
         env.latency_ms = round((time.time() - t0) * 1000, 1)
         return env
 
+    # EGA Data API (byte transfer) host/port. Distinct from META_BASE (public,
+    # unauthenticated). Bytes require OAuth2 + DAC-approved dataset access AND
+    # outbound reachability to this port from wherever the server runs.
+    AAI_HOST = "ega.ebi.ac.uk"
+    AAI_PORT = 8443
+    DATA_HOST = "ega.ebi.ac.uk"
+    DATA_PORT = 8052
+
+    def _port_open(self, host: str, port: int, timeout: float = 8.0) -> tuple[bool, str]:
+        import socket
+
+        t0 = time.time()
+        try:
+            with socket.create_connection((host, port), timeout=timeout):
+                return True, f"reachable in {round((time.time()-t0)*1000)}ms"
+        except Exception as exc:  # noqa: BLE001
+            return False, _reason(exc)
+
+    def download_diagnostics(self, dataset: str | None = None) -> Envelope:
+        """Prove (server-side) whether BAM byte-download is actually possible:
+        (1) outbound reachability to the AAI (8443) and Data API (8052) ports,
+        (2) OAuth2 auth with the configured EGA credentials, and
+        (3) whether the account has a DAC grant covering ``dataset``.
+
+        Transfers NO file bytes. This is the gate for the streaming endpoint:
+        if the Data API port is blocked or the dataset is not authorized, a
+        streaming handler cannot possibly deliver bytes.
+        """
+        action = "download_diagnostics"
+        env = self._envelope(action)
+        ds = dataset or cfg.EGA_DEFAULT_DATASET
+        env.grounding = {"dataset": ds}
+        t0 = time.time()
+
+        if not self.configured():
+            env.status, env.error = "unconfigured", "EGA_USERNAME/EGA_PASSWORD (or EGA_CREDENTIALS_FILE) not set"
+            env.latency_ms = round((time.time() - t0) * 1000, 1)
+            return env
+
+        result: dict[str, Any] = {}
+        aai_ok, aai_msg = self._port_open(self.AAI_HOST, self.AAI_PORT)
+        data_ok, data_msg = self._port_open(self.DATA_HOST, self.DATA_PORT)
+        result["egress"] = {
+            f"{self.AAI_HOST}:{self.AAI_PORT}": {"open": aai_ok, "detail": aai_msg},
+            f"{self.DATA_HOST}:{self.DATA_PORT}": {"open": data_ok, "detail": data_msg},
+        }
+
+        # Auth + authorized-dataset listing via pyega3 (already a dependency).
+        auth_ok = False
+        authorized_datasets: list[str] = []
+        dataset_authorized = None
+        auth_error = None
+        if not _lib_present("pyega3"):
+            auth_error = "pyega3 not installed"
+        elif not data_ok:
+            # pyega3 list-datasets hits the Data API port; if it's blocked, skip
+            # (it would just hang) and report the egress failure as the blocker.
+            auth_error = "skipped: Data API port unreachable (would time out)"
+        else:
+            try:
+                import json as _json
+
+                from pyega3 import pyega3 as _p3  # type: ignore
+
+                creds = {"username": cfg.EGA_USERNAME, "password": cfg.EGA_PASSWORD}
+                if cfg.EGA_CREDENTIALS_FILE:
+                    with open(cfg.EGA_CREDENTIALS_FILE) as fh:
+                        creds = _json.load(fh)
+                token = _p3.get_token(creds)  # type: ignore[attr-defined]
+                auth_ok = bool(token)
+                reply = _p3.api_list_authorized_datasets(token)  # type: ignore[attr-defined]
+                authorized_datasets = [str(x) for x in (reply or [])]
+                dataset_authorized = ds in authorized_datasets
+            except Exception as exc:  # noqa: BLE001
+                auth_error = _reason(exc)
+
+        result["auth_ok"] = auth_ok
+        result["n_authorized_datasets"] = len(authorized_datasets)
+        result["dataset_authorized"] = dataset_authorized
+        if auth_error:
+            result["auth_error"] = auth_error
+
+        # Overall verdict: bytes are possible IFF data port open AND auth ok AND
+        # the target dataset is in the grant.
+        can_download = bool(data_ok and auth_ok and dataset_authorized)
+        result["can_download"] = can_download
+        env.data = result
+        if can_download:
+            env.status = "live"
+        else:
+            env.status = "unreachable"
+            reasons = []
+            if not data_ok:
+                reasons.append(f"data_port_blocked({self.DATA_HOST}:{self.DATA_PORT})")
+            if not auth_ok and data_ok:
+                reasons.append("auth_failed")
+            if auth_ok and dataset_authorized is False:
+                reasons.append(f"no_dac_grant_for:{ds}")
+            env.error = "; ".join(reasons) or (auth_error or "unknown")
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
 
 def _reason(exc: Exception) -> str:
     """Map an exception to a short, honest, typed reason string."""
