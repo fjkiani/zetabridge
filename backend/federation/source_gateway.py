@@ -55,6 +55,13 @@ def _lib_present(name: str) -> bool:
         return False
 
 
+def _json_dumps(obj: Any) -> str:
+    """Serialize a request body to JSON (synapseclient.restPOST expects a str)."""
+    import json as _json
+
+    return _json.dumps(obj)
+
+
 @dataclass
 class Envelope:
     """Uniform, honest result for any live source call."""
@@ -188,6 +195,195 @@ class SynapseClient:
                 "rows": df.head(n).to_dict(orient="records"),
             }
             env.grounding["n_rows"] = int(len(df))
+        except Exception as exc:  # noqa: BLE001
+            env.status, env.error = "unreachable", _reason(exc)
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
+    def list_children(self, parent_id: str, limit: int | None = None) -> Envelope:
+        """List immediate children of a container (Project/Folder/Dataset).
+
+        This is the missing 'crawl' verb: an agent can walk parent -> children
+        recursively to reach every file. Uses the authenticated REST children
+        service, so it respects the account's READ access (a 403 on a controlled
+        parent yields a typed 'unreachable', never fabricated rows).
+        """
+        action = "list_children"
+        n = min(int(limit), 200) if limit and limit > 0 else 100
+        guard = self._guard(action)
+        if guard:
+            guard.grounding = {"parent_id": parent_id, "limit": n}
+            return guard
+        env = self._envelope(action)
+        env.grounding = {"parent_id": parent_id, "limit": n}
+        t0 = time.time()
+        try:
+            syn = self._login()
+            kids: list[dict[str, Any]] = []
+            next_token = None
+            types = ["folder", "file", "table", "entityview", "dataset", "link", "dockerrepo"]
+            while len(kids) < n:
+                body: dict[str, Any] = {"parentId": parent_id, "includeTypes": types,
+                                        "sortBy": "NAME", "sortDirection": "ASC"}
+                if next_token:
+                    body["nextPageToken"] = next_token
+                page = syn.restPOST("/entity/children", body=_json_dumps(body))
+                for c in page.get("page", []):
+                    kids.append({
+                        "id": c.get("id"),
+                        "name": c.get("name"),
+                        "type": (c.get("type") or "").split(".")[-1],
+                        "versionNumber": c.get("versionNumber"),
+                        "benefactorId": c.get("benefactorId"),
+                        "fileSizeBytes": c.get("fileSizeBytes"),
+                        "md5": c.get("md5"),
+                        "is_container": (c.get("type") or "").split(".")[-1] in ("Folder", "Project"),
+                    })
+                    if len(kids) >= n:
+                        break
+                next_token = page.get("nextPageToken")
+                if not next_token:
+                    break
+            env.status = "live"
+            env.data = {"parent_id": parent_id, "n_children": len(kids), "children": kids}
+            env.grounding["n_children"] = len(kids)
+        except Exception as exc:  # noqa: BLE001
+            env.status, env.error = "unreachable", _reason(exc)
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
+    def download_diagnostics(self, syn_id: str) -> Envelope:
+        """Go/no-go gate for byte download WITHOUT transferring the file.
+
+        Resolves the entity + its fileHandle metadata (size, md5, contentType)
+        and confirms a pre-signed URL can be minted. ``data.can_download`` is the
+        boolean an agent checks before committing to a multi-GB stream. No bytes
+        move here. A gated/no-access file yields ``can_download: False`` with a
+        typed reason — never a false 'yes'.
+        """
+        action = "download_diagnostics"
+        guard = self._guard(action)
+        if guard:
+            guard.grounding = {"syn_id": syn_id}
+            return guard
+        env = self._envelope(action)
+        env.grounding = {"syn_id": syn_id}
+        t0 = time.time()
+        try:
+            syn = self._login()
+            ent = syn.get(syn_id, downloadFile=False)
+            fh_id = ent.get("dataFileHandleId")
+            ctype = (ent.get("concreteType") or "").split(".")[-1]
+            if not fh_id:
+                env.status = "live"
+                env.data = {"syn_id": syn_id, "concreteType": ctype, "can_download": False,
+                            "reason": f"entity has no dataFileHandleId (type={ctype}); not a file"}
+                env.latency_ms = round((time.time() - t0) * 1000, 1)
+                return env
+            # Mint the pre-signed URL (proves access) but do NOT fetch bytes.
+            url, size, md5, ct, err = self._filehandle_url(syn, syn_id, fh_id, ent)
+            can = bool(url) and err is None
+            env.status = "live"
+            env.data = {
+                "syn_id": syn_id,
+                "name": ent.get("name"),
+                "concreteType": ctype,
+                "file_handle_id": fh_id,
+                "size_bytes": size,
+                "md5": md5,
+                "content_type": ct,
+                "can_download": can,
+                "reason": None if can else (err or "could not mint pre-signed URL"),
+            }
+            env.grounding["can_download"] = can
+        except Exception as exc:  # noqa: BLE001
+            env.status, env.error = "unreachable", _reason(exc)
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
+    def _filehandle_url(self, syn, syn_id, fh_id, ent):
+        """Return (presigned_url, size, md5, content_type, error).
+
+        Uses the fileHandle batch service to mint a short-lived S3 URL for the
+        entity's data file. Mirrors the ARGO token-handoff: the URL is returned
+        so the caller streams DIRECT from object storage; bytes never proxy
+        through this backend.
+        """
+        try:
+            body = {
+                "includeFileHandles": True,
+                "includePreSignedURLs": True,
+                "requestedFiles": [{"fileHandleId": fh_id, "associateObjectId": syn_id,
+                                    "associateObjectType": "FileEntity"}],
+            }
+            res = syn.restPOST(
+                "/fileHandle/batch",
+                body=_json_dumps(body),
+                endpoint=syn.fileHandleEndpoint,
+            )
+            results = res.get("requestedFiles", [])
+            if not results:
+                return None, None, None, None, "fileHandle/batch returned no results"
+            r0 = results[0]
+            url = r0.get("preSignedURL")
+            fh = r0.get("fileHandle") or {}
+            failure = r0.get("failureCode")
+            if not url:
+                return None, fh.get("contentSize"), fh.get("contentMd5"), \
+                    fh.get("contentType"), f"no preSignedURL (failureCode={failure})"
+            return url, fh.get("contentSize"), fh.get("contentMd5"), fh.get("contentType"), None
+        except Exception as exc:  # noqa: BLE001
+            return None, None, None, None, _reason(exc)
+
+    def resolve_download(self, syn_id: str) -> Envelope:
+        """Mint a short-lived pre-signed S3 URL for a Synapse file's bytes.
+
+        TOKEN-HANDOFF (same contract as ARGO): returns ``data.url`` + expected
+        ``md5``/``size``; the caller streams bytes DIRECTLY from object storage.
+        We never proxy whole files through this backend. A file the account can't
+        read yields a typed 'unreachable'/no-URL — never a fabricated link.
+        """
+        action = "resolve_download"
+        guard = self._guard(action)
+        if guard:
+            guard.grounding = {"syn_id": syn_id}
+            return guard
+        env = self._envelope(action)
+        env.grounding = {"syn_id": syn_id}
+        t0 = time.time()
+        try:
+            syn = self._login()
+            ent = syn.get(syn_id, downloadFile=False)
+            fh_id = ent.get("dataFileHandleId")
+            if not fh_id:
+                ctype = (ent.get("concreteType") or "").split(".")[-1]
+                env.status, env.error = "unreachable", f"not_a_file: entity {syn_id} has no dataFileHandleId (type={ctype})"
+                env.latency_ms = round((time.time() - t0) * 1000, 1)
+                return env
+            url, size, md5, ct, err = self._filehandle_url(syn, syn_id, fh_id, ent)
+            if not url:
+                env.status, env.error = "unreachable", f"auth_or_gated: {err}"
+                env.latency_ms = round((time.time() - t0) * 1000, 1)
+                return env
+            host = None
+            try:
+                host = url.split("/")[2]
+            except Exception:  # noqa: BLE001
+                host = None
+            env.status = "live"
+            env.data = {
+                "syn_id": syn_id,
+                "name": ent.get("name"),
+                "file_handle_id": fh_id,
+                "url": url,
+                "object_host": host,
+                "size_bytes": size,
+                "md5": md5,
+                "content_type": ct,
+                "transport": "direct-from-object-storage; stream data.url directly, do not proxy through ZetaBridge; URL is short-lived",
+            }
+            env.grounding["object_host"] = host
+            env.grounding["size_bytes"] = size
         except Exception as exc:  # noqa: BLE001
             env.status, env.error = "unreachable", _reason(exc)
         env.latency_ms = round((time.time() - t0) * 1000, 1)
