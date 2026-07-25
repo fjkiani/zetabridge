@@ -75,6 +75,34 @@ async def synapse_table(syn_id: str, limit: int = 50):
     return await _run(_get_gateway().synapse.query_table, syn_id, limit)
 
 
+@router.get("/synapse/children/{parent_id}", dependencies=[Depends(require_api_key)])
+async def synapse_children(parent_id: str, limit: int = 100):
+    """List immediate children of a Project/Folder/Dataset — the crawl verb.
+
+    An agent walks parent -> children recursively to reach every file. Respects
+    the account's READ access (a controlled parent yields a typed 'unreachable',
+    never fabricated rows)."""
+    return await _run(_get_gateway().synapse.list_children, parent_id, limit)
+
+
+@router.get("/synapse/download-diagnostics/{syn_id}", dependencies=[Depends(require_api_key)])
+async def synapse_download_diagnostics(syn_id: str):
+    """Go/no-go gate for byte download WITHOUT transferring the file.
+    ``data.can_download`` is the boolean an agent checks before a multi-GB stream."""
+    return await _run(_get_gateway().synapse.download_diagnostics, syn_id)
+
+
+@router.get("/synapse/download-url/{syn_id}", dependencies=[Depends(require_api_key)])
+async def synapse_download_url(syn_id: str):
+    """Mint a short-lived pre-signed S3 URL for a Synapse file's bytes.
+
+    TOKEN-HANDOFF (same contract as ARGO): returns ``data.url`` + expected
+    ``md5``/``size``; the caller streams bytes DIRECTLY from object storage. No
+    bytes proxy through this backend. A file the account can't read yields a
+    typed 'unreachable' with ``data`` null — never a fabricated link."""
+    return await _run(_get_gateway().synapse.resolve_download, syn_id)
+
+
 # --- SAS Viya CAS (B_SAS) --------------------------------------------------
 @router.get("/sas/caslibs", dependencies=[Depends(require_api_key)])
 async def sas_caslibs():

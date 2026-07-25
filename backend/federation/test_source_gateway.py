@@ -174,6 +174,89 @@ def test_synapse_query_table_live_and_clamped(monkeypatch):
     assert env["grounding"]["limit"] == sg.MAX_ROW_CAP  # clamped
 
 
+def test_synapse_list_children_live(monkeypatch):
+    monkeypatch.setattr(sg, "_lib_present", lambda name: True)
+    monkeypatch.setattr(sg.cfg, "SYNAPSE_AUTH_TOKEN", "good-token", raising=False)
+    client = SourceGateway().synapse
+
+    class _FakeSyn:
+        def restPOST(self, uri, body, **kw):
+            assert uri == "/entity/children"
+            return {"page": [
+                {"id": "syn1", "name": "sub", "type": "org.sagebionetworks.repo.model.Folder"},
+                {"id": "syn2", "name": "x.rds", "type": "org.sagebionetworks.repo.model.FileEntity",
+                 "fileSizeBytes": 42, "md5": "abc"},
+            ], "nextPageToken": None}
+
+    monkeypatch.setattr(client, "_login", lambda: _FakeSyn())
+    env = client.list_children("syn0").to_dict()
+    _envelope_shape_ok(env)
+    assert env["status"] == "live"
+    assert env["data"]["n_children"] == 2
+    assert env["data"]["children"][0]["is_container"] is True
+    assert env["data"]["children"][1]["type"] == "FileEntity"
+
+
+def test_synapse_download_diagnostics_no_filehandle(monkeypatch):
+    """A container (no dataFileHandleId) reports can_download False, not an error."""
+    monkeypatch.setattr(sg, "_lib_present", lambda name: True)
+    monkeypatch.setattr(sg.cfg, "SYNAPSE_AUTH_TOKEN", "good-token", raising=False)
+    client = SourceGateway().synapse
+
+    class _FakeSyn:
+        def get(self, syn_id, downloadFile=False):
+            return {"id": syn_id, "name": "folder",
+                    "concreteType": "org.sagebionetworks.repo.model.Folder"}
+
+    monkeypatch.setattr(client, "_login", lambda: _FakeSyn())
+    env = client.download_diagnostics("synFolder").to_dict()
+    _envelope_shape_ok(env)
+    assert env["status"] == "live"
+    assert env["data"]["can_download"] is False
+    assert "no dataFileHandleId" in env["data"]["reason"]
+
+
+def test_synapse_resolve_download_live_and_gated(monkeypatch):
+    """Minting a URL yields a live handoff; a gated file yields typed unreachable,
+    never a fabricated URL."""
+    monkeypatch.setattr(sg, "_lib_present", lambda name: True)
+    monkeypatch.setattr(sg.cfg, "SYNAPSE_AUTH_TOKEN", "good-token", raising=False)
+    client = SourceGateway().synapse
+
+    class _FakeSyn:
+        fileHandleEndpoint = "https://repo-prod.prod.sagebase.org/file/v1"
+
+        def get(self, syn_id, downloadFile=False):
+            return {"id": syn_id, "name": "x.rds", "dataFileHandleId": "999",
+                    "concreteType": "org.sagebionetworks.repo.model.FileEntity"}
+
+        def restPOST(self, uri, body, endpoint=None, **kw):
+            assert uri == "/fileHandle/batch"
+            return {"requestedFiles": [{
+                "preSignedURL": "https://s3.amazonaws.com/proddata/x.rds?sig=abc",
+                "fileHandle": {"contentSize": 1938268174, "contentMd5": "03b0d4a5",
+                               "contentType": "application/octet-stream"}}]}
+
+    monkeypatch.setattr(client, "_login", lambda: _FakeSyn())
+    env = client.resolve_download("syn51091852").to_dict()
+    _envelope_shape_ok(env)
+    assert env["status"] == "live"
+    assert env["data"]["url"].startswith("https://s3.amazonaws.com/")
+    assert env["data"]["md5"] == "03b0d4a5"
+    assert env["data"]["object_host"] == "s3.amazonaws.com"
+
+    # gated: no preSignedURL -> unreachable, data None, no fabricated URL
+    class _FakeSynGated(_FakeSyn):
+        def restPOST(self, uri, body, endpoint=None, **kw):
+            return {"requestedFiles": [{"failureCode": "NOT_FOUND", "fileHandle": {}}]}
+
+    monkeypatch.setattr(client, "_login", lambda: _FakeSynGated())
+    env2 = client.resolve_download("syn51091852").to_dict()
+    assert env2["status"] == "unreachable"
+    assert env2["data"] is None
+    assert "auth_or_gated" in env2["error"]
+
+
 # ── SAS Viya CAS (B_SAS) ─────────────────────────────────────────────────────
 def test_sas_unconfigured_when_host_unset(monkeypatch):
     monkeypatch.setattr(sg, "_lib_present", lambda name: True)
