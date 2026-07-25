@@ -50,7 +50,11 @@ def _endpoint_of(entity: dict) -> str:
         return "synapse"
     if eid.startswith("trial:sas") or ":sas:" in eid or "sas" in stream or "pds" in blob:
         return "pds"
-    if "ega" in eid or "britroc" in eid or "ega" in stream:
+    # Match the EGA endpoint on a namespaced id segment, NOT a bare substring.
+    # A bare `"ega" in eid` misroutes meta entities whose id merely contains the
+    # letters "ega" (e.g. validation_result ids ending in "...neGAtive__zeta" —
+    # verified: 2 such nodes misclassified to EGA under the substring test).
+    if eid.startswith("ega:") or ":ega:" in eid or "britroc" in eid or stream == "ega":
         return "ega"
     return "meta"
 
