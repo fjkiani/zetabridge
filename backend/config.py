@@ -39,5 +39,44 @@ class Config:
     USE_LEGACY_STORE = os.environ.get("USE_LEGACY_STORE", "1") == "1"
     LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
+    # --- Federated Neo4j knowledge graph (Session 12 agent access layer) ---
+    # Credentials stay server-side; consumer agents authenticate with a scoped
+    # API key (ZETA_GRAPH_API_KEY), never with the Neo4j password.
+    NEO4J_URI = os.environ.get("NEO4J_URI", "")
+    NEO4J_USER = os.environ.get("NEO4J_USER", "")
+    NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "")
+    ZETA_GRAPH_API_KEY = os.environ.get("ZETA_GRAPH_API_KEY", "")
+
+    # --- Live source endpoints (Session 15) -------------------------------
+    # SERVER-SIDE ONLY. These tokens authenticate the backend to the three
+    # federated *source* systems. They are NEVER returned to a caller; an
+    # external agent authenticates with ZETA_GRAPH_API_KEY and the backend
+    # performs live extraction on its behalf. Keep them in deploy secrets or a
+    # git-ignored env file — do not commit real values.
+    #
+    # A_MSK — Synapse (synapseclient, personal-access JWT)
+    SYNAPSE_AUTH_TOKEN = os.environ.get("SYNAPSE_AUTH_TOKEN", "")
+    # B_SAS — Project Data Sphere / SAS Viya CAS (swat)
+    SAS_CAS_HOST = os.environ.get("SAS_CAS_HOST", "mpmprodvdmml.ondemand.sas.com")
+    SAS_CAS_PORT = int(os.environ.get("SAS_CAS_PORT", "443"))
+    SAS_CAS_PROTOCOL = os.environ.get("SAS_CAS_PROTOCOL", "https")
+    SAS_CAS_TOKEN = os.environ.get("SAS_CAS_TOKEN", "")
+    SAS_CAS_USER = os.environ.get("SAS_CAS_USER", "")
+    SAS_CAS_PASSWORD = os.environ.get("SAS_CAS_PASSWORD", "")
+    # optional path to a TLS CA bundle for the CAS endpoint (known cert quirk)
+    SAS_CAS_CADATA = os.environ.get("SAS_CAS_CADATA", "")
+    # C_EGA — European Genome-phenome Archive (pyega3 / EGA REST)
+    EGA_USERNAME = os.environ.get("EGA_USERNAME", "")
+    EGA_PASSWORD = os.environ.get("EGA_PASSWORD", "")
+    EGA_CREDENTIALS_FILE = os.environ.get("EGA_CREDENTIALS_FILE", "")
+    EGA_DEFAULT_DATASET = os.environ.get("EGA_DEFAULT_DATASET", "EGAD00001011049")
+    # D_ARGO — ICGC ARGO (Overture SONG/SCORE). DACO-approved controlled-access
+    # token; server-side only, never returned to callers. Bytes stream DIRECTLY
+    # from ICGC_ARGO_OBJECT_HOST via short-lived pre-signed URLs — never proxied
+    # through this backend.
+    ICGC_ARGO_TOKEN = os.environ.get("ICGC_ARGO_TOKEN", "")
+    ICGC_ARGO_API_BASE = os.environ.get("ICGC_ARGO_API_BASE", "https://api.platform.icgc-argo.org")
+    ICGC_ARGO_OBJECT_HOST = os.environ.get("ICGC_ARGO_OBJECT_HOST", "object.genomeinformatics.org")
+
 
 cfg = Config()

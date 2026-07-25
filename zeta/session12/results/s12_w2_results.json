@@ -1,0 +1,644 @@
+{
+  "results": {
+    "worker": "w2_bridges",
+    "n_articulation_points": 157,
+    "top_betweenness": [
+      {
+        "id": "ega:dataset:EGAD00001011049",
+        "betweenness": 0.63254,
+        "endpoint": null
+      },
+      {
+        "id": "vault:synapse_msk_spectrum",
+        "betweenness": 0.36199,
+        "endpoint": "A_MSK"
+      },
+      {
+        "id": "cohort:msk_spectrum_hgsoc",
+        "betweenness": 0.20083,
+        "endpoint": "A_MSK"
+      },
+      {
+        "id": "cohort:britroc1_hgsoc",
+        "betweenness": 0.19636,
+        "endpoint": "C_EGA"
+      },
+      {
+        "id": "vault:ega_britroc1",
+        "betweenness": 0.17535,
+        "endpoint": "C_EGA"
+      },
+      {
+        "id": "disease:hgsoc",
+        "betweenness": 0.17535,
+        "endpoint": null
+      },
+      {
+        "id": "vault:sas_pds",
+        "betweenness": 0.1621,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:LungSm_EliLill_2011_287",
+        "betweenness": 0.0315,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:Melanom_SyntaPh_2007_123",
+        "betweenness": 0.02456,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:Colorec_Amgen_2006_264",
+        "betweenness": 0.01757,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:LungSm_Amgen_2002_266",
+        "betweenness": 0.017,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:Breast_Pfizer_2006_111",
+        "betweenness": 0.01524,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:Colorec_Amgen_2006_263",
+        "betweenness": 0.01349,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:Liver_Pfizer_2008_124",
+        "betweenness": 0.01349,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:Breast_Pfizer_2006_112",
+        "betweenness": 0.01232,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:Breast_Pfizer_2007_113",
+        "betweenness": 0.01232,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:Colorec_Pfizer_2007_114",
+        "betweenness": 0.01232,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:HeadNe_Amgen_2007_265",
+        "betweenness": 0.01232,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:LungNo_Pfizer_2007_115",
+        "betweenness": 0.01232,
+        "endpoint": "B_SAS"
+      },
+      {
+        "id": "trial:sas:Colorec_Amgen_2005_262",
+        "betweenness": 0.01174,
+        "endpoint": "B_SAS"
+      }
+    ],
+    "n_bridge_edges": 863,
+    "n_cross_endpoint_bridge_edges": 0,
+    "subgraph_nodes": 3223,
+    "subgraph_edges": 4496,
+    "n_nodes": 15,
+    "n_edges": 15
+  },
+  "nodes": [
+    {
+      "id": "bridge:s12:artic:vault_synapse_msk_spectrum",
+      "type": "StructuralBridge",
+      "name": "Articulation point vault:synapse_msk_spectrum spanning ['A_MSK', 'B_SAS', 'C_EGA']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "vault:synapse_msk_spectrum",
+        "node_endpoint": "A_MSK",
+        "degree": 27,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS",
+          "C_EGA"
+        ],
+        "betweenness": 0.36199,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644043+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:vault_sas_pds",
+      "type": "StructuralBridge",
+      "name": "Articulation point vault:sas_pds spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "vault:sas_pds",
+        "node_endpoint": "B_SAS",
+        "degree": 98,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.1621,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644085+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_LungSm_EliLill_2011_287",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:LungSm_EliLill_2011_287 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:LungSm_EliLill_2011_287",
+        "node_endpoint": "B_SAS",
+        "degree": 43,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.0315,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644102+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_Melanom_SyntaPh_2007_123",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:Melanom_SyntaPh_2007_123 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:Melanom_SyntaPh_2007_123",
+        "node_endpoint": "B_SAS",
+        "degree": 43,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.02456,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644117+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_LungSm_Amgen_2002_266",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:LungSm_Amgen_2002_266 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:LungSm_Amgen_2002_266",
+        "node_endpoint": "B_SAS",
+        "degree": 30,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.017,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644131+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_Colorec_Amgen_2006_263",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:Colorec_Amgen_2006_263 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:Colorec_Amgen_2006_263",
+        "node_endpoint": "B_SAS",
+        "degree": 25,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01349,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644144+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_Colorec_Amgen_2006_264",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:Colorec_Amgen_2006_264 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:Colorec_Amgen_2006_264",
+        "node_endpoint": "B_SAS",
+        "degree": 25,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01757,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644155+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_Liver_Pfizer_2008_124",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:Liver_Pfizer_2008_124 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:Liver_Pfizer_2008_124",
+        "node_endpoint": "B_SAS",
+        "degree": 25,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01349,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644167+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_Breast_Pfizer_2006_111",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:Breast_Pfizer_2006_111 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:Breast_Pfizer_2006_111",
+        "node_endpoint": "B_SAS",
+        "degree": 24,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01524,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644190+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_Breast_Pfizer_2006_112",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:Breast_Pfizer_2006_112 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:Breast_Pfizer_2006_112",
+        "node_endpoint": "B_SAS",
+        "degree": 23,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01232,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644202+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_Breast_Pfizer_2007_113",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:Breast_Pfizer_2007_113 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:Breast_Pfizer_2007_113",
+        "node_endpoint": "B_SAS",
+        "degree": 23,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01232,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644212+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_Colorec_Pfizer_2007_114",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:Colorec_Pfizer_2007_114 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:Colorec_Pfizer_2007_114",
+        "node_endpoint": "B_SAS",
+        "degree": 23,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01232,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644222+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_HeadNe_Amgen_2007_265",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:HeadNe_Amgen_2007_265 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:HeadNe_Amgen_2007_265",
+        "node_endpoint": "B_SAS",
+        "degree": 23,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01232,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644239+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_LungNo_Pfizer_2007_115",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:LungNo_Pfizer_2007_115 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:LungNo_Pfizer_2007_115",
+        "node_endpoint": "B_SAS",
+        "degree": 23,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01232,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644249+00:00"
+    },
+    {
+      "id": "bridge:s12:artic:trial_sas_Colorec_Amgen_2005_262",
+      "type": "StructuralBridge",
+      "name": "Articulation point trial:sas:Colorec_Amgen_2005_262 spanning ['A_MSK', 'B_SAS']",
+      "label": "StructuralBridge",
+      "cross_refs": [],
+      "verbatim_evidence": [],
+      "attributes": {
+        "node": "trial:sas:Colorec_Amgen_2005_262",
+        "node_endpoint": "B_SAS",
+        "degree": 22,
+        "endpoint_span": [
+          "A_MSK",
+          "B_SAS"
+        ],
+        "betweenness": 0.01174,
+        "kind": "articulation_point"
+      },
+      "_session": 12,
+      "_stream": "session12_deep_traversal",
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644259+00:00"
+    }
+  ],
+  "edges": [
+    {
+      "source": "bridge:s12:artic:vault_synapse_msk_spectrum",
+      "relation": "bridges_node",
+      "target": "vault:synapse_msk_spectrum",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644059+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:vault_sas_pds",
+      "relation": "bridges_node",
+      "target": "vault:sas_pds",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644088+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_LungSm_EliLill_2011_287",
+      "relation": "bridges_node",
+      "target": "trial:sas:LungSm_EliLill_2011_287",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644105+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_Melanom_SyntaPh_2007_123",
+      "relation": "bridges_node",
+      "target": "trial:sas:Melanom_SyntaPh_2007_123",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644120+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_LungSm_Amgen_2002_266",
+      "relation": "bridges_node",
+      "target": "trial:sas:LungSm_Amgen_2002_266",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644134+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_Colorec_Amgen_2006_263",
+      "relation": "bridges_node",
+      "target": "trial:sas:Colorec_Amgen_2006_263",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644146+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_Colorec_Amgen_2006_264",
+      "relation": "bridges_node",
+      "target": "trial:sas:Colorec_Amgen_2006_264",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644157+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_Liver_Pfizer_2008_124",
+      "relation": "bridges_node",
+      "target": "trial:sas:Liver_Pfizer_2008_124",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644170+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_Breast_Pfizer_2006_111",
+      "relation": "bridges_node",
+      "target": "trial:sas:Breast_Pfizer_2006_111",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644192+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_Breast_Pfizer_2006_112",
+      "relation": "bridges_node",
+      "target": "trial:sas:Breast_Pfizer_2006_112",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644204+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_Breast_Pfizer_2007_113",
+      "relation": "bridges_node",
+      "target": "trial:sas:Breast_Pfizer_2007_113",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644214+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_Colorec_Pfizer_2007_114",
+      "relation": "bridges_node",
+      "target": "trial:sas:Colorec_Pfizer_2007_114",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644224+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_HeadNe_Amgen_2007_265",
+      "relation": "bridges_node",
+      "target": "trial:sas:HeadNe_Amgen_2007_265",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644241+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_LungNo_Pfizer_2007_115",
+      "relation": "bridges_node",
+      "target": "trial:sas:LungNo_Pfizer_2007_115",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644251+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    },
+    {
+      "source": "bridge:s12:artic:trial_sas_Colorec_Amgen_2005_262",
+      "relation": "bridges_node",
+      "target": "trial:sas:Colorec_Amgen_2005_262",
+      "attributes": {},
+      "_session": 12,
+      "_mint_planner": "zeta_custodian_session12",
+      "_mint_timestamp": "2026-07-23T09:45:38.644261+00:00",
+      "source_receipts": [
+        "Session 12 deep traversal"
+      ]
+    }
+  ]
+}

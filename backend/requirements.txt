@@ -14,4 +14,11 @@ openlineage-python==1.27.0
 huggingface-hub==0.27.1
 deltalake==0.24.0
 pyarrow>=14.0.1,<17
-requests==2.32.3
+requests>=2.34,<3
+neo4j>=5.20,<7
+mcp>=1.2.0
+# Live source connectors (imported lazily in federation/source_gateway.py;
+# absent -> gateway reports 'unconfigured' rather than crashing).
+synapseclient>=4.13,<5
+swat>=1.18,<2
+pyega3>=3.4,<4

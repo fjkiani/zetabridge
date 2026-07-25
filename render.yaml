@@ -56,6 +56,59 @@ services:
       - key: PYTHON_VERSION
         value: "3.11.0"
 
+      # --- Federated graph + agent access (Sessions 12–14) ---
+      # Neo4j Aura holds the pre-extracted federated KG (read-only over the API).
+      - key: NEO4J_URI
+        sync: false
+      - key: NEO4J_USER
+        sync: false
+      - key: NEO4J_PASSWORD
+        sync: false
+      # The ONE scoped key external agents send as X-Zeta-Api-Key. Closed by
+      # default: with this unset, /api/graph, /api/signals and /api/sources
+      # all return 503.
+      - key: ZETA_GRAPH_API_KEY
+        sync: false
+      # Optional Groq narration for the signal agents (never invents numbers).
+      - key: GROQ_API_KEY
+        sync: false
+
+      # --- Live source extraction (Session 15) ---
+      # SERVER-SIDE ONLY. Values are set as Render dashboard secrets (sync:false),
+      # never committed. Leave any unset => that source reports "unconfigured"
+      # (honest, not an error). EGA metadata is public and needs no token.
+      - key: SYNAPSE_AUTH_TOKEN
+        sync: false
+      - key: SAS_CAS_HOST
+        value: "mpmprodvdmml.ondemand.sas.com"
+      - key: SAS_CAS_PORT
+        value: "443"
+      - key: SAS_CAS_PROTOCOL
+        value: "https"
+      - key: SAS_CAS_TOKEN
+        sync: false
+      - key: SAS_CAS_USER
+        sync: false
+      - key: SAS_CAS_PASSWORD
+        sync: false
+      - key: SAS_CAS_CADATA
+        sync: false
+      - key: EGA_USERNAME
+        sync: false
+      - key: EGA_PASSWORD
+        sync: false
+      - key: EGA_DEFAULT_DATASET
+        value: "EGAD00001011049"
+      # D_ARGO — ICGC ARGO / Overture SONG+SCORE (DACO controlled genomics).
+      # Token is a Render secret (sync:false), already set in the dashboard.
+      # Bytes stream direct from the object host; never proxied through the dyno.
+      - key: ICGC_ARGO_TOKEN
+        sync: false
+      - key: ICGC_ARGO_API_BASE
+        value: "https://api.platform.icgc-argo.org"
+      - key: ICGC_ARGO_OBJECT_HOST
+        value: "object.genomeinformatics.org"
+
   # Monorepo uses pnpm `catalog:` in package.json — build from repo root (no rootDir).
   - type: web
     name: zetabridge-ui
@@ -65,3 +118,8 @@ services:
     envVars:
       - key: VITE_API_BASE
         value: "https://zetabridge-api.onrender.com"
+      # Scoped graph API key the browser sends as X-Zeta-Api-Key. Set as a
+      # Render secret (sync:false). Required for the live /live console and the
+      # two chat copilots; data browsing falls back to the bundled snapshot.
+      - key: VITE_ZETA_API_KEY
+        sync: false
