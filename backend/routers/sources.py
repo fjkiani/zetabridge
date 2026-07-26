@@ -115,6 +115,15 @@ async def sas_adam(caslib: str, table: str, limit: int = 50):
 
 
 # --- EGA (C_EGA) -----------------------------------------------------------
+@router.get("/ega/authorized-datasets", dependencies=[Depends(require_api_key)])
+async def ega_authorized_datasets():
+    """AUTHORITATIVE entitlement: exactly which EGA datasets THIS account can
+    access (from the auth'd :8443/v2/metadata/datasets endpoint — NOT the ~21k
+    public catalog). The anti-sandbagging verb: call it FIRST to learn what is
+    crawlable instead of dead-ending on a 403. Fetches no bytes."""
+    return await _run(_get_gateway().ega.authorized_datasets)
+
+
 @router.get("/ega/files", dependencies=[Depends(require_api_key)])
 async def ega_files(dataset: Optional[str] = None, limit: int = 50):
     return await _run(_get_gateway().ega.list_files, dataset, limit)
@@ -123,6 +132,15 @@ async def ega_files(dataset: Optional[str] = None, limit: int = 50):
 @router.get("/ega/file/{file_id}", dependencies=[Depends(require_api_key)])
 async def ega_file(file_id: str):
     return await _run(_get_gateway().ega.file_metadata, file_id)
+
+
+@router.get("/ega/file/{file_id}/access-probe", dependencies=[Depends(require_api_key)])
+async def ega_file_access_probe(file_id: str):
+    """Per-file go/no-go WITHOUT transferring bytes: auth'd metadata probe
+    (200=authorized, 403=DAC boundary) plus a 1-byte Range probe confirming the
+    byte transport yields 206 octet-stream. ``data.can_download`` is the honest
+    verdict; a 403 returns status=unreachable + data=null (no fabrication)."""
+    return await _run(_get_gateway().ega.file_access_probe, file_id)
 
 
 @router.get("/ega/download-diagnostics", dependencies=[Depends(require_api_key)])

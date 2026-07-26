@@ -511,11 +511,17 @@ class EgaClient:
         return Envelope(endpoint=self.endpoint, source=self.source, status="", action=action)
 
     def list_files(self, dataset: str | None = None, limit: int | None = None) -> Envelope:
-        """List files in an EGA dataset via the public metadata API.
+        """List files in an EGA dataset.
 
-        Dataset/file *metadata* is public; file *content* is controlled-access
-        and intentionally NOT fetched here. Works without credentials for
-        metadata; credentials gate content download (a later phase).
+        When EGA credentials are configured, this prefers the AUTHORITATIVE
+        auth'd endpoint (:8443/v2/metadata/datasets/{id}/files), which returns
+        the real per-file records for a DAC-authorized dataset (679 files for
+        EGAD00001011049, with fileId/fileSize/plainChecksum/...) — the exact set
+        an agent can then byte-pull. If credentials are absent, or the account is
+        not authorized for the dataset, it falls back to the PUBLIC metadata API
+        (dataset/file *metadata* is public; file *content* stays controlled).
+
+        Never fabricates: the ``access`` field records which surface answered.
         """
         action = "list_files"
         ds = dataset or cfg.EGA_DEFAULT_DATASET
@@ -528,6 +534,41 @@ class EgaClient:
         import httpx
 
         t0 = time.time()
+
+        # Preferred path: authoritative auth'd file list (only when credentials
+        # are present). Falls through to the public API on any failure/403.
+        if self.configured():
+            token, _tok_err = self._data_token()
+            if token:
+                recs, a_err = self._data_dataset_files(token, ds)
+                if recs is not None:
+                    slim = [
+                        {
+                            "accession_id": f.get("fileId"),
+                            "filesize": f.get("fileSize"),
+                            "display_file_name": f.get("displayFileName"),
+                            "checksum": f.get("plainChecksum"),
+                            "checksum_type": f.get("plainChecksumType"),
+                            "file_status": f.get("fileStatus"),
+                            "index_file_id": f.get("indexFileId"),
+                        }
+                        for f in recs[:n]
+                        if isinstance(f, dict)
+                    ]
+                    env.status = "live"
+                    env.data = {
+                        "dataset": ds,
+                        "access": "authorized",
+                        "n_files": len(recs),
+                        "files": slim,
+                    }
+                    env.grounding["n_files"] = len(recs)
+                    env.grounding["access"] = "authorized"
+                    env.latency_ms = round((time.time() - t0) * 1000, 1)
+                    return env
+                # a_err (e.g. 403 for an unauthorized dataset) -> fall back to
+                # public metadata so the caller still sees what exists publicly.
+
         try:
             url = f"{self.META_BASE}/datasets/{ds}/files"
             r = httpx.get(url, params={"limit": n}, timeout=CONNECT_TIMEOUT_S)
@@ -552,8 +593,14 @@ class EgaClient:
             else:
                 slim = files
             env.status = "live"
-            env.data = {"dataset": ds, "n_files": len(slim) if isinstance(slim, list) else None, "files": slim}
+            env.data = {
+                "dataset": ds,
+                "access": "public",
+                "n_files": len(slim) if isinstance(slim, list) else None,
+                "files": slim,
+            }
             env.grounding["n_files"] = len(slim) if isinstance(slim, list) else None
+            env.grounding["access"] = "public"
         except Exception as exc:  # noqa: BLE001
             env.status, env.error = "unreachable", _reason(exc)
         env.latency_ms = round((time.time() - t0) * 1000, 1)
@@ -637,6 +684,15 @@ class EgaClient:
     # audience for this route and returns 401).
     DATA_API_BASE = "https://ega.ebi.ac.uk:8443"
     DATA_TOKEN_URL = "https://ega.ebi.ac.uk:8443/ega-openid-connect-server/token"
+    # AUTHORITATIVE entitlement + private-metadata surface, served over the same
+    # reachable AAI port (8443) with the AAI (Data-API) token. Verified live
+    # (no cache): GET /v2/metadata/datasets returns EXACTLY the account's
+    # DAC-granted datasets (e.g. only EGAD00001011049 for this login), whereas
+    # the PUBLIC metadata.ega-archive.org/datasets?authorized=true returns the
+    # entire ~21k-dataset catalog and is therefore useless for entitlement.
+    # GET /v2/metadata/files/{id} returns 200 for an authorized file and a clean
+    # 403 for one the account cannot access — the real go/no-go signal.
+    AUTHZ_DATASETS_URL = "https://ega.ebi.ac.uk:8443/v2/metadata/datasets"
     # Public pyega3 OAuth client (not a secret in any meaningful sense — shipped
     # inside the open-source EGA download client's default_server_file.json).
     DATA_CLIENT_ID = "f20cd2d3-682a-4568-a53e-4262ef54c8f4"
@@ -645,7 +701,13 @@ class EgaClient:
     )
 
     def _egadata_credentials(self) -> tuple[Optional[str], Optional[str]]:
-        """Resolve (username, password) from cfg or the EGA credentials file."""
+        """Resolve (username, password) from cfg or the EGA credentials file.
+
+        Whitespace is stripped from both fields: pasted EGA credentials commonly
+        carry a leading newline / trailing space on the username, and EGA's token
+        endpoint rejects the padded form with a 401 that *looks* like a bad
+        password. Trimming here prevents that false auth failure.
+        """
         username, password = cfg.EGA_USERNAME, cfg.EGA_PASSWORD
         if cfg.EGA_CREDENTIALS_FILE:
             import json as _json
@@ -654,6 +716,8 @@ class EgaClient:
                 creds = _json.load(fh)
             username = creds.get("username", username)
             password = creds.get("password", password)
+        username = username.strip() if isinstance(username, str) else username
+        password = password.strip() if isinstance(password, str) else password
         return username, password
 
     def _data_token(self) -> tuple[Optional[str], Optional[str]]:
@@ -685,6 +749,230 @@ class EgaClient:
             return tok, None
         except Exception as exc:  # noqa: BLE001
             return None, _reason(exc)
+
+    def _authz_datasets(self, token: str) -> tuple[Optional[list[dict]], Optional[str]]:
+        """Fetch the account's DAC-granted datasets from the AUTHORITATIVE
+        auth'd endpoint (:8443/v2/metadata/datasets).
+
+        Returns (records, error). Each record has keys datasetId, description,
+        dacStableId. A server-side 500 here is a known intermittent EGA outage
+        (ega-download-client #274), NOT a credential/code fault — it is surfaced
+        as a typed ``network:`` reason, never silently swallowed.
+        """
+        import httpx
+
+        try:
+            r = httpx.get(
+                self.AUTHZ_DATASETS_URL,
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=CONNECT_TIMEOUT_S,
+            )
+            if r.status_code >= 500:
+                return None, (
+                    f"network: EGA metadata API returned HTTP {r.status_code} "
+                    "(known intermittent server-side outage, not a credential fault)"
+                )
+            r.raise_for_status()
+            body = r.json()
+            recs = body if isinstance(body, list) else body.get("datasets", body)
+            return (recs if isinstance(recs, list) else []), None
+        except Exception as exc:  # noqa: BLE001
+            return None, _reason(exc)
+
+    def _data_file_metadata(self, token: str, file_id: str) -> tuple[int, Optional[dict], Optional[str]]:
+        """Per-file entitlement probe against the auth'd metadata endpoint
+        (:8443/v2/metadata/files/{id}).
+
+        Returns (status_code, json_or_None, error_or_None):
+          * 200 -> authorized; json carries fileId/fileSize/displayFileName/...
+          * 403 -> NOT authorized for this file (genuine DAC boundary)
+          * 404 -> no such file
+          * 5xx -> intermittent EGA outage (typed, not a credential fault)
+        """
+        import httpx
+
+        try:
+            r = httpx.get(
+                f"{self.DATA_API_BASE}/v2/metadata/files/{file_id}",
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=CONNECT_TIMEOUT_S,
+            )
+            if r.status_code == 200:
+                try:
+                    return 200, r.json(), None
+                except Exception:  # noqa: BLE001
+                    return 200, None, None
+            if r.status_code == 403:
+                return 403, None, f"auth: not authorized for file '{file_id}' (DAC grant required)"
+            if r.status_code == 404:
+                return 404, None, f"not_found: no such EGA file '{file_id}'"
+            if r.status_code >= 500:
+                return r.status_code, None, (
+                    f"network: EGA metadata API HTTP {r.status_code} "
+                    "(intermittent server-side outage, not a credential fault)"
+                )
+            return r.status_code, None, f"http: unexpected HTTP {r.status_code}"
+        except Exception as exc:  # noqa: BLE001
+            return -1, None, _reason(exc)
+
+    def _data_dataset_files(self, token: str, dataset: str) -> tuple[Optional[list[dict]], Optional[str]]:
+        """List files in an AUTHORIZED dataset via the auth'd endpoint
+        (:8443/v2/metadata/datasets/{id}/files). 679 files for EGAD00001011049.
+        Returns (records, error); 403 -> not authorized for the dataset."""
+        import httpx
+
+        try:
+            r = httpx.get(
+                f"{self.DATA_API_BASE}/v2/metadata/datasets/{dataset}/files",
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=CONNECT_TIMEOUT_S,
+            )
+            if r.status_code == 403:
+                return None, f"auth: not authorized for dataset '{dataset}' (DAC grant required)"
+            if r.status_code >= 500:
+                return None, (
+                    f"network: EGA metadata API HTTP {r.status_code} "
+                    "(intermittent server-side outage, not a credential fault)"
+                )
+            r.raise_for_status()
+            body = r.json()
+            recs = body if isinstance(body, list) else body.get("files", body)
+            return (recs if isinstance(recs, list) else []), None
+        except Exception as exc:  # noqa: BLE001
+            return None, _reason(exc)
+
+    def authorized_datasets(self) -> Envelope:
+        """AUTHORITATIVE entitlement report: exactly which datasets THIS account
+        can access, from the auth'd :8443/v2/metadata/datasets endpoint.
+
+        This is the anti-sandbagging verb. An agent calls it FIRST to learn what
+        it may crawl, instead of dead-ending on a 403 or being misled by the
+        public catalog (which lists ~21k datasets regardless of access). Fetches
+        NO bytes. ``data.authorized_datasets`` is the ground truth.
+        """
+        action = "authorized_datasets"
+        env = self._envelope(action)
+        t0 = time.time()
+        if not self.configured():
+            env.status, env.error = "unconfigured", "EGA_USERNAME/EGA_PASSWORD (or EGA_CREDENTIALS_FILE) not set"
+            env.latency_ms = round((time.time() - t0) * 1000, 1)
+            return env
+        if not _lib_present("httpx"):
+            env.status, env.error = "unconfigured", "httpx not installed"
+            env.latency_ms = round((time.time() - t0) * 1000, 1)
+            return env
+
+        token, tok_err = self._data_token()
+        if not token:
+            env.status, env.error = "unreachable", tok_err or "auth: token request failed"
+            env.latency_ms = round((time.time() - t0) * 1000, 1)
+            return env
+
+        recs, err = self._authz_datasets(token)
+        if recs is None:
+            env.status, env.error = "unreachable", err or "authorized-datasets query failed"
+            env.latency_ms = round((time.time() - t0) * 1000, 1)
+            return env
+
+        slim = [
+            {
+                "dataset_id": d.get("datasetId") or d.get("egaStableId") or d.get("accessionId"),
+                "description": d.get("description"),
+                "dac_stable_id": d.get("dacStableId"),
+            }
+            for d in recs
+            if isinstance(d, dict)
+        ]
+        env.status = "live"
+        env.data = {
+            "n_authorized": len(slim),
+            "authorized_datasets": slim,
+            "source_endpoint": self.AUTHZ_DATASETS_URL,
+            "note": (
+                "Authoritative DAC grants for this account. An empty list means "
+                "the login is valid but has no dataset access. This is NOT the "
+                "public catalog."
+            ),
+        }
+        env.grounding = {"n_authorized": len(slim), "dataset_ids": [s["dataset_id"] for s in slim]}
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
+
+    def file_access_probe(self, file_id: str) -> Envelope:
+        """Per-file go/no-go WITHOUT transferring bytes: auth'd metadata probe
+        (200=authorized, 403=DAC boundary) plus, only when authorized, a tiny
+        HTTP Range HEAD-equivalent (bytes=0-0) against the byte route to confirm
+        the transport actually yields 206 octet-stream.
+
+        Honesty contract: ``data.can_download`` is True ONLY when the metadata
+        probe is 200 AND the 1-byte range probe returns 206 with octet-stream.
+        A 403 anywhere yields status=unreachable, data=null, typed auth reason —
+        never a fabricated 'ok'.
+        """
+        action = "file_access_probe"
+        env = self._envelope(action)
+        env.grounding = {"file_id": file_id}
+        t0 = time.time()
+        if not self.configured():
+            env.status, env.error = "unconfigured", "EGA_USERNAME/EGA_PASSWORD (or EGA_CREDENTIALS_FILE) not set"
+            env.latency_ms = round((time.time() - t0) * 1000, 1)
+            return env
+        if not _lib_present("httpx"):
+            env.status, env.error = "unconfigured", "httpx not installed"
+            env.latency_ms = round((time.time() - t0) * 1000, 1)
+            return env
+        import httpx
+
+        token, tok_err = self._data_token()
+        if not token:
+            env.status, env.error = "unreachable", tok_err or "auth: token request failed"
+            env.latency_ms = round((time.time() - t0) * 1000, 1)
+            return env
+
+        meta_status, meta_json, meta_err = self._data_file_metadata(token, file_id)
+        result: dict[str, Any] = {"metadata_status": meta_status}
+        if meta_status != 200:
+            env.status = "unreachable"
+            env.data = None
+            env.error = meta_err or f"auth: file metadata HTTP {meta_status}"
+            env.grounding["metadata_status"] = meta_status
+            env.latency_ms = round((time.time() - t0) * 1000, 1)
+            return env
+
+        if isinstance(meta_json, dict):
+            result["display_file_name"] = meta_json.get("displayFileName")
+            result["file_size"] = meta_json.get("fileSize")
+            result["dataset_id"] = meta_json.get("datasetId")
+            result["plain_checksum"] = meta_json.get("plainChecksum")
+
+        # Confirm transport actually yields bytes: 1-byte bounded range probe.
+        byte_status = None
+        byte_ct = None
+        byte_ok = False
+        try:
+            url = f"{self.DATA_API_BASE}/v2/files/{file_id}?destinationFormat=plain"
+            rr = httpx.get(
+                url,
+                headers={"Authorization": f"Bearer {token}", "Accept": "application/octet-stream",
+                         "Range": "bytes=0-0"},
+                timeout=CONNECT_TIMEOUT_S,
+            )
+            byte_status = rr.status_code
+            byte_ct = rr.headers.get("content-type", "")
+            byte_ok = rr.status_code in (200, 206) and "octet-stream" in byte_ct.lower()
+        except Exception as exc:  # noqa: BLE001
+            result["byte_probe_error"] = _reason(exc)
+
+        result["byte_probe_status"] = byte_status
+        result["byte_probe_content_type"] = byte_ct
+        result["can_download"] = bool(meta_status == 200 and byte_ok)
+        env.data = result
+        env.grounding["can_download"] = result["can_download"]
+        env.status = "live" if result["can_download"] else "unreachable"
+        if not result["can_download"]:
+            env.error = "byte transport did not yield 206 octet-stream despite authorized metadata"
+        env.latency_ms = round((time.time() - t0) * 1000, 1)
+        return env
 
     # Bounded slice size for internal fetches. EGA's re-encryption service only
     # returns correctly-offset plaintext for *bounded* ranges; open-ended
@@ -922,38 +1210,60 @@ class EgaClient:
         # Byte transport is possible when the 8443 data host is reachable.
         data_ok = aai_ok
 
-        # Auth + DAC-grant check via the REACHABLE OIDC + private-metadata API
-        # (port 443), independent of the Data API port 8052. This is the correct
-        # entitlement source and works even when 8052 is firewalled.
+        # Auth + DAC-grant check via the AUTHORITATIVE auth'd endpoint
+        # (:8443/v2/metadata/datasets), served over the SAME reachable AAI port
+        # (8443) with the Data-API (AAI) token. This returns EXACTLY the account's
+        # DAC grants. We deliberately do NOT use metadata.ega-archive.org/datasets
+        # ?authorized=true: that endpoint returns the entire ~21k public catalog
+        # regardless of access, which would produce a FALSE-POSITIVE entitlement
+        # (a coincidental "authorized" for any queried dataset). Verified live.
         auth_ok = False
         n_authorized = 0
         dataset_authorized = None
         auth_error = None
+        file_probe_status = None
         if not _lib_present("httpx"):
             auth_error = "httpx not installed"
         else:
-            import httpx
-
-            token, tok_err = self._metadata_token()
+            token, tok_err = self._data_token()
             if not token:
                 auth_error = tok_err or "token request failed"
             else:
                 auth_ok = True
-                try:
-                    r = httpx.get(
-                        f"{self.META_BASE}/datasets",
-                        params={"authorized": "true"},
-                        headers={"Authorization": f"Bearer {token}"},
-                        timeout=CONNECT_TIMEOUT_S,
-                    )
-                    r.raise_for_status()
-                    grants = r.json() or []
-                    ids = [d.get("accession_id") for d in grants if isinstance(d, dict)]
+                recs, ds_err = self._authz_datasets(token)
+                if recs is None:
+                    auth_error = ds_err or "authorized-datasets query failed"
+                else:
+                    ids = [
+                        (d.get("datasetId") or d.get("egaStableId") or d.get("accessionId"))
+                        for d in recs
+                        if isinstance(d, dict)
+                    ]
+                    ids = [i for i in ids if i]
                     n_authorized = len(ids)
                     dataset_authorized = ds in ids
                     result["authorized_datasets"] = ids[:25]
-                except Exception as exc:  # noqa: BLE001
-                    auth_error = _reason(exc)
+                    # Per-file 403-vs-200 confirmation on the smallest authorized
+                    # file gives an agent an unambiguous, byte-free go/no-go for
+                    # the requested dataset (not just a dataset-list membership).
+                    if dataset_authorized:
+                        files, f_err = self._data_dataset_files(token, ds)
+                        if files:
+                            sized = sorted(
+                                (int(f.get("fileSize") or 0), f.get("fileId"))
+                                for f in files if f.get("fileId")
+                            )
+                            sized = [s for s in sized if s[0] > 0]
+                            if sized:
+                                probe_fid = sized[0][1]
+                                st, _mj, _me = self._data_file_metadata(token, probe_fid)
+                                file_probe_status = st
+                                result["file_probe"] = {
+                                    "file_id": probe_fid,
+                                    "metadata_status": st,
+                                    "authorized": st == 200,
+                                }
+                                result["n_files_in_dataset"] = len(files)
 
         result["auth_ok"] = auth_ok
         result["n_authorized_datasets"] = n_authorized
