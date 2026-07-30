@@ -197,16 +197,20 @@ class GraphService:
         tables: list[dict[str, Any]] = []
         tid = 0
         for lb in labels:
+            # Efficient distinct property-key union over a small sample:
+            # UNWIND keys(n) + DISTINCT is far cheaper than reduce+collect of
+            # per-node key lists (which 502'd on the live graph).
             sample = self._read(
-                f"MATCH (n:`{lb}`) WITH n LIMIT 200 "
-                "RETURN count(n) AS n_sample, "
-                "       reduce(keys = [], p IN collect(keys(n)) | keys + [k IN p WHERE NOT k IN keys]) AS pkeys, "
-                "       collect(n.id)[0] AS sample_id",
+                f"MATCH (n:`{lb}`) WITH n LIMIT 25 "
+                "UNWIND keys(n) AS k "
+                "WITH DISTINCT k "
+                "RETURN collect(k) AS pkeys",
             )
             cnt = self._read(f"MATCH (n:`{lb}`) RETURN count(n) AS c")
+            sid = self._read(f"MATCH (n:`{lb}`) RETURN n.id AS i LIMIT 1")
             n_nodes = cnt[0]["c"] if cnt else 0
             pkeys = sorted(sample[0]["pkeys"]) if sample and sample[0]["pkeys"] else []
-            sample_id = sample[0]["sample_id"] if sample else None
+            sample_id = sid[0]["i"] if sid else None
             endpoint = endpoint_of(sample_id) or "GRAPH"
             cols = [{"name": k, "type": "property", "nullable": True} for k in pkeys]
             tables.append({
