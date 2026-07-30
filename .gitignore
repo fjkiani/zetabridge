@@ -56,3 +56,8 @@ backend/data/
 # Secrets (use .env.example)
 .env
 .env.local
+
+# Generated Zeta KG session dumps (large, regenerable — do not commit).
+# Session9 committed ~1.39M lines of these before deleting them; keep them out.
+zeta/**/zeta_entities_s*.json
+zeta/**/zeta_edges_s*.json

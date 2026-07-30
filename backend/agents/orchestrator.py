@@ -36,6 +36,9 @@ from .specialized import (
     CatalogAgent, QueryAgent, LineageAgent,
     ETLAgent, DataQualityAgent, ConnectorAgent,
 )
+from .federation_bridge_agents import (
+    SynapseAgent, PDSAgent, SynthesisAgent,
+)
 
 log = logging.getLogger("zetabridge.orchestrator")
 
@@ -65,6 +68,7 @@ class Intent(str, Enum):
     CONNECTOR_DISCOVER = "connector_discover"
     MULTI_STEP = "multi_step"       # requires multiple agents
     PLATFORM_OVERVIEW = "platform_overview"  # full 360 view
+    FEDERATE_BRIDGE = "federate_bridge"  # Synapse<->PDS cross-endpoint bridge
     UNKNOWN = "unknown"
 
 
@@ -91,6 +95,7 @@ _INTENT_KEYWORDS: dict[str, list[str]] = {
     Intent.CONNECTOR_TEST: ["test connection", "check connection", "ping"],
     Intent.CONNECTOR_DISCOVER: ["discover sources", "find sources", "auto discover"],
     Intent.PLATFORM_OVERVIEW: ["overview", "dashboard", "platform status", "360", "everything", "full picture", "summary"],
+    Intent.FEDERATE_BRIDGE: ["federate", "federation", "bridge", "cross-endpoint", "cross endpoint", "synapse to pds", "synapse and pds", "hidden signal", "hidden signals", "link synapse", "connect synapse"],
 }
 
 
@@ -260,6 +265,19 @@ def decompose_task(intent: Intent, user_input: str, params: dict = None) -> Exec
         t3 = plan.add_task("data_quality_agent", "suite")
         t4 = plan.add_task("connector_agent", "list")
         t5 = plan.add_task("etl_agent", "list")
+
+    elif intent == Intent.FEDERATE_BRIDGE:
+        # Multi-hop cross-endpoint DAG:
+        #   Agent 1 (Synapse) -> Agent 2 (PDS, depends on Synapse) ->
+        #   Synthesis (depends on both). Orchestrator injects each dependency's
+        #   output as dep_<agent_name>, so PDS receives Agent 1's payload and
+        #   Synthesis receives both. Context preserved via AgentContext.fork.
+        gene = params.get("gene", "KRAS")
+        t1 = plan.add_task("synapse_agent", "query_gene", {"gene": gene})
+        t2 = plan.add_task("pds_agent", "interrogate_biomarker", {"gene": gene}, depends_on=[t1])
+        t3 = plan.add_task("synthesis_agent", "synthesize",
+                           {"narrative": params.get("narrative", True)},
+                           depends_on=[t1, t2])
 
     elif intent == Intent.MULTI_STEP:
         # Heuristic multi-step: catalog first, then query
@@ -461,4 +479,8 @@ def create_orchestrator() -> Orchestrator:
     orch.register_agent(ETLAgent())
     orch.register_agent(DataQualityAgent())
     orch.register_agent(ConnectorAgent())
+    # Federation bridge agents (Synapse<->PDS)
+    orch.register_agent(SynapseAgent())
+    orch.register_agent(PDSAgent())
+    orch.register_agent(SynthesisAgent())
     return orch

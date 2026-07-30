@@ -91,6 +91,12 @@ class GraphService:
             auth=(user, password),
             max_connection_pool_size=16,
             connection_acquisition_timeout=timeout_s,
+            # Fail fast when the Neo4j host is unreachable (e.g. an Aura instance
+            # that has been paused/deleted and no longer resolves in DNS) so
+            # callers get a prompt error instead of a ~30s retry storm. Clients
+            # can then fall back to their baked snapshot quickly.
+            connection_timeout=5.0,
+            max_transaction_retry_time=4.0,
         )
         self.row_cap = row_cap
         self.timeout_s = timeout_s

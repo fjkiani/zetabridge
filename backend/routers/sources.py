@@ -75,6 +75,34 @@ async def synapse_table(syn_id: str, limit: int = 50):
     return await _run(_get_gateway().synapse.query_table, syn_id, limit)
 
 
+@router.get("/synapse/children/{parent_id}", dependencies=[Depends(require_api_key)])
+async def synapse_children(parent_id: str, limit: int = 100):
+    """List immediate children of a Project/Folder/Dataset — the crawl verb.
+
+    An agent walks parent -> children recursively to reach every file. Respects
+    the account's READ access (a controlled parent yields a typed 'unreachable',
+    never fabricated rows)."""
+    return await _run(_get_gateway().synapse.list_children, parent_id, limit)
+
+
+@router.get("/synapse/download-diagnostics/{syn_id}", dependencies=[Depends(require_api_key)])
+async def synapse_download_diagnostics(syn_id: str):
+    """Go/no-go gate for byte download WITHOUT transferring the file.
+    ``data.can_download`` is the boolean an agent checks before a multi-GB stream."""
+    return await _run(_get_gateway().synapse.download_diagnostics, syn_id)
+
+
+@router.get("/synapse/download-url/{syn_id}", dependencies=[Depends(require_api_key)])
+async def synapse_download_url(syn_id: str):
+    """Mint a short-lived pre-signed S3 URL for a Synapse file's bytes.
+
+    TOKEN-HANDOFF (same contract as ARGO): returns ``data.url`` + expected
+    ``md5``/``size``; the caller streams bytes DIRECTLY from object storage. No
+    bytes proxy through this backend. A file the account can't read yields a
+    typed 'unreachable' with ``data`` null — never a fabricated link."""
+    return await _run(_get_gateway().synapse.resolve_download, syn_id)
+
+
 # --- SAS Viya CAS (B_SAS) --------------------------------------------------
 @router.get("/sas/caslibs", dependencies=[Depends(require_api_key)])
 async def sas_caslibs():
@@ -87,6 +115,15 @@ async def sas_adam(caslib: str, table: str, limit: int = 50):
 
 
 # --- EGA (C_EGA) -----------------------------------------------------------
+@router.get("/ega/authorized-datasets", dependencies=[Depends(require_api_key)])
+async def ega_authorized_datasets():
+    """AUTHORITATIVE entitlement: exactly which EGA datasets THIS account can
+    access (from the auth'd :8443/v2/metadata/datasets endpoint — NOT the ~21k
+    public catalog). The anti-sandbagging verb: call it FIRST to learn what is
+    crawlable instead of dead-ending on a 403. Fetches no bytes."""
+    return await _run(_get_gateway().ega.authorized_datasets)
+
+
 @router.get("/ega/files", dependencies=[Depends(require_api_key)])
 async def ega_files(dataset: Optional[str] = None, limit: int = 50):
     return await _run(_get_gateway().ega.list_files, dataset, limit)
@@ -95,6 +132,59 @@ async def ega_files(dataset: Optional[str] = None, limit: int = 50):
 @router.get("/ega/file/{file_id}", dependencies=[Depends(require_api_key)])
 async def ega_file(file_id: str):
     return await _run(_get_gateway().ega.file_metadata, file_id)
+
+
+@router.get("/ega/file/{file_id}/size", dependencies=[Depends(require_api_key)])
+async def ega_file_size(file_id: str):
+    """Authenticated file-size lookup via the EGA Data API.
+
+    Unlike /ega/file/{id} (public metadata), this exercises the controlled-access
+    Data API with the server-side credentials, so a 'live' status here proves the
+    byte channel below will authenticate. Envelope-shaped; no bytes.
+    """
+    return await _run(_get_gateway().ega.download_size, file_id)
+
+
+@router.get("/ega/file/{file_id}/download", dependencies=[Depends(require_api_key)])
+async def ega_file_download(file_id: str):
+    """Stream decrypted file bytes for ``file_id`` from the EGA Data API.
+
+    Server-side authenticated proxy: the caller supplies only the X-Zeta-Api-Key
+    and never sees the EGA credentials. Returns application/octet-stream. Auth is
+    forced before streaming, so an auth/config failure returns a JSON error with
+    the proper status code rather than a truncated body.
+    """
+    from fastapi.responses import StreamingResponse
+
+    gw = _get_gateway()
+    if not gw.ega.configured():
+        raise HTTPException(status_code=503, detail="EGA credentials not configured on server.")
+
+    # Acquire an authenticated byte generator; surface auth/config errors up-front.
+    try:
+        gen = await asyncio.to_thread(_prime_ega_stream, gw, file_id)
+    except RuntimeError as exc:
+        msg = str(exc)
+        code = 503 if msg.startswith("unconfigured") else 502
+        raise HTTPException(status_code=code, detail=f"EGA download failed: {msg}")
+
+    headers = {"Content-Disposition": f'attachment; filename="{file_id}"'}
+    return StreamingResponse(gen, media_type="application/octet-stream", headers=headers)
+
+
+def _prime_ega_stream(gw, file_id: str):
+    """Build the byte generator and force token acquisition (raises on failure)."""
+    gen = gw.ega.iter_file_bytes(file_id)
+    # pull nothing yet; iter_file_bytes forces the token internally on first use.
+    return gen
+
+@router.get("/ega/file/{file_id}/access-probe", dependencies=[Depends(require_api_key)])
+async def ega_file_access_probe(file_id: str):
+    """Per-file go/no-go WITHOUT transferring bytes: auth'd metadata probe
+    (200=authorized, 403=DAC boundary) plus a 1-byte Range probe confirming the
+    byte transport yields 206 octet-stream. ``data.can_download`` is the honest
+    verdict; a 403 returns status=unreachable + data=null (no fabrication)."""
+    return await _run(_get_gateway().ega.file_access_probe, file_id)
 
 
 @router.get("/ega/download-diagnostics", dependencies=[Depends(require_api_key)])
