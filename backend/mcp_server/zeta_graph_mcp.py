@@ -144,11 +144,12 @@ def run_cypher_readonly(cypher: str, params: Optional[dict[str, Any]] = None) ->
 # --------------------------------------------------------------------------
 @mcp.tool()
 def list_sources() -> dict:
-    """List the three LIVE source endpoints behind Zeta Bridge and their current
-    status: A_MSK (Synapse), B_SAS (SAS Viya CAS), C_EGA (EGA). Performs a real
-    connect handshake per endpoint and reports `configured` (are server-side
-    credentials present) and `status` (live / unreachable / unconfigured) plus
-    connection latency. No data is extracted — this is the discovery probe."""
+    """List the four LIVE source endpoints behind Zeta Bridge and their current
+    status: A_MSK (Synapse), B_SAS (SAS Viya CAS), C_EGA (EGA), D_ARGO (ICGC
+    ARGO). Performs a real connect handshake per endpoint and reports
+    `configured` (are server-side credentials present) and `status` (live /
+    unreachable / unconfigured) plus connection latency. No data is extracted —
+    this is the discovery probe."""
     return _gw().health()
 
 
@@ -202,6 +203,56 @@ def ega_file_metadata(file_id: str) -> dict:
     Metadata only (size, checksum, extension, locations); no byte download.
     Returns the uniform envelope; data is real metadata or null on failure."""
     return _gw().ega.file_metadata(file_id).to_dict()
+
+
+# --------------------------------------------------------------------------
+# ICGC ARGO (D_ARGO) live tools — Overture SONG/SCORE, DACO controlled genomics.
+# Download is a TOKEN-HANDOFF: argo_download_url mints a short-lived pre-signed
+# URL; the caller streams bytes DIRECTLY from object storage. Bytes are never
+# proxied through Zeta Bridge (that would reintroduce a bandwidth bottleneck).
+# --------------------------------------------------------------------------
+@mcp.tool()
+def argo_list_entities(project: str = "", access: str = "", file_type: str = "", size: int = 50) -> dict:
+    """LIVE: search the ICGC ARGO SCORE object registry (D_ARGO endpoint). Filter
+    by `project` (e.g. 'POG-CA'), `access` ('controlled'/'open'), and `file_type`
+    (extension, e.g. 'cram','bam','vcf'). Returns up to `size` (capped 500) real
+    objects, each with object_id, gnos_id, and donor/sample/experiment derived
+    from the ARGO filename convention. Registry listing works without the token;
+    controlled *content* download requires the DACO token at resolve time.
+    Returns the uniform envelope; data is real objects or null on failure."""
+    return _gw().argo.list_entities(project or None, access or None, file_type or None, size).to_dict()
+
+
+@mcp.tool()
+def argo_entity_metadata(object_id: str) -> dict:
+    """LIVE: fetch one ICGC ARGO object's registry metadata + derived
+    relationships (project -> donor -> sample -> file, experiment, date) by its
+    object_id (a UUID). Returns the uniform envelope; data is real metadata or
+    null (typed error) on failure."""
+    return _gw().argo.entity_metadata(object_id).to_dict()
+
+
+@mcp.tool()
+def argo_download_url(object_id: str, offset: int = 0, length: int = -1) -> dict:
+    """LIVE: mint a short-lived pre-signed SCORE download URL for a controlled
+    ICGC ARGO object (D_ARGO endpoint). Returns the uniform envelope whose
+    `data.parts[].url` is a direct object-storage URL — the CALLER streams bytes
+    directly from `data.object_host`; Zeta Bridge never proxies the bytes. Also
+    returns object_md5 and object_size for verification. Requires the DACO token;
+    an invalid/non-entitled token yields a typed auth error with data=null. No
+    bytes are transferred by this call."""
+    return _gw().argo.resolve_download(object_id, offset, length).to_dict()
+
+
+@mcp.tool()
+def argo_graph_neighbors(node_id: str, hops: int = 1, cap: int = 200) -> dict:
+    """READ-ONLY graph traversal of the ICGC ARGO subgraph loaded in Neo4j.
+    Given an ARGO node id (e.g. 'argo:donor:DO256421', 'argo:file:<object_id>',
+    'argo:sample:SA621283'), return the n-hop induced subgraph (nodes + edges)
+    over Argo* nodes: Program-[:HAS_DONOR]->Donor-[:HAS_SAMPLE]->Sample-
+    [:HAS_FILE]->File, plus Sample-[:SERIAL_WITH]->Sample for same-donor serial
+    pairs. `hops` capped at 3. Requires the ARGO subgraph to have been loaded."""
+    return _svc().neighbors(node_id, hops=hops, direction="both", cap=cap)
 
 
 def main() -> None:

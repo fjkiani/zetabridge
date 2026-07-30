@@ -492,6 +492,117 @@ python3 -m pytest routers/test_sources_api.py -q
 python3 federation/live_smoke.py
 ```
 
+## Live source extraction (Session 16) — ICGC ARGO (`D_ARGO`), controlled BAM/CRAM by direct-from-S3 handoff
+
+Session 16 adds a **fourth** live source — **ICGC ARGO** (the Overture
+SONG/SCORE stack at `api.platform.icgc-argo.org`) — for DACO-controlled cancer
+genomics (WGS/WXS **CRAM**, RNA-seq **BAM**). It follows the exact same
+`/api/sources` + MCP + envelope pattern as the other three, with one crucial
+transport difference for the heavy bytes.
+
+| Endpoint | Live system | Auth | Data |
+|---|---|---|---|
+| `D_ARGO` | **ICGC ARGO** — Overture SONG + SCORE (`/storage-api`) | `ICGC_ARGO_TOKEN` (DACO-approved, server-side) | controlled BAM/CRAM object registry + pre-signed download URLs |
+
+### The transport contract (read this — it is the whole point)
+
+**ZetaBridge is a URL-minting coordinator, not a byte pipe.** For everything
+except the actual alignment bytes, the flow is identical to the other sources
+(call an endpoint, get an envelope). For the bytes:
+
+1. You call `download-url/{object_id}` (REST) or `argo_download_url(object_id)`
+   (MCP) with your `X-Zeta-Api-Key`.
+2. The backend uses the **server-side** DACO token to mint a **short-lived
+   pre-signed URL** to object storage (`object.genomeinformatics.org`) and
+   returns it in `data.parts[].url` (plus `object_md5`, `object_size`).
+3. **You stream the bytes DIRECTLY from that pre-signed URL** (S3-style HTTP
+   `GET`, `Range` supported → slice a genomic region without pulling the whole
+   file). **The bytes never transit ZetaBridge.**
+
+This is deliberate: proxying a ~9 GB CRAM through the app dyno is the exact
+bandwidth wall that throttles a proxied path. Direct-from-object-storage
+measured **~10× faster** in probing. The DACO token is never exposed to you —
+you present only the scoped `X-Zeta-Api-Key`, same as everything else.
+
+### REST endpoints (`/api/sources/argo`, `X-Zeta-Api-Key` required)
+
+| Method | Path | Params | Returns |
+|---|---|---|---|
+| GET | `/api/sources/argo/health` | — | token-`configured?` + a cheap SCORE liveness ping (no data) |
+| GET | `/api/sources/argo/entities` | `project`, `access`, `file_type`, `size` (default 50) | real object registry rows (`object_id`, `file_name`, `gnos_id`, `project_code`, `access`) + donor/sample/experiment derived from the filename convention |
+| GET | `/api/sources/argo/entity/{object_id}` | object id in path | one object's registry metadata (`404` if unknown) |
+| GET | `/api/sources/argo/download-url/{object_id}` | `offset` (default 0), `length` (default -1 = whole object) | **minted pre-signed URL spec** (`data.parts[].url`, `object_md5`, `object_size`, `object_host`) for direct-from-S3 streaming |
+
+Failure typing on `download-url`: **401** invalid/expired token, **403** token
+lacks DACO controlled-data access, **404** unknown object, **503** token unset,
+**504** timeout, **502** other upstream. On every failure path `data` is `null`
+and **no URL is returned** — a pre-signed URL is minted only on the live path.
+
+```bash
+export API=http://localhost:8000 KEY=<ZETA_GRAPH_API_KEY>
+
+# is ARGO wired up + is SCORE alive?
+curl -s -H "X-Zeta-Api-Key: $KEY" "$API/api/sources/argo/health"
+
+# find controlled CRAMs in a project (client-side filters on extension/access)
+curl -s -H "X-Zeta-Api-Key: $KEY" \
+  "$API/api/sources/argo/entities?project=POG-CA&access=controlled&file_type=cram&size=10"
+
+# mint a pre-signed URL, then stream a 1 MiB Range slice DIRECT from object storage:
+URL=$(curl -s -H "X-Zeta-Api-Key: $KEY" \
+  "$API/api/sources/argo/download-url/<object_id>" | python3 -c 'import sys,json;print(json.load(sys.stdin)["data"]["parts"][0]["url"])')
+curl -s -H "Range: bytes=0-1048575" "$URL" -o slice.bin   # ZetaBridge is NOT in this hop
+```
+
+### New MCP live tools (ARGO — 4 more, alongside the 13 → 17 total)
+
+| Tool | Purpose |
+|---|---|
+| `argo_list_entities(project, access, file_type, size)` | search the controlled object registry (live) |
+| `argo_entity_metadata(object_id)` | one object's metadata + derived donor/sample fields (live) |
+| `argo_download_url(object_id, offset, length)` | mint a pre-signed URL for **direct-from-object-storage** streaming (bytes do not flow through ZetaBridge) |
+| `argo_graph_neighbors(node_id, hops, cap)` | read-only Neo4j traversal of the loaded ARGO subgraph (`argo:donor:DO…`, `argo:sample:SA…`, `argo:file:<object_id>`) |
+
+Same envelope + typed-error behavior as the other tools. `argo_download_url`
+returns the URL spec only; you do the direct stream.
+
+### The ARGO knowledge subgraph (read-only / additive to Neo4j)
+
+`backend/federation/argo_graph_loader.py` loads a bounded ARGO cohort into Neo4j
+as an **additive, `Argo*`-namespaced** subgraph — it never mutates the existing
+MSK/SAS/EGA nodes:
+
+- Nodes: `(:ArgoProgram)-[:HAS_DONOR]->(:ArgoDonor)-[:HAS_SAMPLE]->(:ArgoSample)-[:HAS_FILE]->(:ArgoFile)`.
+- `(:ArgoSample)-[:SERIAL_WITH]->(:ArgoSample)` links same-donor serial samples
+  (diagnosis/relapse timepoints) → enables serial-sample genomic-instability
+  analysis.
+- Node ids are namespaced (`argo:program:<code>`, `argo:donor:<DO…>`,
+  `argo:sample:<SA…>`, `argo:file:<object_id>`); the loader is idempotent
+  (`MERGE`), so re-running does not duplicate.
+
+### Server-side secret configuration (ARGO)
+
+```
+ICGC_ARGO_TOKEN=              # DACO-approved token (server-side only, never sent to callers)
+ICGC_ARGO_API_BASE=https://api.platform.icgc-argo.org
+ICGC_ARGO_OBJECT_HOST=object.genomeinformatics.org
+```
+
+Local: git-ignored `.env` (see `.env.example`). Render: names declared in
+`render.yaml` with `sync: false`; values set as dashboard secrets. Leave
+`ICGC_ARGO_TOKEN` unset → ARGO reports `unconfigured` (registry listing may
+still work; controlled download resolution returns `unreachable:auth`).
+
+### Tests (ARGO)
+
+```bash
+cd backend
+# ArgoClient contract tests (mocked httpx; no live creds) — parser + no-fabrication guard
+python3 -m pytest federation/test_argo_client.py -q
+# ARGO REST route auth + envelope + typed-error mapping
+python3 -m pytest routers/test_argo_routes.py -q
+```
+
 ## Front-end (Session 15 additions)
 
 Two new opportunity surfaces on top of the Session 14 app:
