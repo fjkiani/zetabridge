@@ -78,5 +78,18 @@ class Config:
     ICGC_ARGO_API_BASE = os.environ.get("ICGC_ARGO_API_BASE", "https://api.platform.icgc-argo.org")
     ICGC_ARGO_OBJECT_HOST = os.environ.get("ICGC_ARGO_OBJECT_HOST", "object.genomeinformatics.org")
 
+    # --- Vault (Qdrant) federated RAG layer (Session 16) ------------------
+    # Read-only semantic + structured lookup over the `zeta_vault` collection.
+    # QDRANT_* are required for the /api/vault surface; if unset the endpoints
+    # report 501 ("not configured") rather than crashing the app. OPENROUTER_*
+    # gates DENSE semantic search ONLY — absent -> filter (and bm25 if fastembed
+    # present) still work. Credentials stay server-side; a caller authenticates
+    # with ZETA_GRAPH_API_KEY, never with the Qdrant key.
+    QDRANT_URL = os.environ.get("QDRANT_URL", "")
+    QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY", "")
+    QDRANT_COLLECTION = os.environ.get("QDRANT_COLLECTION", "zeta_vault")
+    OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+    VAULT_EMBED_MODEL = os.environ.get("VAULT_EMBED_MODEL", "nvidia/llama-nemotron-embed-vl-1b-v2")
+
 
 cfg = Config()

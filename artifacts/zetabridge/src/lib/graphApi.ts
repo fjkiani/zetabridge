@@ -85,6 +85,12 @@ export function endpointOf(id: string | null | undefined): EndpointCode {
   for (const code of Object.keys(ENDPOINT_PREFIXES) as Exclude<EndpointCode, null>[]) {
     if (ENDPOINT_PREFIXES[code].some((p) => id.startsWith(p))) return code;
   }
+  // EGA / BriTROC HGSOC live-graph ids (Session 16): EGA accessions
+  // (EGAD dataset · EGAF file · EGAN sample · EGAR run · EGAS study …) and
+  // Subject ids namespaced as "<NAMESPACE>:<subject_id>" (JBLAB / PATIENT_INT).
+  // The live nodes also carry an explicit `endpoint` property that normNode
+  // prefers; this id fallback keeps snapshot/id-only code paths coloring EGA.
+  if (/^EGA[A-Z]\d/i.test(id) || /^(JBLAB|PATIENT_INT):/i.test(id)) return "C_EGA";
   return null;
 }
 
@@ -339,4 +345,32 @@ export async function getS12Insights(): Promise<{
 
 export function apiConfigured(): boolean {
   return Boolean(API_BASE);
+}
+
+// ---------------------------------------------------------------------------
+// read-only Cypher (live-only; no snapshot fallback by design)
+// ---------------------------------------------------------------------------
+export interface CypherResult {
+  columns: string[];
+  rows: Record<string, unknown>[];
+  row_count: number;
+}
+
+/**
+ * Run a read-only Cypher query against the live backend `/api/graph/cypher`.
+ * The backend enforces a read-only guard + row cap; write/DDL is rejected 403.
+ * Live-only: if the backend is unreachable this throws (pages surface it
+ * honestly rather than swapping in stale snapshot rows).
+ */
+export async function runCypher(
+  cypher: string,
+  params?: Record<string, unknown>,
+  cap?: number,
+): Promise<CypherResult> {
+  const raw = await apiFetch("/api/graph/cypher", {
+    method: "POST",
+    body: JSON.stringify({ cypher, params: params ?? null, cap: cap ?? null }),
+  });
+  LAST_SOURCE = "live";
+  return raw as CypherResult;
 }

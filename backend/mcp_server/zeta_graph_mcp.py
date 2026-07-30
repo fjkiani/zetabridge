@@ -255,6 +255,57 @@ def argo_graph_neighbors(node_id: str, hops: int = 1, cap: int = 200) -> dict:
     return _svc().neighbors(node_id, hops=hops, direction="both", cap=cap)
 
 
+# --------------------------------------------------------------------------
+# Vault (Qdrant) tools (Session 16) — read-only RAG over the `zeta_vault`
+# vector collection. Same anti-blind-guess contract as describe_schema():
+# call vault_manifest() ONCE to learn the collection config, the filterable
+# fields with their LIVE value vocabularies, the available search modes, and
+# worked examples — then call vault_search(). Qdrant credentials stay
+# server-side. Requires QDRANT_URL + QDRANT_API_KEY; absent -> a typed error,
+# never a fabricated result.
+# --------------------------------------------------------------------------
+_vault_svc = None
+
+
+def _vault():
+    global _vault_svc
+    if _vault_svc is None:
+        from federation.vault_store import get_vault_service
+
+        _vault_svc = get_vault_service()
+    return _vault_svc
+
+
+@mcp.tool()
+def vault_manifest() -> dict:
+    """Discovery verb for the federated vector store (Qdrant `zeta_vault`). Call
+    this FIRST. Returns — computed LIVE from Qdrant — the collection point count,
+    vector config (dense 2048/Cosine + bm25 sparse), the embedding model and
+    whether dense semantic search is currently enabled, every filterable payload
+    field WITH its real value vocabulary + counts (via facet), the available
+    search modes, and worked example queries. An agent that reads this cannot
+    guess wrong about what to send to vault_search()."""
+    try:
+        return _vault().manifest()
+    except Exception as exc:
+        return {"error": f"vault unavailable: {exc}"}
+
+
+@mcp.tool()
+def vault_search(query: str = "", mode: str = "filter",
+                 filters: Optional[dict] = None, limit: int = 10) -> dict:
+    """Read-only search over the vault. `mode`: 'filter' (exact payload-filter
+    lookup over indexed fields — always available), 'dense' (semantic Cosine;
+    only if OPENROUTER_API_KEY configured), or 'bm25' (lexical sparse; only if
+    fastembed installed). `filters` maps a filterable field (see vault_manifest)
+    to an exact value. `limit` capped at 100. Unavailable modes return a typed
+    error — results are NEVER fabricated."""
+    try:
+        return _vault().search(query=query, mode=mode, filters=filters, limit=limit)
+    except Exception as exc:
+        return {"error": f"vault search failed: {exc}"}
+
+
 def main() -> None:
     # confirm creds present early with a clear message
     if not (os.environ.get("NEO4J_URI") and os.environ.get("NEO4J_USER")

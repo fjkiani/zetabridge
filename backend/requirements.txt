@@ -17,6 +17,9 @@ pyarrow>=14.0.1,<17
 requests>=2.34,<3
 neo4j>=5.20,<7
 mcp>=1.2.0
+# Vault (Qdrant) federated RAG layer (Session 16) — read-only vector/structured
+# lookup over the `zeta_vault` collection. facet + query_points require >=1.11.
+qdrant-client>=1.12,<2
 # Live source connectors (imported lazily in federation/source_gateway.py;
 # absent -> gateway reports 'unconfigured' rather than crashing).
 synapseclient>=4.13,<5

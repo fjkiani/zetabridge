@@ -1,0 +1,46 @@
+name: keepalive
+
+# Keeps the Neo4j Aura Free instance from being auto-paused/deleted (it pauses
+# after ~30 idle days) by running a trivial `RETURN 1` Bolt query every 3 days,
+# and warms the Render free web service. This is the free replacement for a paid
+# cron: GitHub Actions scheduled workflows are free for public repos.
+#
+# One-time setup — add these repo secrets under
+#   Settings -> Secrets and variables -> Actions -> New repository secret:
+#     NEO4J_URI            e.g. neo4j+s://<id>.databases.neo4j.io
+#     NEO4J_USER           e.g. <id>
+#     NEO4J_PASSWORD       the Aura password
+#     ZETA_GRAPH_API_KEY   the scoped graph API key (for the backend health check)
+#
+# You can also trigger it on demand from the Actions tab ("Run workflow").
+
+on:
+  schedule:
+    - cron: "0 6 */3 * *"   # 06:00 UTC roughly every 3 days
+  workflow_dispatch: {}
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Neo4j driver
+        run: pip install "neo4j>=5,<6"
+      - name: Keep Aura alive + warm backend
+        env:
+          NEO4J_URI: ${{ secrets.NEO4J_URI }}
+          NEO4J_USER: ${{ secrets.NEO4J_USER }}
+          NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+          ZETA_GRAPH_API_KEY: ${{ secrets.ZETA_GRAPH_API_KEY }}
+        run: python scripts/keepalive_ping.py

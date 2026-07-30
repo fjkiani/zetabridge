@@ -105,3 +105,12 @@ app.include_router(signals_router.router)
 from routers import sources as sources_router
 
 app.include_router(sources_router.router)
+
+# Vault access layer (Session 16) — read-only /api/vault over the federated
+# Qdrant `zeta_vault` collection. Structured filter lookup is always on; dense
+# semantic search is gated on OPENROUTER_*. GET /api/vault/manifest lets an
+# external agent discover the collection LIVE (fields + value vocabularies +
+# modes) and never blind-guess. Registered in BOTH store modes.
+from routers import vault as vault_router
+
+app.include_router(vault_router.router)

@@ -26,6 +26,7 @@ import {
   Radio,
   Sun,
   Moon,
+  Dna,
 } from "lucide-react";
 import DashboardHome from "@/pages/dashboard-home";
 import CoPilot from "@/pages/copilot";
@@ -45,6 +46,7 @@ import LiveSources from "@/pages/live-sources";
 import QueryWorkbench from "@/pages/query-workbench";
 import Connectors from "@/pages/connectors";
 import Benchmarks from "@/pages/benchmarks";
+import EgaBritroc from "@/pages/ega-britroc";
 import NotFound from "@/pages/not-found";
 
 function ZetaBridgeLogo({ collapsed }: { collapsed: boolean }) {
@@ -82,6 +84,7 @@ const navItems = [
   { path: "/", label: "Overview", icon: LayoutDashboard },
   { path: "/opportunities", label: "Opportunities", icon: Gem },
   { path: "/live", label: "Live Extraction", icon: Radio },
+  { path: "/ega", label: "EGA / BriTROC", icon: Dna },
   { path: "/signals", label: "Signal Intel", icon: Radar },
   { path: "/bridges", label: "Bridges", icon: GitFork },
   { path: "/gaps", label: "Blind Spots", icon: ShieldAlert },
@@ -192,6 +195,7 @@ function AppLayout() {
           <Route path="/query" component={QueryWorkbench} />
           <Route path="/connectors" component={Connectors} />
           <Route path="/benchmarks" component={Benchmarks} />
+          <Route path="/ega" component={EgaBritroc} />
           <Route component={NotFound} />
         </Switch>
       </main>
