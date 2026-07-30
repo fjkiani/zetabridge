@@ -1373,7 +1373,8 @@ class EgaClient:
         if not _lib_present("pyega3"):
             raise RuntimeError("unconfigured: pyega3 not installed")
         dc = self._pyega3_data_client()
-        _ = dc.auth_client.token  # force token now so auth failure raises pre-stream
+        # Force token acquisition now so an auth failure raises before streaming.
+        _ = dc.auth_client.token
         path = f"/files/{file_id}?destinationFormat=plain"
         with dc.get_stream(path) as r:
             for chunk in r.iter_content(chunk_size=chunk_size):
