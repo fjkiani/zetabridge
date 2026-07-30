@@ -99,6 +99,15 @@ services:
         sync: false
       - key: EGA_DEFAULT_DATASET
         value: "EGAD00001011049"
+      # D_ARGO — ICGC ARGO / Overture SONG+SCORE (DACO controlled genomics).
+      # Token is a Render secret (sync:false), already set in the dashboard.
+      # Bytes stream direct from the object host; never proxied through the dyno.
+      - key: ICGC_ARGO_TOKEN
+        sync: false
+      - key: ICGC_ARGO_API_BASE
+        value: "https://api.platform.icgc-argo.org"
+      - key: ICGC_ARGO_OBJECT_HOST
+        value: "object.genomeinformatics.org"
 
   # Monorepo uses pnpm `catalog:` in package.json — build from repo root (no rootDir).
   - type: web

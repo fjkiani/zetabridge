@@ -24,6 +24,8 @@ import {
   Gem,
   Sparkles,
   Radio,
+  Sun,
+  Moon,
 } from "lucide-react";
 import DashboardHome from "@/pages/dashboard-home";
 import CoPilot from "@/pages/copilot";
@@ -99,6 +101,7 @@ const navItems = [
 function Sidebar() {
   const [location] = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const [theme, toggleTheme] = useTheme();
 
   return (
     <aside
@@ -138,10 +141,10 @@ function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-sidebar-border p-2 shrink-0">
+      <div className="border-t border-sidebar-border p-2 shrink-0 flex items-center gap-1">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center justify-center py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
+          className="flex-1 flex items-center justify-center py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
           data-testid="toggle-sidebar"
         >
           {collapsed ? (
@@ -149,6 +152,16 @@ function Sidebar() {
           ) : (
             <ChevronLeft className="w-4 h-4" />
           )}
+        </button>
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          className="flex items-center justify-center py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
+          data-testid="theme-toggle"
+        >
+          {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
       </div>
     </aside>
@@ -186,18 +199,39 @@ function AppLayout() {
   );
 }
 
-function ThemeInit() {
+type Theme = "light" | "dark";
+
+function applyTheme(t: Theme) {
+  const el = document.documentElement;
+  if (t === "dark") el.classList.add("dark");
+  else el.classList.remove("dark");
+}
+
+/** Read persisted theme; default to LIGHT (white mode) when nothing is stored. */
+function getInitialTheme(): Theme {
+  if (typeof window === "undefined") return "light";
+  const stored = window.localStorage.getItem("zeta-theme");
+  return stored === "dark" ? "dark" : "light";
+}
+
+function useTheme(): [Theme, () => void] {
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
   useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
-  return null;
+    applyTheme(theme);
+    try {
+      window.localStorage.setItem("zeta-theme", theme);
+    } catch {
+      /* ignore storage errors */
+    }
+  }, [theme]);
+  const toggle = () => setTheme((p) => (p === "dark" ? "light" : "dark"));
+  return [theme, toggle];
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <ThemeInit />
         <Toaster />
         <Router hook={useHashLocation}>
           <AppLayout />

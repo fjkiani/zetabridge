@@ -76,6 +76,16 @@ class _FakeEga:
     def file_metadata(self, file_id):
         return _live("file_metadata", accession_id=file_id)
 
+    def authorized_datasets(self):
+        return _live("authorized_datasets", n_authorized=1,
+                     authorized_datasets=[{"dataset_id": "EGAD00001011049",
+                                           "description": "Shallow whole genome sequencing",
+                                           "dac_stable_id": "EGAC00001000388"}])
+
+    def file_access_probe(self, file_id):
+        return _live("file_access_probe", metadata_status=200, can_download=True,
+                     file_id=file_id)
+
 
 class _FakeGateway:
     def __init__(self):
@@ -188,3 +198,19 @@ def test_ega_file_metadata(client):
     r = client.get("/api/sources/ega/file/EGAF00008095047", headers=HDR)
     assert r.status_code == 200
     assert r.json()["data"]["accession_id"] == "EGAF00008095047"
+
+
+def test_ega_authorized_datasets(client):
+    r = client.get("/api/sources/ega/authorized-datasets", headers=HDR)
+    assert r.status_code == 200
+    j = r.json()
+    assert j["data"]["n_authorized"] == 1
+    assert j["data"]["authorized_datasets"][0]["dataset_id"] == "EGAD00001011049"
+
+
+def test_ega_file_access_probe(client):
+    r = client.get("/api/sources/ega/file/EGAF00008095569/access-probe", headers=HDR)
+    assert r.status_code == 200
+    j = r.json()
+    assert j["data"]["can_download"] is True
+    assert j["data"]["metadata_status"] == 200
