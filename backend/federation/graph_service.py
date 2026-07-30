@@ -178,6 +178,60 @@ class GraphService:
             "endpoint_prefixes": ENDPOINT_PREFIXES,
         }
 
+    def catalog_tables(self) -> list[dict[str, Any]]:
+        """Expose the live KG as a browsable catalog.
+
+        The legacy catalog router read Gravitino/Snowflake/Databricks connectors
+        (none of which hold the federated KG), so the Catalog page rendered empty.
+        Here each *node label* becomes a "table": catalog = owning endpoint,
+        schema = semantic node type, columns = the union of property keys seen on
+        sampled nodes of that label. Read-only; bounded sampling.
+        """
+        rows = self._read(
+            "MATCH (n) UNWIND labels(n) AS lb "
+            "WITH DISTINCT lb WHERE NOT lb IN $structural "
+            "RETURN lb ORDER BY lb",
+            {"structural": list(_STRUCTURAL_LABELS)},
+        )
+        labels = [r["lb"] for r in rows]
+        tables: list[dict[str, Any]] = []
+        tid = 0
+        for lb in labels:
+            sample = self._read(
+                f"MATCH (n:`{lb}`) WITH n LIMIT 200 "
+                "RETURN count(n) AS n_sample, "
+                "       reduce(keys = [], p IN collect(keys(n)) | keys + [k IN p WHERE NOT k IN keys]) AS pkeys, "
+                "       collect(n.id)[0] AS sample_id",
+            )
+            cnt = self._read(f"MATCH (n:`{lb}`) RETURN count(n) AS c")
+            n_nodes = cnt[0]["c"] if cnt else 0
+            pkeys = sorted(sample[0]["pkeys"]) if sample and sample[0]["pkeys"] else []
+            sample_id = sample[0]["sample_id"] if sample else None
+            endpoint = endpoint_of(sample_id) or "GRAPH"
+            cols = [{"name": k, "type": "property", "nullable": True} for k in pkeys]
+            tables.append({
+                "id": tid,
+                "catalog_name": endpoint,
+                "catalog_type": "Neo4j",
+                "schema_name": lb,
+                "table_name": lb,
+                "columns": cols,
+                "properties": {"node_count": str(n_nodes), "kind": "node_label"},
+                "fqn": f"{endpoint}.{lb}.{lb}",
+            })
+            tid += 1
+        return tables
+
+    def catalog_stats(self) -> dict[str, Any]:
+        tables = self.catalog_tables()
+        catalogs = sorted({t["catalog_name"] for t in tables})
+        return {
+            "n_tables": len(tables),
+            "n_catalogs": len(catalogs),
+            "catalogs": catalogs,
+            "total_nodes": sum(int(t["properties"]["node_count"]) for t in tables),
+        }
+
     def get_node(self, node_id: str) -> dict[str, Any] | None:
         rows = self._read(
             "MATCH (n {id:$id}) "
@@ -214,12 +268,35 @@ class GraphService:
             where.append("(n.type = $type OR n.entity_type = $type OR $type IN labels(n))")
             params["type"] = type_
         if name_contains:
-            where.append("toLower(coalesce(n.name,'')) CONTAINS toLower($nc)")
+            where.append(
+                "(toLower(coalesce(n.name,'')) CONTAINS toLower($nc) "
+                "OR toLower(coalesce(n.id,'')) CONTAINS toLower($nc))"
+            )
             params["nc"] = name_contains
         where_clause = ("WHERE " + " AND ".join(where)) if where else ""
+        # Relevance ranking: exact name/id match > name/id prefix > name/id
+        # substring > incidental (verbatim/attribute) text match. Without an
+        # ORDER BY, Neo4j returns nodes in arbitrary storage order, so a search
+        # for "BRCA1" buried the actual BRCA1 gene node under unrelated nodes
+        # that merely mention it in free text.
+        if name_contains:
+            score = (
+                "WITH n, CASE "
+                "WHEN toLower(coalesce(n.name,'')) = toLower($nc) "
+                "  OR toLower(coalesce(n.id,'')) = toLower($nc) THEN 0 "
+                "WHEN toLower(coalesce(n.name,'')) STARTS WITH toLower($nc) "
+                "  OR toLower(coalesce(n.id,'')) STARTS WITH toLower($nc) THEN 1 "
+                "WHEN toLower(coalesce(n.name,'')) CONTAINS toLower($nc) THEN 2 "
+                "ELSE 3 END AS _score "
+            )
+            order = "ORDER BY _score ASC, coalesce(n.name, n.id) ASC "
+        else:
+            score = "WITH n, 0 AS _score "
+            order = "ORDER BY coalesce(n.name, n.id) ASC "
         cypher = (
             f"MATCH (n{label_clause}) {where_clause} "
-            f"RETURN properties(n) AS props, labels(n) AS labels LIMIT {limit}"
+            f"{score}"
+            f"RETURN properties(n) AS props, labels(n) AS labels {order} LIMIT {limit}"
         )
         rows = self._read(cypher, params)
         return [self._node_payload(r["props"], r["labels"]) for r in rows]
