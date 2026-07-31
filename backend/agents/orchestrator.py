@@ -69,6 +69,8 @@ class Intent(str, Enum):
     MULTI_STEP = "multi_step"       # requires multiple agents
     PLATFORM_OVERVIEW = "platform_overview"  # full 360 view
     FEDERATE_BRIDGE = "federate_bridge"  # Synapse<->PDS cross-endpoint bridge
+    CAPABILITY_ANCHOR = "capability_anchor"    # outcome-anchor index lookup
+    CAPABILITY_EFFICACY = "capability_efficacy"  # Efficacy Predictor (Cox/logistic)
     UNKNOWN = "unknown"
 
 
@@ -96,6 +98,8 @@ _INTENT_KEYWORDS: dict[str, list[str]] = {
     Intent.CONNECTOR_DISCOVER: ["discover sources", "find sources", "auto discover"],
     Intent.PLATFORM_OVERVIEW: ["overview", "dashboard", "platform status", "360", "everything", "full picture", "summary"],
     Intent.FEDERATE_BRIDGE: ["federate", "federation", "bridge", "cross-endpoint", "cross endpoint", "synapse to pds", "synapse and pds", "hidden signal", "hidden signals", "link synapse", "connect synapse"],
+    Intent.CAPABILITY_ANCHOR: ["outcome anchor", "outcome data", "clinical outcome", "what outcomes", "which cohorts", "dataset outcome", "trial outcome", "do we have os", "do we have pfs", "platinum sensitivity data", "publication for", "what was the outcome"],
+    Intent.CAPABILITY_EFFICACY: ["predict survival", "predict outcome", "efficacy", "cox model", "cox ph", "hazard ratio", "survival model", "train a model", "predict os", "predict pfs", "predict platinum", "logistic regression", "concordance", "c-index", "auc", "efficacy predictor", "model outcomes", "reverse engineer"],
 }
 
 
@@ -291,6 +295,89 @@ def decompose_task(intent: Intent, user_input: str, params: dict = None) -> Exec
     return plan
 
 
+# ── Capability layer (outcome anchors + Efficacy Predictor) ──────────────────
+
+def _capability_anchor_answer(user_input: str) -> dict:
+    """Answer 'what outcomes / which cohorts / publication for X' from the anchor index."""
+    from routers.capability import _load_index
+    idx = _load_index()
+    sources = idx.get("sources", [])
+    q = user_input.lower()
+    hit = None
+    for s in sources:
+        keys = [s["source_id"].lower(), s["name"].lower(), s.get("cancer_type", "").lower()]
+        if any(k and k in q for k in keys):
+            hit = s
+            break
+    if hit:
+        pub = hit.get("publication", {})
+        summary = (f"{hit['name']} ({hit['source_id']}): {hit['cohort_n']} patients, "
+                   f"{hit['cancer_type']}, trial={'yes' if hit['is_trial'] else 'no'}. "
+                   f"Outcomes: {', '.join(hit.get('outcome_vars', []))}. "
+                   f"Signals: {', '.join(hit.get('signal_vars', []))}. "
+                   f"Publication: {pub.get('title', 'n/a')} ({pub.get('doi', 'n/a')}). "
+                   f"Efficacy-ready: {hit['efficacy_ready']}.")
+        return {"results": hit, "summary": summary}
+    lines = []
+    for s in sources:
+        lines.append(f"- {s['name']} ({s['source_id']}): {s['cohort_n']} pts, {s['cancer_type']}, "
+                     f"outcomes={', '.join(s.get('outcome_vars', []))}, efficacy_ready={s['efficacy_ready']}")
+    summary = (f"ZetaBridge has {len(sources)} outcome-anchored sources:\n" + "\n".join(lines))
+    return {"results": {"n_sources": len(sources), "sources": sources}, "summary": summary}
+
+
+def _capability_efficacy_answer(user_input: str, params: dict) -> dict:
+    """Parse cohort/features/outcome from the prompt and run the Efficacy Predictor."""
+    from routers.capability import EfficacyRequest, run_efficacy
+    q = user_input.lower()
+    cohort = params.get("cohort")
+    if not cohort:
+        if "britroc" in q or "brit" in q:
+            cohort = "britroc"
+        elif "spectrum" in q or "synapse" in q or "msk" in q:
+            cohort = "spectrum"
+        else:
+            cohort = "britroc"
+    analysis = params.get("analysis")
+    if not analysis:
+        if "platinum" in q or "sensitivity" in q or "resistance" in q:
+            analysis = "platinum_sensitivity"
+        elif "pfs" in q or "progression" in q:
+            analysis = "pfs"
+        else:
+            analysis = "os"
+    feats = params.get("features")
+    if not feats:
+        if cohort == "spectrum":
+            feats = ["is_fbi"]
+        else:
+            cand = ["LST_score", "fraction_genome_altered", "CCNE1", "KRAS", "MYC", "age"]
+            feats = [c for c in cand if c.lower() in q] or ["LST_score", "fraction_genome_altered"]
+    try:
+        res = run_efficacy(EfficacyRequest(cohort=cohort, analysis=analysis, features=feats,
+                                           cv_folds=int(params.get("cv_folds", 5))))
+    except Exception as e:
+        return {"results": {"error": str(e)},
+                "summary": f"Efficacy model failed: {e}. Try cohort=spectrum|britroc, analysis=os|pfs|platinum_sensitivity."}
+    if res["model"] == "cox_ph":
+        hr = res.get("hazard_ratios", {})
+        hr_s = ", ".join(f"{k} HR={v}" for k, v in hr.items())
+        summary = (f"Efficacy Predictor — {cohort} → {analysis} (Cox PH, n={res['n']}, events={res['events']}): "
+                   f"CV concordance={res.get('cv_concordance_mean')}. {hr_s}. "
+                   f"PH assumption ok={res.get('ph_assumption_ok')}. Discovery-only (single cohort).")
+    else:
+        summary = (f"Efficacy Predictor — {cohort} → {analysis} (logistic, n={res['n']}, events={res['events']}): "
+                   f"CV AUC={res.get('cv_auc_mean')}. Discovery-only (single cohort).")
+    return {"results": res, "summary": summary}
+
+
+def _handle_capability_intent(intent: "Intent", user_input: str, params: dict) -> dict:
+    """Route a capability intent to the anchor index or the Efficacy Predictor."""
+    if intent == Intent.CAPABILITY_ANCHOR:
+        return _capability_anchor_answer(user_input)
+    return _capability_efficacy_answer(user_input, params or {})
+
+
 # ── Orchestrator ─────────────────────────────────────────────────────────────
 
 class Orchestrator:
@@ -414,6 +501,14 @@ class Orchestrator:
         # Step 1: Classify intent
         intent = classify_intent(user_input)
         log.info("Co-pilot intent: %s for input: %s", intent.value, user_input[:80])
+
+        # Capability layer: outcome-anchor + Efficacy Predictor, answered directly
+        # from the byte-verified anchors (no agent decomposition needed).
+        if intent in (Intent.CAPABILITY_ANCHOR, Intent.CAPABILITY_EFFICACY):
+            cap = _handle_capability_intent(intent, user_input, params)
+            cap["intent"] = intent.value
+            cap["user_input"] = user_input
+            return cap
 
         # Step 2: Decompose into execution plan
         plan = decompose_task(intent, user_input, params)

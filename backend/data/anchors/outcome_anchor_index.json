@@ -120,10 +120,22 @@
    "source_id": "B_PDS",
    "name": "Project Data Sphere oncology RCTs",
    "repository": "Project Data Sphere / SAS Viya CAS",
-   "cancer_type": "Multi (Breast/Colorectal/Gastric/Lung/etc.)",
+   "cancer_type": "Multi (Breast/Colorectal/Head&Neck/Lung)",
    "is_trial": true,
-   "design": "Randomized controlled trials (40 trials)",
-   "cohort_n": "40 trials, 4.6M rows",
+   "design": "Randomized controlled trials (40 trials indexed; 9 with clean patient-level survival extracted)",
+   "cohort_n": 12069,
+   "cohort_with_outcome": 12069,
+   "trials_extracted": [
+    "Breast_Allianc_2002_194 (n=3171, OS+DFS)",
+    "Breast_Allianc_2002_200 (n=3871, OS+DFS)",
+    "Colorec_Amgen_2004_310 (n=370, PFS)",
+    "Colorec_Amgen_2005_262 (n=842, OS+PFS, panitumumab+bev vs bev)",
+    "Colorec_Amgen_2006_263 (n=946, OS+PFS)",
+    "Colorec_Amgen_2006_264 (n=935, OS+PFS)",
+    "Colorec_Amgen_2006_309 (n=935, OS+PFS)",
+    "HeadNe_Amgen_2007_265 (n=520, OS)",
+    "LungSm_Amgen_2002_266 (n=479, OS)"
+   ],
    "publication": {
     "cite": "PDS data-sharing platform (multiple trial publications)"
    },
@@ -132,25 +144,23 @@
     "os_event": true,
     "dfs_mos": true,
     "pfs_mos": true,
-    "treatment_arm": true,
-    "efficacy_response": true,
-    "labs": true
+    "treatment_arm": true
    },
    "signal_vars": {
-    "treatment_arms": "RCT randomization",
+    "treatment_arms": "RCT randomization (e.g. panitumumab+bevacizumab vs bevacizumab)",
     "tumor_response": "RECIST/efficacy tables",
     "longitudinal_labs": "chemistry/heme"
    },
-   "key_finding": "RCT arm-assignment + OS/PFS + response -> Efficacy Predictor training arm",
+   "key_finding": "12069 RCT patients with arm + OS/PFS/DFS -> reverse-engineer-trials Efficacy Predictor training arm",
    "files": {
     "outcome_anchor": "pds/pds_outcome_anchor.csv",
-    "manifest": "pds/pds_table_manifest.csv"
+    "summary": "pds/pds_extraction_summary.json"
    },
    "efficacy_ready": true,
    "model_target": [
     "os",
     "pfs",
-    "response"
+    "dfs"
    ]
   }
  ]

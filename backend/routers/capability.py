@@ -78,6 +78,7 @@ class EfficacyRequest(BaseModel):
 _COHORT_FILES = {
     "spectrum": {"file": "synapse/survival_table.json", "kind": "json"},
     "britroc": {"file": "ega/britroc_outcome_anchor.csv", "kind": "csv"},
+    "pds": {"file": "pds/pds_outcome_anchor.csv", "kind": "csv"},
 }
 
 
@@ -93,6 +94,15 @@ def _load_cohort(name: str) -> pd.DataFrame:
         df["os_days"] = df["os_time"]; df["os_ev"] = df["os_event"]
         df["pfs_days"] = df["pfs_time"]; df["pfs_ev"] = df["pfs_event"]
         df["is_fbi"] = (df["group"] == "FBI").astype(int)
+    elif name == "pds":
+        df = pd.read_csv(path)
+        # months -> days for consistency with other cohorts
+        df["os_days"] = df["os_mos"] * 30.44; df["os_ev"] = df["os_event"]
+        df["pfs_days"] = df["pfs_mos"] * 30.44; df["pfs_ev"] = df["pfs_event"]
+        df["dfs_days"] = df["dfs_mos"] * 30.44; df["dfs_ev"] = df["dfs_event"]
+        # numeric arm indicator within each trial (1 = first arm, 0 = reference)
+        df["arm_str"] = df["arm"].astype(str)
+        df["arm_ind"] = df.groupby("caslib")["arm_str"].transform(lambda s: (s == s.mode().iloc[0]).astype(int))
     else:
         df = pd.read_csv(path)
         df["os_days"] = df["os"]; df["os_ev"] = df["status"]
@@ -110,6 +120,9 @@ def list_cohorts() -> dict:
         {"cohort": "britroc", "n": 273, "cancer": "ovarian HGSOC (relapse)",
          "features": ["LST_score", "fraction_genome_altered", "CCNE1", "KRAS", "MYC", "age"],
          "targets": ["os", "pfs", "platinum_sensitivity"]},
+        {"cohort": "pds", "n": 12069, "cancer": "multi (breast/colorectal/head&neck/lung RCTs)",
+         "features": ["arm_ind"], "targets": ["os", "pfs", "dfs"],
+         "note": "RCT arm indicator within trial; filter by caslib for single-trial model"},
     ]}
 
 

@@ -1,0 +1,423 @@
+[
+ {
+  "caslib": "Breast_Allianc_2002_194",
+  "table": "eval46_3_finala",
+  "n_patients": 3171,
+  "has_arm": true,
+  "has_dfs": true,
+  "has_pfs": false,
+  "status": "ok"
+ },
+ {
+  "caslib": "Breast_Allianc_2002_200",
+  "table": "all_finalb",
+  "n_patients": 3871,
+  "has_arm": true,
+  "has_dfs": true,
+  "has_pfs": false,
+  "status": "ok"
+ },
+ {
+  "caslib": "Breast_Allianc_2006_216",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_Allianc_2008_158",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_Allianc_2009_162",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_AmgenI_2006_122",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_Amgen_2004_153",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_Celgene_2001_107",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_EliLill_2008_168",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_Multipl_2004_414",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_Pfizer_2006_111",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_Pfizer_2006_112",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_Pfizer_2007_113",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_SanofiU_1997_120",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_SanofiU_1998_127",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_SanofiU_2000_118",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Breast_SanofiU_2004_135",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_Allianc_1994_201",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_Allianc_1997_138",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_Allianc_1997_182",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_Allianc_2004_161",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_Amgen_2004_310",
+  "table": "adsl_pds2019",
+  "n_patients": 370,
+  "has_arm": true,
+  "has_dfs": false,
+  "has_pfs": true,
+  "status": "ok"
+ },
+ {
+  "caslib": "Colorec_Amgen_2005_262",
+  "table": "a_eendpt",
+  "n_patients": 842,
+  "has_arm": true,
+  "has_dfs": false,
+  "has_pfs": true,
+  "status": "ok"
+ },
+ {
+  "caslib": "Colorec_Amgen_2006_263",
+  "table": "a_eendpt",
+  "n_patients": 946,
+  "has_arm": true,
+  "has_dfs": false,
+  "has_pfs": true,
+  "status": "ok"
+ },
+ {
+  "caslib": "Colorec_Amgen_2006_264",
+  "table": "a_eendpt",
+  "n_patients": 935,
+  "has_arm": true,
+  "has_dfs": false,
+  "has_pfs": true,
+  "status": "ok"
+ },
+ {
+  "caslib": "Colorec_Amgen_2006_309",
+  "table": "adsl_pds2019",
+  "n_patients": 935,
+  "has_arm": true,
+  "has_dfs": false,
+  "has_pfs": true,
+  "status": "ok"
+ },
+ {
+  "caslib": "Colorec_AstraZe_2006_78",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_Multipl_2006_251",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_Pfizer_2007_114",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_SanofiU_1998_128",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_SanofiU_2002_137",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_SanofiU_2005_136",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Colorec_SanofiU_2007_131",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Gastric_MerckKG_2008_130",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Gastric_Multipl_1999_416",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Gastric_Multipl_2008_415",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Gastric_SanofiU_1999_143",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Glioma_EMDSero_2008_441",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Glioma_EMDSero_2009_440",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "HeadNe_Amgen_2007_265",
+  "table": "aeendpt",
+  "n_patients": 520,
+  "has_arm": true,
+  "has_dfs": false,
+  "has_pfs": false,
+  "status": "ok"
+ },
+ {
+  "caslib": "HeadNe_EliLill_2006_150",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "HeadNe_SanofiU_1998_142",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "HeadNe_SanofiU_2002_129",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Kidney_BayerAG_2003_97",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Liver_Pfizer_2008_124",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungNo_Celgene_2007_108",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungNo_ELiLill_2006_116",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungNo_EliLill_2008_141",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungNo_EliLill_2008_148",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungNo_EliLill_2009_438",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungNo_EliLill_2010_272",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungNo_MerckKG_2007_145",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungNo_Pfizer_2007_115",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungNo_SanofiU_2007_133",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungSm_Allianc_1998_261",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungSm_Allianc_2007_218",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungSm_Amgen_2002_266",
+  "table": "a_eendpt",
+  "n_patients": 479,
+  "has_arm": false,
+  "has_dfs": false,
+  "has_pfs": true,
+  "status": "ok"
+ },
+ {
+  "caslib": "LungSm_EliLill_2011_287",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungSm_G1Thera_2015_433",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "LungSm_G1Thera_2015_434",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Lymphom_Allianc_2006_212",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Melanom_SyntaPh_2007_123",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Multiple_Allianc_2002_202",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Multiple_Allianc_2002_213",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Multiple_Amgen_2006_156",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Multiple_Brigham_454",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Multiple_MerckKG_2008_441",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Multiple_SanofiU_2008_119",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Myelody_sanofi_2012_110",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Pancrea_Celgene_2008_132",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Pancrea_ClovisO_2010_186",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Pancrea_EMDSero_2009_442",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Pancrea_Multipl_2020_430",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Pancrea_SanofiU_2007_134",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Pancrea_Sanofi_2006_109",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_AmgenI_2006_121",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Amgen_2004_154",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Amgen_2006_155",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Asociac_484",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_AstraZe_1995_102",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_AstraZe_1995_105",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_AstraZe_1995_106",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_AstraZe_2009_144",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Celgene_2009_90",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Multipl_2008_406",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Multipl_2008_420",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Multipl_2009_417",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Multipl_2018_234",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Pfizer_2008_81",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Researc_2016_167",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Sanofi_2000_80",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Sanofi_2007_79",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_Sanofi_2007_83",
+  "status": "no_survival_table"
+ },
+ {
+  "caslib": "Prostat_na_2006_149",
+  "status": "no_survival_table"
+ }
+]
