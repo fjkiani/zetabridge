@@ -96,10 +96,19 @@ def _load_cohort(name: str) -> pd.DataFrame:
         df["is_fbi"] = (df["group"] == "FBI").astype(int)
     elif name == "pds":
         df = pd.read_csv(path)
-        # months -> days for consistency with other cohorts
-        df["os_days"] = df["os_mos"] * 30.44; df["os_ev"] = df["os_event"]
-        df["pfs_days"] = df["pfs_mos"] * 30.44; df["pfs_ev"] = df["pfs_event"]
-        df["dfs_days"] = df["dfs_mos"] * 30.44; df["dfs_ev"] = df["dfs_event"]
+        # UNIT FIX: pds os_mos/pfs_mos/dfs_mos are MIXED units at the source-table
+        # level. Breast trials (eval46_3_finala, all_finalb) are true months;
+        # colorectal/head-neck/lung tables (adsl_pds2019, a_eendpt, aeendpt) are
+        # DAYS mislabeled as months. Blanket *30.44 inflated those ~30x and
+        # corrupted any pooled Cox. Normalize per-table to days.
+        _TABLE_UNIT = {"eval46_3_finala": "months", "all_finalb": "months",
+                       "adsl_pds2019": "days", "a_eendpt": "days", "aeendpt": "days"}
+        df["_unit"] = df["table"].map(_TABLE_UNIT).fillna("months")
+        df["_factor"] = (df["_unit"] == "months").astype(float) * 30.44 + (df["_unit"] == "days").astype(float) * 1.0
+        df["os_days"] = pd.to_numeric(df["os_mos"], errors="coerce") * df["_factor"]; df["os_ev"] = df["os_event"]
+        df["pfs_days"] = pd.to_numeric(df["pfs_mos"], errors="coerce") * df["_factor"]; df["pfs_ev"] = df["pfs_event"]
+        df["dfs_days"] = pd.to_numeric(df["dfs_mos"], errors="coerce") * df["_factor"]; df["dfs_ev"] = df["dfs_event"]
+        df = df.drop(columns=["_factor"])
         # numeric arm indicator within each trial (1 = first arm, 0 = reference)
         df["arm_str"] = df["arm"].astype(str)
         df["arm_ind"] = df.groupby("caslib")["arm_str"].transform(lambda s: (s == s.mode().iloc[0]).astype(int))
