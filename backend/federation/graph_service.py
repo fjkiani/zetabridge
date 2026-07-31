@@ -16,6 +16,7 @@ result-row cap and a connection-acquisition timeout instead.
 from __future__ import annotations
 
 import os
+import time
 from typing import Any, Iterable
 
 from neo4j import GraphDatabase
@@ -51,18 +52,40 @@ ENDPOINT_PREFIXES: dict[str, list[str]] = {
     ],
 }
 
+# Second-segment refinement: ids whose endpoint is encoded in the 2nd colon
+# segment (e.g. biomarker:kras:colorectal -> B_SAS, genomicfeature:msk -> A_MSK).
+# endpoint_of() checks these first so key biomarker/gene nodes are not
+# misclassified as GRAPH hubs.
+ENDPOINT_SECOND_SEGMENT: dict[str, str] = {
+    "msk": "A_MSK", "synapse": "A_MSK", "spectrum": "A_MSK",
+    "sas": "B_SAS", "pds": "B_SAS", "colorectal": "B_SAS", "breast": "B_SAS",
+    "kras": "B_SAS",
+    "ega": "C_EGA", "britroc": "C_EGA", "britroc1": "C_EGA",
+    "argo": "D_ARGO", "icgc": "D_ARGO", "pog": "D_ARGO", "pogca": "D_ARGO",
+}
+
 # labels that are structural, not the semantic type
 _STRUCTURAL_LABELS = {"Entity", "ZetaVault", "Resource", "_Bloom_Perspective_"}
 
 
 def endpoint_of(node_id: str | None) -> str | None:
-    """Return endpoint code (A_MSK/B_SAS/C_EGA) for a node id, else None."""
+    """Return endpoint code (A_MSK/B_SAS/C_EGA/D_ARGO) for a node id, else None.
+
+    Checks the explicit prefix map first, then falls back to a 2nd-segment
+    lookup so ids like ``biomarker:kras:colorectal`` or ``genomicfeature:msk:``
+    resolve to their true source instead of the GRAPH hub.
+    """
     if not node_id:
         return None
     for code, prefixes in ENDPOINT_PREFIXES.items():
         for p in prefixes:
             if node_id.startswith(p):
                 return code
+    parts = node_id.split(":")
+    if len(parts) >= 2:
+        seg = parts[1].lower()
+        if seg in ENDPOINT_SECOND_SEGMENT:
+            return ENDPOINT_SECOND_SEGMENT[seg]
     return None
 
 
@@ -227,14 +250,45 @@ class GraphService:
         return tables
 
     def catalog_stats(self) -> dict[str, Any]:
-        tables = self.catalog_tables()
-        catalogs = sorted({t["catalog_name"] for t in tables})
-        return {
-            "n_tables": len(tables),
+        """Cheap catalog stats — single consolidated Cypher query + 5-min cache.
+
+        Previously this called catalog_tables(), which issues 3 Cypher
+        round-trips per label (91 labels = 273 queries, ~102s), then called it
+        AGAIN -> ~204s -> Render 30s proxy timeout -> 502. This version gets
+        per-label node counts in ONE query and derives endpoint from a single
+        sampled id per label, all cached for 5 minutes.
+        """
+        now = time.time()
+        cache = getattr(self, "_catalog_stats_cache", None)
+        if cache and (now - cache["ts"]) < 300:
+            return cache["data"]
+        # One query: per-label node counts.
+        rows = self._read(
+            "MATCH (n) UNWIND labels(n) AS lb "
+            "WITH lb WHERE NOT lb IN $structural "
+            "MATCH (m) WHERE lb IN labels(m) "
+            "RETURN lb AS lb, count(m) AS c ORDER BY lb",
+            {"structural": list(_STRUCTURAL_LABELS)},
+        )
+        # One query: one sample id per label for endpoint resolution.
+        sid_rows = self._read(
+            "MATCH (n) UNWIND labels(n) AS lb "
+            "WITH DISTINCT lb WHERE NOT lb IN $structural "
+            "MATCH (m) WHERE lb IN labels(m) "
+            "WITH lb, m.id AS i LIMIT 1 "
+            "RETURN lb AS lb, collect(i)[0] AS i",
+            {"structural": list(_STRUCTURAL_LABELS)},
+        )
+        sid_map = {r["lb"]: r["i"] for r in sid_rows}
+        catalogs = sorted({endpoint_of(sid_map.get(r["lb"])) or "GRAPH" for r in rows})
+        data = {
+            "n_tables": len(rows),
             "n_catalogs": len(catalogs),
             "catalogs": catalogs,
-            "total_nodes": sum(int(t["properties"]["node_count"]) for t in tables),
+            "total_nodes": sum(int(r["c"]) for r in rows),
         }
+        self._catalog_stats_cache = {"ts": now, "data": data}
+        return data
 
     def get_node(self, node_id: str) -> dict[str, Any] | None:
         rows = self._read(
