@@ -132,3 +132,14 @@ app.include_router(agents_router.router)
 from routers import platform as platform_router
 
 app.include_router(platform_router.router)
+
+# Agent GPS navigation layer — /api/gps (task registry, graph coordinates,
+# provenance ledger). Registered in BOTH modes.
+from routers import gps as gps_router
+
+app.include_router(gps_router.router)
+
+# GraphRAG — /api/rag multi-hop traversal over the live KG (no cache).
+from routers import rag as rag_router
+
+app.include_router(rag_router.router)

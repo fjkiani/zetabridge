@@ -30,6 +30,39 @@ def _detect_capability_intent(text: str) -> str | None:
     return None
 
 
+_GRAPH_Q_KW = ["connect", "connected", "connection", "path", "hop", "traverse", "link",
+               "relationship", "how is", "how does", "bridge", "between", "neighbor",
+               "reach", "associated with", "related to"]
+
+
+def _is_graph_question(text: str) -> bool:
+    q = text.lower()
+    return any(k in q for k in _GRAPH_Q_KW)
+
+
+def _extract_term(text: str) -> str:
+    """Pull the most likely entity term out of a graph question."""
+    import re
+    q = text.strip().rstrip("?")
+    # gene-like tokens (BRCA1, TP53, CCNE1) or capitalized multi-word entities
+    genes = re.findall(r"\b[A-Z][A-Z0-9]{2,}\d*\b", q)
+    if genes:
+        return genes[0]
+    # "how is X connected to Y" -> X ; "between X and Y" -> X
+    m = re.search(r"how (?:is|does|are) (.+?) (?:connected|related|linked|associated)", q, re.I)
+    if m:
+        return m.group(1).strip()
+    m = re.search(r"between (.+?) and ", q, re.I)
+    if m:
+        return m.group(1).strip()
+    # fallback: longest capitalized word, else last content word
+    words = [w for w in re.findall(r"[A-Za-z][A-Za-z0-9_-]+", q) if len(w) > 3]
+    stop = {"what", "show", "tell", "about", "connect", "connected", "connection", "path",
+            "traverse", "relationship", "between", "neighbor", "reach", "associated", "related"}
+    words = [w for w in words if w.lower() not in stop]
+    return words[-1] if words else q
+
+
 def _run_capability(intent: str, message: str, params: dict) -> dict:
     """Call the capability router logic directly (anchors + Efficacy Predictor)."""
     from routers import capability as cap
@@ -98,6 +131,23 @@ async def copilot_chat(req: CoPilotChatRequest):
                                  "data": cap["results"], "render_type": "text", "suggestions": sugg}}
         except Exception as exc:
             raise HTTPException(400, f"capability query failed: {exc}") from exc
+
+    # Graph questions -> multi-hop GraphRAG over the live KG (no cache).
+    if _is_graph_question(req.message):
+        try:
+            from federation.graph_service import GraphService
+            from federation.graph_rag_neo4j import Neo4jGraphRAG
+            term = _extract_term(req.message)
+            rag = Neo4jGraphRAG(GraphService.from_env())
+            ans = rag.answer(term, max_hops=int((req.params or {}).get("max_hops", 3)))
+            paths_txt = "\n".join(f"  • {p['chain']} ({p['hops']} hops)" for p in ans.get("paths", []))
+            summary = ans["summary"] + ("\n" + paths_txt if paths_txt else "")
+            return {"response": {"summary": summary, "intent": "graph_rag",
+                                 "data": ans, "render_type": "text",
+                                 "suggestions": ["how is BRCA1 connected to neutropenia?",
+                                                 "what outcomes do we have for britroc?"]}}
+        except Exception as exc:
+            raise HTTPException(400, f"graph query failed: {exc}") from exc
 
     try:
         import legacy_app as leg
