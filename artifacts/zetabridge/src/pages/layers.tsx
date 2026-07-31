@@ -35,6 +35,12 @@ const LAYER_DEFS: Record<string, DatasetLayers> = {
       { layer: "L2", label: "Summary", signals: 7, detail: "CIBERSORT immune fractions" },
       { layer: "L3", label: "Derived signals", signals: 2, detail: "ICI response + CD8 protective (HR 0.756) in 76 ICI patients" },
     ]},
+  CRC: { id: "CRC", name: "Colorectal (cBioPortal + SAS PDS)", source: "vault:cbioportal_crc", maxLayer: "L3",
+    layers: [
+      { layer: "L1", label: "Metadata", signals: 2, detail: "4,025 cBioPortal + 4,028 SAS PDS mCRC patients" },
+      { layer: "L2", label: "Summary", signals: 5, detail: "TMB / MSI / RAS / BRAF / ECOG across 5+5 cohorts" },
+      { layer: "L3", label: "Derived signals", signals: 8, detail: "BRAF + RAS externally validated; TMB≥28 protective (HR 0.726); treat×RAS predictive (HR 1.258); TCGA immune proxy validated" },
+    ]},
 };
 
 export default function Layers() {
