@@ -1,0 +1,155 @@
+{
+  "A_MSK_SPECTRUM": {
+    "dataset": "A_MSK_SPECTRUM",
+    "name": "SPECTRUM ovarian HGSOC single-cell",
+    "repository": "Synapse/MSK",
+    "cancer_type": "Ovarian HGSOC",
+    "extraction_status": "extracted",
+    "cohort_n": 41,
+    "cohort_with_outcome": 39,
+    "publication": {
+      "doi": "10.1038/s41586-022-05032-0",
+      "cite": "Vazquez-Garcia/Uhlitz Nature 2022; McPherson Nature 2025 (WGD)"
+    },
+    "outcome_vars": {
+      "os_time_days": true,
+      "os_event": true,
+      "pfs_time_days": true,
+      "pfs_event": true,
+      "platinum_sensitivity": false
+    },
+    "signal_vars": {
+      "scRNA_pseudobulk_DE": "123 genes (104 FBI-up, 19 HRD-up)",
+      "hallmark_pathways": "11 ssGSEA (FDR<0.05)",
+      "subtype": "HRD-Dup/HRD-Del/FBI (mutational signatures)"
+    },
+    "key_finding": "FBI subtype -> worse OS (HR=6.17, p=0.002) and PFS (p=0.0099); prognostic biomarker",
+    "files": {
+      "outcome_anchor": "synapse/patient_outcomes.csv",
+      "survival": "synapse/survival_table.json",
+      "gene_de": "synapse/gene_de_signals.csv",
+      "pathways": "synapse/pathway_ssgsea_subtype.csv"
+    },
+    "efficacy_ready": true,
+    "model_target": [
+      "os",
+      "pfs"
+    ],
+    "resumable_pointer": "synapse/patient_outcomes.csv",
+    "updated_at": "2026-07-31T03:48:57Z"
+  },
+  "C_EGA_BRITROC1": {
+    "dataset": "C_EGA_BRITROC1",
+    "name": "BriTROC-1 recurrent ovarian HGSOC",
+    "repository": "EGA (EGAD00001011049) + Zenodo 8304868 + GitHub BRITROC",
+    "cancer_type": "Ovarian HGSOC (relapse)",
+    "extraction_status": "extracted",
+    "cohort_n": 276,
+    "cohort_with_outcome": 273,
+    "publication": {
+      "doi": "10.1038/s41467-023-39867-7",
+      "cite": "Smith & Bradley Nat Commun 2023"
+    },
+    "outcome_vars": {
+      "os_time_days": true,
+      "os_event": true,
+      "pfs_time_days": true,
+      "pfs_event": true,
+      "platinum_sensitivity": true,
+      "age": true,
+      "stage": true,
+      "chemo_lines": true
+    },
+    "signal_vars": {
+      "absolute_CN": "30kb absCopyNumber segment table (672 samples)",
+      "HRD_scar": "LST + FGA derived per sample",
+      "focal_amps": "CCNE1/KRAS/MYC/ERBB2",
+      "SNV": "TAM-Seq targeted panel"
+    },
+    "key_finding": "CCNE1 amp 95% platinum-resistant vs 65% sensitive (replicates paper); FGA higher in resistant (p=0.006)",
+    "files": {
+      "outcome_anchor": "ega/britroc_outcome_anchor.csv",
+      "sample_cn": "ega/britroc_sample_cn.csv"
+    },
+    "efficacy_ready": true,
+    "model_target": [
+      "os",
+      "pfs",
+      "platinum_sensitivity"
+    ],
+    "resumable_pointer": "ega/britroc_outcome_anchor.csv",
+    "updated_at": "2026-07-31T03:48:57Z"
+  },
+  "D_ARGO_POGCA": {
+    "dataset": "D_ARGO_POGCA",
+    "name": "ICGC ARGO POG-CA pan-cancer WGS",
+    "repository": "ICGC ARGO",
+    "cancer_type": "Pan-cancer (advanced/metastatic)",
+    "extraction_status": "partial",
+    "cohort_n": 324,
+    "cohort_with_outcome": null,
+    "publication": {
+      "doi": "10.1038/s43018-020-0015-6",
+      "cite": "Pleasance Nat Cancer 2020 (POG570)"
+    },
+    "outcome_vars": {
+      "os_months": "via POG570 cBioPortal (570 pts)",
+      "ici_response": "via POG570",
+      "hrd_score": "POG570 sample-level",
+      "note": "POG570<->ARGO donor ID map DAC-gated"
+    },
+    "signal_vars": {
+      "SBS3_HRD": "6/18 donors HRD-high (SBS3>10%, sanger-called)",
+      "mutational_spectra": "SBS96 + COSMIC v3.3 NNLS"
+    },
+    "key_finding": "SBS3 HRD signature detectable; POG570 reference cohort has HRD_SCORE+OS+ICI response",
+    "files": {
+      "outcome_anchor": "argo/argo_outcome_anchor.csv",
+      "pog570_ref": "argo/pog570_clinical_full.csv",
+      "sbs3": "argo/argo_pogca_sbs3_exposure.csv"
+    },
+    "efficacy_ready": "partial",
+    "model_target": [
+      "os (POG570 ref)"
+    ],
+    "resumable_pointer": "argo/argo_outcome_anchor.csv",
+    "updated_at": "2026-07-31T03:48:57Z"
+  },
+  "B_PDS": {
+    "dataset": "B_PDS",
+    "name": "Project Data Sphere oncology RCTs",
+    "repository": "Project Data Sphere / SAS Viya CAS",
+    "cancer_type": "Multi (Breast/Colorectal/Head&Neck/Lung)",
+    "extraction_status": "extracted",
+    "cohort_n": 12069,
+    "cohort_with_outcome": 12069,
+    "publication": {
+      "cite": "PDS data-sharing platform (multiple trial publications)"
+    },
+    "outcome_vars": {
+      "os_mos": true,
+      "os_event": true,
+      "dfs_mos": true,
+      "pfs_mos": true,
+      "treatment_arm": true
+    },
+    "signal_vars": {
+      "treatment_arms": "RCT randomization (e.g. panitumumab+bevacizumab vs bevacizumab)",
+      "tumor_response": "RECIST/efficacy tables",
+      "longitudinal_labs": "chemistry/heme"
+    },
+    "key_finding": "12069 RCT patients with arm + OS/PFS/DFS -> reverse-engineer-trials Efficacy Predictor training arm",
+    "files": {
+      "outcome_anchor": "pds/pds_outcome_anchor.csv",
+      "summary": "pds/pds_extraction_summary.json"
+    },
+    "efficacy_ready": true,
+    "model_target": [
+      "os",
+      "pfs",
+      "dfs"
+    ],
+    "resumable_pointer": "pds/pds_outcome_anchor.csv",
+    "updated_at": "2026-07-31T03:48:57Z"
+  }
+}
