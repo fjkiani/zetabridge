@@ -25,16 +25,25 @@ class Neo4jGraphRAG:
     def resolve(self, query: str, limit: int = 8) -> list[dict]:
         # Prefer well-connected nodes: order by degree so traversal seeds are
         # the entities that actually participate in relationships, not leaves.
-        rows = self.svc._read(
+        cypher = (
             "MATCH (n) WHERE toLower(coalesce(n.name,'')) CONTAINS toLower($q) "
             "OR toLower(coalesce(n.id,'')) CONTAINS toLower($q) "
             "OPTIONAL MATCH (n)-[r]-() "
             "WITH n, count(r) AS deg "
             "RETURN n.id AS id, n.name AS name, labels(n) AS labels, "
-            "n.gps_endpoint AS endpoint, deg ORDER BY deg DESC LIMIT $lim",
-            {"q": query, "lim": limit},
-        )
-        return rows
+            "n.gps_endpoint AS endpoint, deg ORDER BY deg DESC LIMIT $lim")
+        rows = self.svc._read(cypher, {"q": query, "lim": limit})
+        if rows:
+            return rows
+        # Fallback: multi-word queries rarely substring-match one node name.
+        # Match on individual significant tokens (len>=4) and merge by degree.
+        tokens = [t.strip("?.,!") for t in query.split() if len(t.strip("?.,!")) >= 4]
+        merged: dict[str, dict] = {}
+        for tok in tokens[:6]:
+            for r in self.svc._read(cypher, {"q": tok, "lim": limit}):
+                if r["id"] not in merged or r["deg"] > merged[r["id"]]["deg"]:
+                    merged[r["id"]] = r
+        return sorted(merged.values(), key=lambda x: x["deg"], reverse=True)[:limit]
 
     # ── 2. BFS traversal ─────────────────────────────────────────────────────
     def traverse(self, start_id: str, max_hops: int = 3, rel_types: list[str] | None = None,
