@@ -121,3 +121,14 @@ app.include_router(vault_router.router)
 from routers import capability as capability_router
 
 app.include_router(capability_router.router)
+
+# Agent framework surface — /api/agents (roster, stats, tools, execution
+# history) for the Agents page + Overview dashboard. Registered in BOTH modes.
+from routers import agents as agents_router
+
+app.include_router(agents_router.router)
+
+# Platform status rollup — /api/platform/status for the Overview dashboard.
+from routers import platform as platform_router
+
+app.include_router(platform_router.router)
