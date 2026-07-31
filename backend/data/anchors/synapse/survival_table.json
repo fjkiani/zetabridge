@@ -1,0 +1,353 @@
+[
+ {
+  "patient": "SPECTRUM-OV-002",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 356.0,
+  "pfs_event": 1,
+  "os_time": 1822.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-003",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 454.0,
+  "pfs_event": 0,
+  "os_time": 2108.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-007",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 2045.0,
+  "pfs_event": 0,
+  "os_time": 2045.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-008",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 663.0,
+  "pfs_event": 0,
+  "os_time": 663.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-009",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1146.0,
+  "pfs_event": 0,
+  "os_time": 2049.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-014",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 576.0,
+  "pfs_event": 1,
+  "os_time": 1535.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-022",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 770.0,
+  "pfs_event": 0,
+  "os_time": 2004.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-024",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 270.0,
+  "pfs_event": 1,
+  "os_time": 1002.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-025",
+  "subtype": "HRD-Del",
+  "group": "HRD",
+  "pfs_time": 1934.0,
+  "pfs_event": 0,
+  "os_time": 1934.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-026",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1691.0,
+  "pfs_event": 0,
+  "os_time": 1980.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-031",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1953.0,
+  "pfs_event": 0,
+  "os_time": 1953.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-036",
+  "subtype": "HRD-Del",
+  "group": "HRD",
+  "pfs_time": 1905.0,
+  "pfs_event": 0,
+  "os_time": 1905.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-037",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1360.0,
+  "pfs_event": 0,
+  "os_time": 1885.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-041",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 476.0,
+  "pfs_event": 1,
+  "os_time": 1361.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-042",
+  "subtype": "HRD-Del",
+  "group": "HRD",
+  "pfs_time": 395.0,
+  "pfs_event": 1,
+  "os_time": 1280.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-045",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 471.0,
+  "pfs_event": 1,
+  "os_time": 881.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-049",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1857.0,
+  "pfs_event": 0,
+  "os_time": 1857.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-050",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1638.0,
+  "pfs_event": 1,
+  "os_time": 1865.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-051",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 534.0,
+  "pfs_event": 0,
+  "os_time": 1863.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-052",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 1785.0,
+  "pfs_event": 0,
+  "os_time": 1785.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-053",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1861.0,
+  "pfs_event": 0,
+  "os_time": 1861.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-054",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 966.0,
+  "pfs_event": 1,
+  "os_time": 966.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-065",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 1086.0,
+  "pfs_event": 1,
+  "os_time": 1295.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-067",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 511.0,
+  "pfs_event": 1,
+  "os_time": 814.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-068",
+  "subtype": "HRD-Del",
+  "group": "HRD",
+  "pfs_time": 301.0,
+  "pfs_event": 1,
+  "os_time": 396.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-070",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 787.0,
+  "pfs_event": 1,
+  "os_time": 1765.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-071",
+  "subtype": "HRD-Del",
+  "group": "HRD",
+  "pfs_time": 950.0,
+  "pfs_event": 1,
+  "os_time": 1157.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-075",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 341.0,
+  "pfs_event": 1,
+  "os_time": 1165.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-077",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 471.0,
+  "pfs_event": 1,
+  "os_time": 1721.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-080",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 233.0,
+  "pfs_event": 1,
+  "os_time": 1232.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-082",
+  "subtype": "HRD-Del",
+  "group": "HRD",
+  "pfs_time": 1606.0,
+  "pfs_event": 0,
+  "os_time": 1606.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-083",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 1217.0,
+  "pfs_event": 0,
+  "os_time": 1609.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-105",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 407.0,
+  "pfs_event": 1,
+  "os_time": 825.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-107",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 502.0,
+  "pfs_event": 0,
+  "os_time": 1448.0,
+  "os_event": 1
+ },
+ {
+  "patient": "SPECTRUM-OV-110",
+  "subtype": "HRD-Del",
+  "group": "HRD",
+  "pfs_time": 1414.0,
+  "pfs_event": 0,
+  "os_time": 1414.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-112",
+  "subtype": "FBI",
+  "group": "FBI",
+  "pfs_time": 1337.0,
+  "pfs_event": 0,
+  "os_time": 1337.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-115",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1393.0,
+  "pfs_event": 0,
+  "os_time": 1393.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-116",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1463.0,
+  "pfs_event": 0,
+  "os_time": 1463.0,
+  "os_event": 0
+ },
+ {
+  "patient": "SPECTRUM-OV-118",
+  "subtype": "HRD-Dup",
+  "group": "HRD",
+  "pfs_time": 1384.0,
+  "pfs_event": 0,
+  "os_time": 1384.0,
+  "os_event": 0
+ }
+]
