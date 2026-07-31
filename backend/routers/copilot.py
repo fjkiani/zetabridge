@@ -16,6 +16,19 @@ class CoPilotChatRequest(BaseModel):
 
 @router.post("/chat")
 async def copilot_chat(req: CoPilotChatRequest):
+    # Capability intents (outcome anchors + Efficacy Predictor) are served by the
+    # lightweight orchestrator path even when the legacy agent stack is off.
+    try:
+        from agents.orchestrator import classify_intent, _handle_capability_intent, Intent
+        intent = classify_intent(req.message)
+        if intent in (Intent.CAPABILITY_ANCHOR, Intent.CAPABILITY_EFFICACY):
+            cap = _handle_capability_intent(intent, req.message, req.params or {})
+            return {"response": {"summary": cap.get("summary"), "intent": intent.value,
+                                 "data": cap.get("results"), "render_type": "text",
+                                 "suggestions": _capability_suggestions(intent)}}
+    except Exception:
+        pass  # fall through to legacy copilot
+
     try:
         import legacy_app as leg
 
@@ -31,6 +44,17 @@ async def copilot_chat(req: CoPilotChatRequest):
         raise
     except Exception as exc:
         raise HTTPException(503, str(exc)) from exc
+
+
+def _capability_suggestions(intent) -> list[str]:
+    from agents.orchestrator import Intent
+    if intent == Intent.CAPABILITY_ANCHOR:
+        return ["what outcomes do we have for britroc?",
+                "which cohorts are efficacy-ready?",
+                "predict os from LST_score and CCNE1"]
+    return ["predict pfs from fraction_genome_altered",
+            "predict platinum sensitivity from CCNE1",
+            "what outcomes do we have for pds?"]
 
 
 @router.get("/sessions/{session_id}/history")
