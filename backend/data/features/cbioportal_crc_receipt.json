@@ -1,0 +1,18 @@
+{
+ "n": 4025,
+ "per_study": {
+  "crc_msk_2017": 1099,
+  "crc_apc_impact_2020": 471,
+  "crc_eo_2020": 1513,
+  "coad_silu_2022": 348,
+  "coadread_tcga_pan_can_atlas_2018": 594
+ },
+ "with_tmb": 2385,
+ "with_msi": 2762,
+ "with_os": 2390,
+ "with_pfs": 1409,
+ "with_ras": 4025,
+ "with_braf": 4025,
+ "md5": "23993697c9abc4fe12c5417a9a510483",
+ "ts": "2026-07-31T10:05:53Z"
+}

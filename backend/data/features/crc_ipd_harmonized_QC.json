@@ -1,0 +1,16 @@
+{
+ "n": 4028,
+ "per_trial": {
+  "PEAK_263": 946,
+  "PRIME_309": 935,
+  "PRIME_264": 935,
+  "PACCE_262": 842,
+  "PaniBSC_310": 370
+ },
+ "with_os": 3186,
+ "with_pfs": 3186,
+ "with_ras": 2668,
+ "with_braf": 702,
+ "with_ecog": 3968,
+ "with_liver": 2816
+}
