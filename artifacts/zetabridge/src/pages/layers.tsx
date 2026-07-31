@@ -39,7 +39,8 @@ const LAYER_DEFS: Record<string, DatasetLayers> = {
     layers: [
       { layer: "L1", label: "Metadata", signals: 2, detail: "4,025 cBioPortal + 4,028 SAS PDS mCRC patients" },
       { layer: "L2", label: "Summary", signals: 5, detail: "TMB / MSI / RAS / BRAF / ECOG across 5+5 cohorts" },
-      { layer: "L3", label: "Derived signals", signals: 8, detail: "BRAF + RAS externally validated; TMB≥28 protective (HR 0.726); treat×RAS predictive (HR 1.258); TCGA immune proxy validated" },
+      { layer: "L3", label: "Derived signals", signals: 8, detail: "BRAF + RAS externally validated; TMB≥28 protective (HR 0.726); treat×RAS predictive (HR 1.258, discovery); TCGA immune proxy validated" },
+      { layer: "L3", label: "Immune→response frame", signals: 5, detail: "Predictive frame literature-grounded: MAYA spatial cytotoxic T cells + post-TMZ TMB→PFS (Nat Commun 2026); BRAF-trial immune-program induction→outcome (Nat Med 2023); pre-treatment proxy honest null. treat×RAS stays discovery-level (no randomized external cohort)." },
     ]},
 };
 

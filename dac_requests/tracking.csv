@@ -1,0 +1,8 @@
+dataset,accession,dac_or_portal,package_file,access_type,est_timeline,requires,status,next_action
+MAYA spatial multi-omics,EGAS50000001567,EGAC50000000875 (Auristone DAA),maya_egas50000001567.md,controlled,4-8 weeks,institution signature + collaboration (DUO:0000020),prepared,complete applicant details + sign + submit
+MSI/MSS scRNA,EGAS50000000830,EGA direct,msi_mss_scrna_egas50000000830.md,controlled,~2 weeks,EGA account + institutional email,prepared,register EGA + submit
+SYSCOL CMS/TME,EGAS00001002376,EGA direct,syscol_egas00001002376.md,controlled,~2-4 weeks,EGA account; pre-check open matrix,prepared,pre-check Zenodo/GEO then submit
+Multiregional CRC,EGAS00001004668,EGA direct,multiregion_egas00001004668.md,controlled,~2-4 weeks,EGA account,prepared,complete applicant details + submit
+BRAF V600E trial,phs003178,dbGaP,phs003178_dbgap.md,controlled,~4-8 weeks,NIH eRA Commons + Signing Official DUA,prepared,confirm eRA + SO + submit DUA
+phs003178 scRNA (alt),SCP2079,Broad Single Cell Portal,(none - account-gated),account-gated,immediate,free Broad SCP account,blocked,user creates free Broad account to download
+phs003178 scRNA (alt2),Zenodo 19958545,Zenodo,(none - restricted),restricted,owner-dependent,Zenodo record owner approval,blocked,request access via Zenodo record
