@@ -27,13 +27,14 @@ import {
   Sun,
   Moon,
   Dna,
-  Activity,
+  Activity, Layers as LayersIcon,
 } from "lucide-react";
 import DashboardHome from "@/pages/dashboard-home";
 import CoPilot from "@/pages/copilot";
 import AgentsPage from "@/pages/agents";
 import CatalogExplorer from "@/pages/catalog-explorer";
 import Survival from "@/pages/survival";
+import Layers from "@/pages/layers";
 import Datasets from "@/pages/datasets";
 import LineageGraph from "@/pages/lineage-graph";
 import GraphExplorer from "@/pages/graph-explorer";
@@ -89,6 +90,7 @@ const navItems = [
   { path: "/live", label: "Live Extraction", icon: Radio },
   { path: "/ega", label: "EGA / BriTROC", icon: Dna },
   { path: "/survival", label: "Survival / Cox", icon: Activity },
+  { path: "/layers", label: "Layers", icon: LayersIcon },
   { path: "/datasets", label: "Datasets", icon: Database },
   { path: "/signals", label: "Signal Intel", icon: Radar },
   { path: "/bridges", label: "Bridges", icon: GitFork },
@@ -202,6 +204,7 @@ function AppLayout() {
           <Route path="/benchmarks" component={Benchmarks} />
           <Route path="/ega" component={EgaBritroc} />
           <Route path="/survival" component={Survival} />
+          <Route path="/layers" component={Layers} />
           <Route path="/datasets" component={Datasets} />
           <Route component={NotFound} />
         </Switch>

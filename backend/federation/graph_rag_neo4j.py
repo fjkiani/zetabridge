@@ -50,7 +50,7 @@ class Neo4jGraphRAG:
             f"WHERE ALL(rel IN relationships(path) WHERE true {rel_filter}) "
             f"WITH path LIMIT $cap "
             f"RETURN [n IN nodes(path) | {{id: n.id, name: n.name, labels: labels(n), "
-            f"endpoint: n.gps_endpoint}}] AS nodes, "
+            f"endpoint: n.gps_endpoint, layer: n.layer, hr: n.hr, p: n.p}}] AS nodes, "
             f"[rel IN relationships(path) | type(rel)] AS rels, length(path) AS hops",
             params,
         )
@@ -89,12 +89,16 @@ class Neo4jGraphRAG:
         all_paths.sort(key=lambda p: (not crosses(p), p["hops"]))
         top = all_paths[:5]
         seed_names = ", ".join(s.get("name") or s["id"] for s in seeds[:3])
+        # deep-layer: collect extraction layers reached (Signal nodes carry n.layer)
+        layers = sorted({cited_nodes[nid].get("layer") for nid in cited_nodes
+                         if cited_nodes[nid].get("layer")})
+        layer_note = f" Extraction layers reached: {', '.join(layers)}." if layers else ""
         summary = (f"GraphRAG: '{query}' resolves to {len(seeds)} seed node(s) "
                    f"({seed_names}). Traversed {len(cited_nodes)} nodes across "
                    f"{dict(endpoints)} endpoints within {max_hops} hops. "
-                   f"{len(top)} cited path(s) below.")
+                   f"{len(top)} cited path(s) below.{layer_note}")
         return {"query": query, "found": True, "summary": summary,
-                "seeds": seeds, "endpoints": dict(endpoints),
+                "seeds": seeds, "endpoints": dict(endpoints), "layers": layers,
                 "paths": [{"hops": p["hops"],
                            "chain": " → ".join((cited_nodes[nid].get("name") or nid) for nid in p["nodes"]),
                            "rels": p["rels"]} for p in top],
