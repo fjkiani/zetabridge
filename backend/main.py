@@ -114,3 +114,10 @@ app.include_router(sources_router.router)
 from routers import vault as vault_router
 
 app.include_router(vault_router.router)
+
+# Capability layer — outcome-anchor index + Efficacy Predictor. Surfaces the
+# byte-verified outcome anchors (SPECTRUM / BriTROC-1 / ARGO-POG570 / PDS) and a
+# Cox/logistic Efficacy Predictor with user-configured inputs. Read-only.
+from routers import capability as capability_router
+
+app.include_router(capability_router.router)
