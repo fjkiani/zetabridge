@@ -23,11 +23,27 @@
  "tmb_28": {
   "n_hi": 192,
   "hr": 0.726,
-  "p": 0.00493750644348666
+  "p": 0.00493750644348666,
+  "validated": false,
+  "status": "confounded_pooled_artifact",
+  "per_study": {
+   "crc_msk_2017": {"n": 978, "n_hi": 42, "hr": 0.693, "p": 0.254},
+   "crc_apc_impact_2020": {"n": 471, "n_hi": 24, "hr": 0.771, "p": 0.36},
+   "coad_silu_2022": {"n": 281, "n_hi": 60, "hr": 0.700, "p": 0.147},
+   "coadread_tcga_pan_can_atlas_2018": {"n": 510, "n_hi": 66, "hr": 1.128, "p": 0.657}
+  },
+  "confound": "Pooled HR 0.726 (p=0.005) is a pooled-cohort artifact: every individual study is null and TCGA goes the opposite direction (HR 1.13). Likely immortal-time bias (MSK-IMPACT sequencing requires survival, enriching high-TMB with indolent/MSI-H tumors) + stage-mix differences. An independent 21-study CRC cohort (n_hi=259) gave HR 0.933, p=0.47 (null).",
+  "honest_read": "Tissue TMB is NOT prognostic for OS in unselected CRC; it is predictive only in the checkpoint-inhibitor context. Do NOT cite the pooled HR 0.726 as a protective effect or as refuting the prior underpowered null."
  },
  "msi_high": {
   "n_hi": 27,
   "hr": 1.337,
-  "p": 0.23881872192677733
- }
+  "p": 0.23881872192677733,
+  "note": "underpowered null (n=27)"
+ },
+ "_validated_prognostic": {
+  "braf": "EXTERNALLY VALIDATED adverse prognostic (crc_msk_2017 HR 2.162 p=8e-8; crc_apc_impact HR 1.784 p=1.3e-4)",
+  "ras": "EXTERNALLY VALIDATED adverse prognostic (crc_msk_2017 HR 1.336 p=0.002)"
+ },
+ "_discovery_only": ["treat_x_ras", "tmb_28 (confounded)", "msi_high (underpowered)"]
 }

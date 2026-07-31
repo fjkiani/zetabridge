@@ -1,0 +1,44 @@
+{
+  "immune_proxy_os": {
+    "HR": 1.141,
+    "p": 0.12622345197840162,
+    "n": 566
+  },
+  "msi_high_os": {
+    "HR": 0.84,
+    "p": 0.5177745429706926,
+    "n": 530,
+    "n_msi_hi": 84
+  },
+  "tmb_high_os": {
+    "HR": 1.54,
+    "p": 0.02193469393869147,
+    "n": 566
+  },
+  "multivariable": {
+    "immune_z": {
+      "HR": 1.17,
+      "p": 0.090689056746166
+    },
+    "msi_hi": {
+      "HR": 0.595,
+      "p": 0.08414131983065049
+    },
+    "tmb_high": {
+      "HR": 1.645,
+      "p": 0.011406398119705674
+    },
+    "n": 566
+  },
+  "cohort": "TCGA COAD/READ (public bulk)",
+  "frame": "CMS1/immune-hot TME prognostic frame",
+  "discovery_only": true,
+  "note": "CMS1 label not directly available in TCGA pan-atlas; immune-hot proxy (upper immune_score) used as CMS1 surrogate. TME prognostic independent of MSI/TMB tested via multivariable Cox.",
+  "interpretation": {
+    "conclusion": "Immune proxy is PREDICTIVE (MSI/response biology), not prognostic for OS in unselected early-stage TCGA.",
+    "stage_confound": "TCGA COAD/READ is predominantly stage I-III resected; OS prognostic frame confounded by stage mix.",
+    "msi_h_trend": "MSI-H protective trend (HR 0.60, p=0.084) consistent with known favorable early-stage MSI-H prognosis.",
+    "tmb_adverse": "TMB-high adverse for OS (HR 1.54) likely reflects right-sided/BRAF-like biology + stage mix, not ICI context.",
+    "action": "CMS1/TME prognostic validation requires a stage-matched or metastatic cohort (SYSCOL DAC-gated); proxy retained as predictive frame."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "dataset": "phs003178 / SCP2079 (BRAF V600E CRC Phase 2 trial scRNA-seq)",
+  "publication": "Tian J, et al. Nat Med 2023. doi:10.1038/s41591-022-02181-8",
+  "trial": "NCT03668431",
+  "intended_analysis": "Compute immune composite (CD8A/CD3D/CD68 + CD274/PDCD1/FOXP3) per patient from 95,421 cells x 36,591 genes (23 paired pre/day-15 biopsies); test association with response and on-treatment immune-program induction.",
+  "access_status": "BLOCKED - no anonymous raw-data path",
+  "paths_probed": [
+    {"channel": "Broad Single Cell Portal SCP2079", "url": "https://singlecell.broadinstitute.org/single_cell/study/SCP2079", "result": "HTTP 401 on /api/v1/studies/SCP2079; page requires Google/Broad sign-in", "verdict": "account-gated (free Broad account required)"},
+    {"channel": "Zenodo mirror", "url": "https://zenodo.org/records/19958545", "result": "access_right=restricted; file list not public", "verdict": "restricted (owner approval required)"},
+    {"channel": "GEO mirror", "url": "NCBI gds esearch", "result": "count=0 for trial-specific query", "verdict": "no open GEO mirror exists"}
+  ],
+  "fallback": "Literature-grounded predictive support (Evidence nodes evidence:braf_trial:immune_induction + evidence:braf_trial:pretreatment_null) minted from the published findings; raw recompute deferred until access granted.",
+  "unblock_actions": [
+    "User creates a free Broad Single Cell Portal account and downloads SCP2079 expression matrix, OR",
+    "User requests access to Zenodo record 19958545, OR",
+    "User obtains dbGaP phs003178 via eRA Commons DUA (package prepared: dac_requests/phs003178_dbgap.md)"
+  ],
+  "honest_note": "Per the publication, pre-treatment TMB/CMS/BM1-BM2 did NOT predict response; only on-treatment immune-program induction did. The pre-treatment proxy is therefore expected to be null for response in this cohort - reported, not hidden.",
+  "discovery_only": true
+}

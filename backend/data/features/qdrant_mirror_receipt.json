@@ -1,0 +1,16 @@
+{
+  "task": "Mirror new CRC Evidence/Signal nodes to Qdrant zeta_vault",
+  "status": "DEFERRED - server-side credential required",
+  "reason": "QDRANT_API_KEY and OPENROUTER_API_KEY were stored only in /workspace/.env on a prior machine (not on worker-0, not in git, not recoverable from Render env-var API which only exposes QDRANT_URL + QDRANT_COLLECTION). The vault router (/api/vault) is read-only (health/manifest/search) - no upsert endpoint.",
+  "neo4j_status": "COMPLETE - 4 Evidence nodes + 1 predictive-frame Signal minted and wired; copilot verified answering the immune->response question via the Neo4j GraphRAG path (no Qdrant dependency).",
+  "nodes_pending_qdrant": [
+    "evidence:maya:spatial_cytotoxic_t",
+    "evidence:maya:tmb_pfs",
+    "evidence:braf_trial:immune_induction",
+    "evidence:braf_trial:pretreatment_null",
+    "signal:crc:immune_proxy_predicts_response"
+  ],
+  "mirror_procedure_when_key_available": "Additive upsert (NO rebuild) into zeta_vault: dense=nvidia/llama-nemotron-embed-vl-1b-v2 (2048-dim cosine) + BM25 sparse; deterministic point id uuid5(NAMESPACE_URL, 'zeta_vault::<entity_id>'); payload {entity_id, entity_type, text, fingerprint, source_file_md5}. Do NOT touch crispro_kb_v3 (must stay 1418 points).",
+  "invariants": {"crispro_kb_v3_points": 1418, "cross_links": 0},
+  "discovery_only": true
+}
