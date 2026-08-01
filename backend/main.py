@@ -22,6 +22,10 @@ from config import cfg
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import logging
+
+    _log = logging.getLogger("zetabridge")
+
     if cfg.USE_LEGACY_STORE:
         from legacy_app import legacy_startup, legacy_shutdown
 
@@ -36,17 +40,29 @@ async def lifespan(app: FastAPI):
             g.register_databricks_catalog()
         except Exception:
             pass
+
+    # Clinical backbone: CRC IPD → Postgres (env + content-hash gated)
+    try:
+        from services.crc_ipd_seed import seed_crc_ipd_if_configured
+
+        seed_result = seed_crc_ipd_if_configured()
+        _log.info("CRC IPD lifespan seed: %s", seed_result)
+        app.state.crc_ipd_seed = seed_result
+    except Exception as exc:
+        _log.warning("CRC IPD lifespan seed failed: %s", exc)
+        app.state.crc_ipd_seed = {"crc_ipd_seed": "error", "error": str(exc)}
+
     yield
     if cfg.USE_LEGACY_STORE:
         from legacy_app import legacy_shutdown
 
-                # Seed biotech research data into DuckDB
+        # Seed biotech research data into DuckDB
         try:
             from data.biotech.seed_biotech import seed_biotech_tables
+
             seed_biotech_tables()
         except Exception as exc:
-            import logging
-            logging.getLogger("zetabridge").warning("Biotech seed skipped: %s", exc)
+            _log.warning("Biotech seed skipped: %s", exc)
         await legacy_shutdown()
 
 
@@ -63,7 +79,11 @@ app.add_middleware(
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    out = {"status": "ok"}
+    seed = getattr(app.state, "crc_ipd_seed", None)
+    if seed is not None:
+        out["crc_ipd_seed"] = seed
+    return out
 
 
 if cfg.USE_LEGACY_STORE:

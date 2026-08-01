@@ -39,6 +39,11 @@ class Config:
     USE_LEGACY_STORE = os.environ.get("USE_LEGACY_STORE", "1") == "1"
     LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
+    # CRC IPD clinical backbone — lifespan upsert (hash-gated)
+    CRC_IPD_SEED_ON_BOOT = os.environ.get("CRC_IPD_SEED_ON_BOOT", "0") == "1"
+    CRC_IPD_DSN = os.environ.get("CRC_IPD_DSN", "")  # falls back to DATABASE_URL in seeder
+    CRC_IPD_CSV_PATH = os.environ.get("CRC_IPD_CSV_PATH", "")
+
     # --- Federated Neo4j knowledge graph (Session 12 agent access layer) ---
     # Credentials stay server-side; consumer agents authenticate with a scoped
     # API key (ZETA_GRAPH_API_KEY), never with the Neo4j password.

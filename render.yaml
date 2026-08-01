@@ -25,6 +25,10 @@ services:
         fromDatabase:
           name: zetabridge-pg
           property: connectionString
+      # CRC IPD clinical backbone — hash-gated upsert on boot from
+      # backend/resources/crc_ipd/crc_ipd_harmonized_v3.csv (committed artifact).
+      - key: CRC_IPD_SEED_ON_BOOT
+        value: "1"
       - key: SNOWFLAKE_ACCOUNT
         sync: false
       - key: SNOWFLAKE_USER

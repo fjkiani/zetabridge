@@ -1,0 +1,92 @@
+{
+  "schema": "crc_ipd_subset_manifest:v1",
+  "null_policy": {
+    "liver_met_missing": "If 1.0, axis is UNKNOWN \u2014 never coerce to 0 in 11D vector",
+    "kras_missing": "If 1.0, axis is UNKNOWN \u2014 never coerce to 0 in 11D vector",
+    "imputation": "complete_case_per_axis OR explicit missingness indicator; NO mean-impute by default",
+    "demography_only": "EXCLUDE_FROM_SURVIVAL_ENDPOINTS"
+  },
+  "trials": {
+    "PEAK_263": {
+      "available_n": 946,
+      "published_n": null,
+      "subset_scale": 1.0,
+      "pack_role": "full_ipd",
+      "status": "ok",
+      "model_policy": null,
+      "survival_weight_instruction": "full_weight"
+    },
+    "PACCE_262": {
+      "available_n": 842,
+      "published_n": null,
+      "subset_scale": 1.0,
+      "pack_role": "full_ipd",
+      "status": "ok",
+      "model_policy": null,
+      "survival_weight_instruction": "full_weight"
+    },
+    "PRIME_264": {
+      "available_n": 935,
+      "published_n": null,
+      "subset_scale": 1.0,
+      "pack_role": "full_ipd",
+      "status": "ok",
+      "model_policy": null,
+      "survival_weight_instruction": "full_weight"
+    },
+    "PRIME_309": {
+      "available_n": 935,
+      "published_n": null,
+      "subset_scale": 1.0,
+      "pack_role": "full_ipd",
+      "status": "ok",
+      "model_policy": null,
+      "survival_weight_instruction": "full_weight"
+    },
+    "PaniBSC_310": {
+      "available_n": 370,
+      "published_n": null,
+      "subset_scale": 1.0,
+      "pack_role": "full_ipd",
+      "status": "ok",
+      "model_policy": null,
+      "survival_weight_instruction": "full_weight"
+    },
+    "N0147_161": {
+      "available_n": 2968,
+      "published_n": null,
+      "subset_scale": 1.0,
+      "pack_role": "full_ipd",
+      "status": "ok",
+      "model_policy": null,
+      "survival_weight_instruction": "full_weight"
+    },
+    "HORIZON_III_78": {
+      "available_n": 690,
+      "published_n": 1422,
+      "subset_scale": 0.48523206751054854,
+      "pack_role": "subset_arm",
+      "status": "ok",
+      "model_policy": null,
+      "survival_weight_instruction": "Multiply patient-level OS/PFS contributions by subset_scale; or use inverse-probability trial weight = 1/subset_scale only when assuming MCAR within published ITT (document assumption)."
+    },
+    "MOSAIC_128": {
+      "available_n": 1122,
+      "published_n": 2246,
+      "subset_scale": 0.4995547640249332,
+      "pack_role": "os_dfs_ipd",
+      "status": "ok",
+      "model_policy": null,
+      "survival_weight_instruction": "Multiply patient-level OS/PFS contributions by subset_scale; or use inverse-probability trial weight = 1/subset_scale only when assuming MCAR within published ITT (document assumption)."
+    },
+    "VELOUR_131": {
+      "available_n": 610,
+      "published_n": 1226,
+      "subset_scale": 0.49755301794453505,
+      "pack_role": "demography_only",
+      "status": "DEMOGRAPHY_ONLY",
+      "model_policy": "EXCLUDE_FROM_SURVIVAL_ENDPOINTS",
+      "survival_weight_instruction": "Multiply patient-level OS/PFS contributions by subset_scale; or use inverse-probability trial weight = 1/subset_scale only when assuming MCAR within published ITT (document assumption)."
+    }
+  }
+}
