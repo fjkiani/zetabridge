@@ -24,6 +24,7 @@ envelope, so they can never leak to an API caller.
 from __future__ import annotations
 
 import importlib.util
+import os
 import time
 from dataclasses import asdict, dataclass, field
 from typing import Any, Optional
@@ -411,17 +412,28 @@ class SasCasClient:
             return self._conn
         import swat  # lazy
 
-        kwargs: dict[str, Any] = {
-            "hostname": cfg.SAS_CAS_HOST,
-            "port": cfg.SAS_CAS_PORT,
-            "protocol": cfg.SAS_CAS_PROTOCOL,
-        }
+        # PDS Viya rejects hostname-only REST (/cas/sessions → 405). Prefer the
+        # shared-default HTTP path that SWAT + PDS-MCP use successfully.
+        host = (cfg.SAS_CAS_HOST or "").strip()
+        if host and "://" not in host and "/cas-" not in host:
+            host = f"https://{host}/cas-shared-default-http/"
+        elif host.startswith("https://") and "/cas-" not in host:
+            host = host.rstrip("/") + "/cas-shared-default-http/"
+
+        # SWAT reads CAS_CLIENT_SSL_CA_LIST (cafile= kwarg is ignored/unrecognized).
         if cfg.SAS_CAS_CADATA:
-            kwargs["cafile"] = cfg.SAS_CAS_CADATA
+            os.environ["CAS_CLIENT_SSL_CA_LIST"] = cfg.SAS_CAS_CADATA
+
+        port = cfg.SAS_CAS_PORT
         if cfg.SAS_CAS_TOKEN:
-            conn = swat.CAS(**kwargs, password=cfg.SAS_CAS_TOKEN)
+            conn = swat.CAS(host, port, password=cfg.SAS_CAS_TOKEN)
         else:
-            conn = swat.CAS(**kwargs, username=cfg.SAS_CAS_USER, password=cfg.SAS_CAS_PASSWORD)
+            conn = swat.CAS(
+                host,
+                port,
+                username=cfg.SAS_CAS_USER,
+                password=cfg.SAS_CAS_PASSWORD,
+            )
         self._conn = conn
         return conn
 

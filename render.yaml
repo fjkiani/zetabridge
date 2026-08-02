@@ -84,7 +84,7 @@ services:
       - key: SYNAPSE_AUTH_TOKEN
         sync: false
       - key: SAS_CAS_HOST
-        value: "mpmprodvdmml.ondemand.sas.com"
+        value: "https://mpmprodvdmml.ondemand.sas.com/cas-shared-default-http/"
       - key: SAS_CAS_PORT
         value: "443"
       - key: SAS_CAS_PROTOCOL

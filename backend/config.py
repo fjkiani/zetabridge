@@ -1,6 +1,7 @@
 """Centralized environment configuration for ZetaBridge."""
 
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -62,14 +63,27 @@ class Config:
     # A_MSK — Synapse (synapseclient, personal-access JWT)
     SYNAPSE_AUTH_TOKEN = os.environ.get("SYNAPSE_AUTH_TOKEN", "")
     # B_SAS — Project Data Sphere / SAS Viya CAS (swat)
-    SAS_CAS_HOST = os.environ.get("SAS_CAS_HOST", "mpmprodvdmml.ondemand.sas.com")
+    # Full PDS REST path required (hostname-only → 405 on /cas/sessions).
+    SAS_CAS_HOST = os.environ.get(
+        "SAS_CAS_HOST",
+        "https://mpmprodvdmml.ondemand.sas.com/cas-shared-default-http/",
+    )
     SAS_CAS_PORT = int(os.environ.get("SAS_CAS_PORT", "443"))
     SAS_CAS_PROTOCOL = os.environ.get("SAS_CAS_PROTOCOL", "https")
     SAS_CAS_TOKEN = os.environ.get("SAS_CAS_TOKEN", "")
     SAS_CAS_USER = os.environ.get("SAS_CAS_USER", "")
     SAS_CAS_PASSWORD = os.environ.get("SAS_CAS_PASSWORD", "")
-    # optional path to a TLS CA bundle for the CAS endpoint (known cert quirk)
-    SAS_CAS_CADATA = os.environ.get("SAS_CAS_CADATA", "")
+    # optional path to a TLS CA bundle (exported as CAS_CLIENT_SSL_CA_LIST)
+    _default_cas_ca = str(
+        Path(__file__).resolve().parent / "resources" / "certs" / "trustedcerts.pem"
+    )
+    _env_cas_ca = os.environ.get("SAS_CAS_CADATA", "").strip()
+    if _env_cas_ca and Path(_env_cas_ca).exists():
+        SAS_CAS_CADATA = _env_cas_ca
+    elif Path(_default_cas_ca).exists():
+        SAS_CAS_CADATA = _default_cas_ca
+    else:
+        SAS_CAS_CADATA = _env_cas_ca
     # C_EGA — European Genome-phenome Archive (pyega3 / EGA REST)
     EGA_USERNAME = os.environ.get("EGA_USERNAME", "")
     EGA_PASSWORD = os.environ.get("EGA_PASSWORD", "")
