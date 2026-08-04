@@ -1,0 +1,110 @@
+{
+  "model": "patient_selection_enrichment_v2",
+  "version": "v2",
+  "disease": "crc",
+  "built_utc": "2026-08-04T23:34:33.860051+00:00",
+  "description": "Honest GENIE R20 enrichment feature feed. Tissue panel TMB only. MSI unavailable in R20-public clinical. Poison CSV refused. NOT Guardant plasma pTMB. Does NOT soft-unblock 8D-04.",
+  "source_matrix": {
+    "path": "datasets/genie_r20/crc_tmb_msi_matrix.parquet",
+    "sha256": "308f4325a59a102e307a66e9213b59593c869c1d139ef65564d4509256f03121",
+    "n_rows": 24109,
+    "n_patients": 22782,
+    "release": "20.0-public",
+    "source": "genie_r20_public_native"
+  },
+  "IS_GUARDANT_PTMB": false,
+  "tmb": {
+    "label": "tissue_panel_TMB",
+    "columns": [
+      "tmb",
+      "tmb_mut_per_mb",
+      "tmb_bin"
+    ],
+    "assay_type": "tissue_panel_TMB",
+    "missingness": 0,
+    "missingness_rate": 0.0,
+    "tmb_bin_distribution": {
+      "Mid (2-16)": 15188,
+      "High (>16)": 6259,
+      "Low (<2)": 2662
+    },
+    "NOT_guardant_ptmb": true,
+    "NOT_plasma_ptmb": true
+  },
+  "msi": {
+    "available": false,
+    "MSI_STATUS_non_null": 0,
+    "policy": "leave_null_do_not_invent_MSI_H"
+  },
+  "features_available_from_genie_r20": [
+    {
+      "name": "tissue_panel_TMB",
+      "type": "continuous",
+      "column": "tmb_mut_per_mb",
+      "bin_column": "tmb_bin",
+      "enrichment_use": "prior/strata only \u2014 not GuardantOMNI pTMB threshold (\u226528)"
+    },
+    {
+      "name": "tmb_bin",
+      "type": "categorical",
+      "levels": [
+        "High (>16)",
+        "Low (<2)",
+        "Mid (2-16)"
+      ],
+      "source": "native tmb_bin from tmb_20.0-public.tsv"
+    }
+  ],
+  "features_explicitly_null": [
+    {
+      "name": "pTMB_guardant",
+      "status": "null",
+      "reason": "GENIE R20 has tissue panel TMB only; refuse tissue\u2192pTMB copy"
+    },
+    {
+      "name": "immunoscore_ic",
+      "status": "null",
+      "reason": "not in GENIE R20 public"
+    },
+    {
+      "name": "liver_met_burden",
+      "status": "null",
+      "reason": "GENIE public unreliable for liver-met burden; use IPD flags"
+    },
+    {
+      "name": "MSI_STATUS",
+      "status": "null",
+      "reason": "absent in R20-public clinical sample/patient"
+    }
+  ],
+  "poison_refusal": {
+    "refused_paths_detected_local": [
+      "zetabridge/backend/data/features/genie_crc/crc_tmb_msi_matrix.cbioportal_bridge.QUARANTINE.csv",
+      "zetabridge/backend/data/features/genie_crc/crc_tmb_msi_matrix.cbioportal_bridge.QUARANTINE.parquet",
+      "zetabridge/backend/data/features/genie_crc/crc_tmb_msi_provenance.cbioportal_bridge.QUARANTINE.json",
+      "zetabridge/backend/data/features/genie_crc/patient_selection_enrichment_v1.QUARANTINE.json",
+      "zetabridge/backend/data/features/genie_crc/patient_selection_enrichment_v1.QUARANTINED.csv",
+      "zetabridge/datasets/genie_r20/quarantine_notes/POISON_QUARANTINE.md",
+      "backend/data/features/genie_crc/crc_tmb_msi_matrix.cbioportal_bridge.QUARANTINE.csv",
+      "backend/data/features/genie_crc/crc_tmb_msi_matrix.cbioportal_bridge.QUARANTINE.parquet",
+      "backend/data/features/genie_crc/patient_selection_enrichment_v1.QUARANTINED.csv"
+    ],
+    "policy": "DO_NOT_LOAD \u2014 patient_selection_enrichment_v1.QUARANTINED.csv and cBio bridge quarantine",
+    "loaded_poison": false
+  },
+  "null_contract": {
+    "pTMB_guardant": "If missing, leave null. Never copy tissue_panel_TMB into pTMB.",
+    "MSI": "If missing, leave null. Do not invent MSI-H.",
+    "immunoscore_ic": "If missing, do not invent from tissue TMB.",
+    "liver_met_burden": "Use IPD (PEAK/PRIME/PACCE) only."
+  },
+  "do_not_claim": [
+    "8D-04 soft-unblock",
+    "GuardantOMNI plasma pTMB",
+    "MSI coverage from this feed",
+    "PATH A/B ranking winner",
+    "fit_B ranking"
+  ],
+  "NOT_8D04_unblock": true,
+  "RUO": "Research Use Only. Not clinical decision support."
+}
