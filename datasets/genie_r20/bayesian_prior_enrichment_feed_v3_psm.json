@@ -1,0 +1,82 @@
+{
+  "model": "zeta_bayesian_prior_enrichment_v3_psm",
+  "disease": "crc",
+  "description": "IPTW synthetic-control baseline on PEAK_263+PRIME_309 liver_met==0 (n=236). Metrics computed from crc_ipd_harmonized_v3.csv. CO.26 HRs remain published priors (not fitted).",
+  "source_file": "/Users/fahadkiani/Desktop/development/zetabridge/backend/data/features/crc_ipd_from_zips/crc_ipd_harmonized_v3.csv",
+  "reproducible_script": "/Users/fahadkiani/Desktop/development/zetabridge/scripts/s14/run_psm_iptw_liver_met_neg.py",
+  "weights_csv": "/Users/fahadkiani/Desktop/development/zetabridge/backend/data/features/genie_crc/psm_iptw_liver_met_neg_weights.csv",
+  "target_packs": [
+    "PEAK_263",
+    "PRIME_309"
+  ],
+  "structural_reality": {
+    "io_ipd_available": false,
+    "baseline_cohort": "n=236 liver-met-negative patients (PEAK_263 / PRIME_309)",
+    "synthetic_baseline_metrics": {
+      "total_patients": 236,
+      "treatment_n": 112,
+      "control_n": 124,
+      "iptw_effective_sample_size_treated": 110.6381,
+      "iptw_effective_sample_size_control": 122.643,
+      "variance_weights_treated": 0.0551,
+      "variance_weights_control": 0.0404,
+      "mean_smd_unweighted": 0.1009,
+      "mean_smd_weighted": 0.005,
+      "smd_reduction": 0.0959,
+      "smd_unweighted_by_covariate": {
+        "age": 0.153,
+        "sex_num": 0.1114,
+        "ras": 0.0997,
+        "ecog": 0.0395
+      },
+      "smd_weighted_by_covariate": {
+        "age": 0.0002,
+        "sex_num": 0.006,
+        "ras": 0.0098,
+        "ecog": 0.0039
+      },
+      "ps_model": {
+        "type": "LogisticRegression",
+        "solver": "lbfgs",
+        "random_state": 42,
+        "imputer": "most_frequent",
+        "coefficients": {
+          "age": -0.014441,
+          "sex_num": -0.196216,
+          "ras": 0.251779,
+          "ecog": -0.086868
+        },
+        "intercept": 0.846535
+      },
+      "covariates_used": [
+        "age",
+        "sex_num",
+        "ras",
+        "ecog"
+      ]
+    }
+  },
+  "features": [
+    {
+      "name": "liver_met_status",
+      "type": "binary",
+      "class": "PRIMARY_PREDICTIVE_AXIS",
+      "prior_hr_benefit": 0.54,
+      "prior_hr_resistance": 1.39,
+      "interaction_p_value": 0.02,
+      "source_prior": "CO.26 published subgroup HRs (NOT fitted on this IPD)",
+      "note": "Published prior only \u2014 no IO IPD in backbone to re-estimate interaction."
+    },
+    {
+      "name": "synthetic_control_baseline",
+      "type": "psm_weighted",
+      "class": "BASELINE_CALIBRATION",
+      "metrics": {
+        "ess_treated": 110.6381,
+        "ess_control": 122.643,
+        "smd_reduction": 0.0959
+      },
+      "zeta_directive": "Use ESS for variance bounds in Bayesian updating of published CO.26 priors."
+    }
+  ]
+}

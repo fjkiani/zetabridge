@@ -1,0 +1,71 @@
+{
+  "model": "patient_selection_enrichment_v1",
+  "disease": "crc",
+  "description": "Separate feature matrix for patient-selection enrichment, distinct from 8D mechanistic ranker. Focuses on enrichment signals: Liver-met site burden, Immunoscore-IC, and GuardantOMNI plasma pTMB. GENIE R20 supplies tissue panel TMB only \u2014 never label it as pTMB_guardant.",
+  "target_packs": [
+    "CO.26",
+    "AtezoTRIBE",
+    "GuardantOMNI"
+  ],
+  "features": [
+    {
+      "name": "liver_met_burden",
+      "type": "categorical",
+      "levels": [
+        "none",
+        "low",
+        "high"
+      ],
+      "source_priority": [
+        "AtezoTRIBE",
+        "cBioPortal"
+      ],
+      "enrichment_signal": "CO.26 PFS no-LM HR 0.54 vs LM HR 1.39 (P_int = 0.02)"
+    },
+    {
+      "name": "immunoscore_ic",
+      "type": "continuous",
+      "proxy_allowed": true,
+      "proxy_sources": [
+        "Gene expression immune scores"
+      ],
+      "source_priority": [
+        "AtezoTRIBE"
+      ],
+      "enrichment_signal": "AtezoTRIBE: liver mets prognostic, not predictive, when immune infiltrate is high (P_int = 0.990)"
+    },
+    {
+      "name": "pTMB_guardant",
+      "type": "continuous",
+      "threshold": 28.0,
+      "source_priority": [
+        "CO.26",
+        "GuardantOMNI"
+      ],
+      "enrichment_signal": "CO.26 OS HR 0.34 (post-hoc, GuardantOMNI-specific)"
+    }
+  ],
+  "null_contract": {
+    "immunoscore_ic": "If missing, do NOT invent from tissue TMB; leave null or use HalioDx/AtezoTRIBE only",
+    "pTMB_guardant": "If missing, leave null. GENIE R20 tissue_panel_TMB (crc_tmb_msi_matrix) is NOT GuardantOMNI pTMB. Do not enforce \u226528 threshold on tissue TMB. Do not copy tissue TMB into a pTMB column.",
+    "liver_met_burden": "GENIE public does not provide reliable liver-met burden; use IPD flags (PEAK/PRIME/PACCE)"
+  },
+  "genie_r20_tissue_tmb": {
+    "matrix": "crc_tmb_msi_matrix.csv",
+    "release": "20.0-public",
+    "columns": [
+      "tmb",
+      "tmb_mut_per_mb",
+      "tmb_bin"
+    ],
+    "label": "tissue_panel_TMB",
+    "NOT_guardant_ptmb": true,
+    "msi": "absent_in_r20_public_clinical",
+    "qc_receipt": "crc_tmb_msi_qc_receipt.json"
+  },
+  "quarantine": {
+    "patient_selection_enrichment_v1.QUARANTINED.csv": "POISON \u2014 keep quarantined",
+    "crc_tmb_msi_matrix.cbioportal_bridge.QUARANTINE.*": "prior bridge \u2014 not primary"
+  },
+  "NOT_8D04_unblock": true
+}
