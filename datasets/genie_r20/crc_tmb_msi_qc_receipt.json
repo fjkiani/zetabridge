@@ -1,0 +1,108 @@
+{
+  "artifact": "crc_tmb_msi_matrix",
+  "source": "genie_r20_public_native",
+  "release": "20.0-public",
+  "parent_syn": "syn76285058",
+  "built_utc": "2026-08-04T23:07:40.609886+00:00",
+  "builder": "scripts/s14/build_genie_r20_crc_tmb_msi_matrix.py",
+  "n_crc": 24109,
+  "n_rows_matrix": 24109,
+  "n_patients": 22782,
+  "join": {
+    "crc_case_list": 24109,
+    "crc_cap_tmb": 24109,
+    "crc_cap_clinical_sample": 24109,
+    "crc_cap_patient": 24109,
+    "missing_tmb": 0,
+    "missing_sample": 0,
+    "missing_patient": 0
+  },
+  "tmb": {
+    "column_native": "tmb",
+    "units_native": "fraction_of_bases (GENIE file as-downloaded)",
+    "column_derived_mut_per_mb": "tmb_mut_per_mb = tmb * 1e6",
+    "tmb_bin_source": "native tmb_bin from tmb_20.0-public.tsv",
+    "missingness": 0,
+    "missingness_rate": 0.0,
+    "describe_native": {
+      "count": 24109.0,
+      "mean": 0.00012859544099663058,
+      "std": 0.004124526769925249,
+      "min": 0.0,
+      "25%": 4.26964334815184e-06,
+      "50%": 6.83142935704295e-06,
+      "75%": 2.35458150776319e-05,
+      "max": 0.411764705882353
+    },
+    "describe_mut_per_mb": {
+      "count": 24109.0,
+      "mean": 128.5954409966306,
+      "std": 4124.526769925249,
+      "min": 0.0,
+      "25%": 4.26964334815184,
+      "50%": 6.83142935704295,
+      "75%": 23.5458150776319,
+      "max": 411764.70588235295
+    },
+    "tmb_bin_distribution": {
+      "Mid (2-16)": 15188,
+      "High (>16)": 6259,
+      "Low (<2)": 2662
+    },
+    "NOT_guardant_ptmb": true,
+    "label": "tissue_panel_TMB"
+  },
+  "msi": {
+    "available": false,
+    "msi_columns_found_in_clinical": [],
+    "MSI_STATUS_non_null": 0,
+    "note": "R20-public data_clinical_sample/patient have no MSI/MMR fields; MSI left null"
+  },
+  "oncotree_top": {
+    "COAD": 13955,
+    "COADREAD": 5083,
+    "READ": 4372,
+    "MACR": 491,
+    "SRCCR": 154,
+    "CMC": 38,
+    "CAIS": 16
+  },
+  "seq_assay_id_top": {
+    "MSK-IMPACT505": 4427,
+    "MSK-IMPACT468": 3458,
+    "DFCI-ONCOPANEL-3.1": 2885,
+    "PROV-TSO500HT-V2": 2277,
+    "JHU-50GP": 1186,
+    "MSK-IMPACT410": 937,
+    "COLU-CSTP-V2": 792,
+    "DFCI-ONCOPANEL-3": 788,
+    "DFCI-ONCOPANEL-2": 737,
+    "COLU-CSTP-V1": 492,
+    "DUKE-F1-DX1": 440,
+    "VHIO-300": 407,
+    "MDA-50-V1": 308,
+    "NKI-CHPV2-SOCV2-NGS": 301,
+    "NKI-TSACP-MISEQ-NGS": 285
+  },
+  "sha256_inputs": {
+    "tmb_20.0-public.tsv": "29f4946224dc7d1afb66f3325feba8efca1b21e726a2912a35fb9a793b4dabfe",
+    "data_clinical_sample.txt": "66250ca41bebbf418e1eb688d474130b2e98b59253dfeb20d0013d66ed100601",
+    "data_clinical_patient.txt": "9e26a7447a654d2ffe804f21a5169ca38b4db14f76cfcd166959952e0f891da1",
+    "cases_Colorectal_Cancer.txt": "3b256eace3972fca455a198580a8b30c58dc0e8a2449fdc8922061b9b71f6c8f",
+    "assay_information.txt": "5add5972afd92a8c2f7152d70e4667de9f4fef2674201f143008f3ddf83b4fc3"
+  },
+  "sha256_outputs": {
+    "crc_tmb_msi_matrix.csv": "61fed244a497a7ad0fe5be91f2879a8f04a6eaec0f57938f5082e8ef02fb95b6",
+    "crc_tmb_msi_matrix.parquet": "308f4325a59a102e307a66e9213b59593c869c1d139ef65564d4509256f03121"
+  },
+  "do_not_claim": [
+    "8D-04 soft-unblock",
+    "GuardantOMNI plasma pTMB",
+    "Immunoscore-IC",
+    "liver-met burden from this matrix"
+  ],
+  "quarantine_notes": {
+    "cbioportal_bridge": "crc_tmb_msi_matrix.cbioportal_bridge.QUARANTINE.*",
+    "poison_enrichment_csv": "patient_selection_enrichment_v1.QUARANTINED.csv (unchanged)"
+  }
+}

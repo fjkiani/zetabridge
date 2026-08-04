@@ -1,0 +1,376 @@
+{
+  "generated_utc": "2026-08-04T23:22:52.311234Z",
+  "local_root": "backend/data/features/pds_crc_cas/ (gitignored IPD parquet \u2014 LOCAL ONLY)",
+  "n_caslibs": 16,
+  "total_bytes": 7888706,
+  "caslibs": [
+    {
+      "caslib": "Colorec_Allianc_1994_201",
+      "n_files": 1,
+      "files": [
+        {
+          "name": "master.csv.parquet",
+          "bytes": 56987,
+          "sha256": "b48b99ad1bdcb2c93edb9563fb583397bbea4e02d895ddf6912f33fc9a8f401a"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Allianc_1997_138",
+      "n_files": 1,
+      "files": [
+        {
+          "name": "Data_Dictionary.xlsx.parquet",
+          "bytes": 8043,
+          "sha256": "fd9adfe03027a08a66da1fbf057305172d0095891b238a5ff3587f3c16958185"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Allianc_1997_182",
+      "n_files": 6,
+      "files": [
+        {
+          "name": "Data_Dictionary.xlsx.parquet",
+          "bytes": 8067,
+          "sha256": "c91a7ae173d7a0b1aa946855aa7c325a011c15ffff60d4c1bbba0e20aec95365"
+        },
+        {
+          "name": "adverse_event_c272.xlsx.parquet",
+          "bytes": 41792,
+          "sha256": "fced5819a2cfe3503a80716e923de963a99e9651961f89393659fc26c32022ff"
+        },
+        {
+          "name": "new_primary_c1001.xlsx.parquet",
+          "bytes": 9476,
+          "sha256": "790290a4f4e06504ba78dadc283cd10f720423d36e06105bfd98fc9b813188f2"
+        },
+        {
+          "name": "off_trt_c300.xlsx.parquet",
+          "bytes": 7837,
+          "sha256": "74934119640bf878aabd61f2de42a076ca81626538cdcd1a4567ee5c9e7274b1"
+        },
+        {
+          "name": "onstudy_c437.xlsx.parquet",
+          "bytes": 75054,
+          "sha256": "dfd66e3cf1b2e40cb45c0692fc8a29244bc856042168d01ee33996554a2e5abd"
+        },
+        {
+          "name": "outcome_other_baseline_data.xlsx.parquet",
+          "bytes": 29752,
+          "sha256": "b735e8e596777914896b9ec74f0aadc6287ae5ea4562e8383527b611f2fae500"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Allianc_2004_161",
+      "n_files": 3,
+      "files": [
+        {
+          "name": "characteristic.csv.parquet",
+          "bytes": 71819,
+          "sha256": "cbe534d89117e6c315a541910061eb295db843a5e401f683510f5985cb2bb07b"
+        },
+        {
+          "name": "objectives.csv.parquet",
+          "bytes": 49476,
+          "sha256": "08461094adfaf01a3c71e11d7b3f386b06e76a1ffefd3076deb01da550400fd8"
+        },
+        {
+          "name": "tox.csv.parquet",
+          "bytes": 13944,
+          "sha256": "c77338b92063ec21bdf8357e7dda360387b1b517787e4042f5f0c47fa6601803"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Amgen_2004_310",
+      "n_files": 6,
+      "files": [
+        {
+          "name": "adae_pds2019.sas7bdat.parquet",
+          "bytes": 12071,
+          "sha256": "a5f59d12f325a5dc3fcb6c64e58aa36e01fe670e34c1e65fc0cb3e84af482cc1"
+        },
+        {
+          "name": "adlb_pds2019.sas7bdat.parquet",
+          "bytes": 52006,
+          "sha256": "ea22a7d3631db8d7e6dfeceed69bbfe0f751bab721fd93dc32b03f1838665b86"
+        },
+        {
+          "name": "adls_pds2019.sas7bdat.parquet",
+          "bytes": 43373,
+          "sha256": "a910d549ca231e259bb44d70fc15dda20d5cc005a4ce3e6f80a50b8513c8bd62"
+        },
+        {
+          "name": "adpm_pds2019.sas7bdat.parquet",
+          "bytes": 16285,
+          "sha256": "bfd32cf66ffb3e32a5dc3bd76e37d9a6bd3190e844e8c8177a1ab73be136e6d7"
+        },
+        {
+          "name": "adrsp_pds2019.sas7bdat.parquet",
+          "bytes": 14809,
+          "sha256": "6addc13855028f56365235ad86907da11d01423dbcb7104bd17c27f0bbcb9a4a"
+        },
+        {
+          "name": "adsl_pds2019.sas7bdat.parquet",
+          "bytes": 18225,
+          "sha256": "a8e1413a74452ef42667c8d189965bbc9f9d639d08c02bbfe7c1f3988fed0132"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Amgen_2005_262",
+      "n_files": 6,
+      "files": [
+        {
+          "name": "a_eendpt.sas7bdat.parquet",
+          "bytes": 195322,
+          "sha256": "5153e4019f9e4a11f86265299b3d403bcff6f565f19b8aeca2831fe5eeef7046"
+        },
+        {
+          "name": "a_sendpt.sas7bdat.parquet",
+          "bytes": 348620,
+          "sha256": "26166013c61432d25a01cac020fbc21d75b6ce56f99234c5dcd4c466043a2433"
+        },
+        {
+          "name": "ae.sas7bdat.parquet",
+          "bytes": 785228,
+          "sha256": "7b282adba337ef2d122f26d38b10221a7e264fd187102a6d69c59c81127e785a"
+        },
+        {
+          "name": "chemotx.sas7bdat.parquet",
+          "bytes": 76358,
+          "sha256": "c7f5dea14793bd6cf98fcf377839a1e24b634f256b669879aea8ace397df2538"
+        },
+        {
+          "name": "corevar.sas7bdat.parquet",
+          "bytes": 60335,
+          "sha256": "50f1a03a2d4f920a67d0590e166b9d912fab7f6e998af6bf5d798035b6f7cd81"
+        },
+        {
+          "name": "death.sas7bdat.parquet",
+          "bytes": 58474,
+          "sha256": "d9b3a4cd40a8edc5c03c1b4821b680ae58d8e70cfa659ee6081433f6f5986cad"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Amgen_2006_263",
+      "n_files": 6,
+      "files": [
+        {
+          "name": "a_eendpt.sas7bdat.parquet",
+          "bytes": 223483,
+          "sha256": "494bc30ad00b5610f2dfe74044110f5d91e3ec65922e6361da61dff0f13a8b01"
+        },
+        {
+          "name": "a_endpt.sas7bdat.parquet",
+          "bytes": 326639,
+          "sha256": "1efe68fdac091a1323231d2a453c28ae96716017461e3f6bd46d4c97f97d7d3e"
+        },
+        {
+          "name": "a_sendpt.sas7bdat.parquet",
+          "bytes": 485247,
+          "sha256": "7f9c10a53614cf2140f0f556257aafe98b72305a3c0eb884edc62e202b053a0c"
+        },
+        {
+          "name": "ae.sas7bdat.parquet",
+          "bytes": 1043580,
+          "sha256": "f252e93089e3412b9acb25d6488847cc9cf9a56fbe5203b4ea4b7d2ad35557f7"
+        },
+        {
+          "name": "chemotx.sas7bdat.parquet",
+          "bytes": 104838,
+          "sha256": "a7ab2cd6c0d1de0390c585182a2a4ac8fee442a37c80381acbf9d5aae5da00f3"
+        },
+        {
+          "name": "corevar.sas7bdat.parquet",
+          "bytes": 50108,
+          "sha256": "e378fcf93b715e6b4b92cf804a9c7650f490aabb610c067feab5d7c8939f42ed"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Amgen_2006_264",
+      "n_files": 6,
+      "files": [
+        {
+          "name": "a_eendpt.sas7bdat.parquet",
+          "bytes": 208969,
+          "sha256": "5771098767ae04f3fb31f3797e13d29a7558e24773642d2b99a7bd7fe7c9dbbe"
+        },
+        {
+          "name": "a_endpt.sas7bdat.parquet",
+          "bytes": 302640,
+          "sha256": "338ca63710f419ad7b45a7989938c4b506d31e4a65b4c609dab732d316c07b83"
+        },
+        {
+          "name": "a_sendpt.sas7bdat.parquet",
+          "bytes": 483063,
+          "sha256": "becea0e2b19501a13fa4ac5765ae46feff005bd6c87e360d528e25e3e3c2834e"
+        },
+        {
+          "name": "ae.sas7bdat.parquet",
+          "bytes": 1451531,
+          "sha256": "c6870fe09edbd8a2a10747fb15604dd98ddb4516251ebef815dee66092ca7152"
+        },
+        {
+          "name": "chemotx.sas7bdat.parquet",
+          "bytes": 32761,
+          "sha256": "d58bd7bd3c9bfaf36edd8d7e72188ca1bcc513fe2d726467fd2035ae81586467"
+        },
+        {
+          "name": "corevar.sas7bdat.parquet",
+          "bytes": 37503,
+          "sha256": "19cc559b5543b8180ed762a9e220c67c203a505639715259dfe3549fb5b4d9e3"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Amgen_2006_309",
+      "n_files": 6,
+      "files": [
+        {
+          "name": "adae_pds2019.sas7bdat.parquet",
+          "bytes": 28603,
+          "sha256": "181568bc5a229f10ac6ac5d48782ad0464ec61ff5e1ad6a47fdc4ba8fcedbd65"
+        },
+        {
+          "name": "adlb_pds2019.sas7bdat.parquet",
+          "bytes": 437872,
+          "sha256": "3557bac27ebd5bb286d5519018a6647e68c028d169a7294c01b8c631c95059a3"
+        },
+        {
+          "name": "adls_pds2019.sas7bdat.parquet",
+          "bytes": 88757,
+          "sha256": "54c8df7dade54a1b5b1270760dd61778bb05be97b8a6862c86d5f9a58efdf0cf"
+        },
+        {
+          "name": "adpm_pds2019.sas7bdat.parquet",
+          "bytes": 59040,
+          "sha256": "08d84d97fff40c8a03df52ee1b196e17b0a041806337f82021aab10c6c8bc161"
+        },
+        {
+          "name": "adrsp_pds2019.sas7bdat.parquet",
+          "bytes": 49248,
+          "sha256": "0ee4946dde7bd5e2baac2905d0c68dbaa14a93c125a62b4669f68beef6f1b7f4"
+        },
+        {
+          "name": "adsl_pds2019.sas7bdat.parquet",
+          "bytes": 33036,
+          "sha256": "f050748a0c8a3b218ff7ec4bd67600a8f365893b22a73b4430ade9e3d3810e02"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_AstraZe_2006_78",
+      "n_files": 1,
+      "files": [
+        {
+          "name": "AstraZeneca_Data_Cediranib.xls.parquet",
+          "bytes": 3747,
+          "sha256": "fce73c8c4ae62618695379eeceb4f9af4400f9d7fa3adab7ca14c104ba5145b1"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Multipl_2006_251",
+      "n_files": 2,
+      "files": [
+        {
+          "name": "MEPS_Variable_Crosswalk.xlsx.parquet",
+          "bytes": 7822,
+          "sha256": "e9631edcd003e3708042c82cc2942450eb378ffb50f2336900f13a527f8a49f4"
+        },
+        {
+          "name": "linked_pds78_20180429_final.sas7bdat.parquet",
+          "bytes": 120427,
+          "sha256": "d936671fb01be14a67fc1bdec25753250e23b4e17af25c2f5a76beec18baca73"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_Pfizer_2007_114",
+      "n_files": 6,
+      "files": [
+        {
+          "name": "adverse.sas7bdat.parquet",
+          "bytes": 69197,
+          "sha256": "1d462545ddc411031910f504eb21a5d3f57545addfeb6bc85170d55f2959f718"
+        },
+        {
+          "name": "cd_b_p.sas7bdat.parquet",
+          "bytes": 17616,
+          "sha256": "7980f19aef5413d7ebf5a31753fcc8228332d626cfe2ed2b7a33d0614236e851"
+        },
+        {
+          "name": "cn_6_p.sas7bdat.parquet",
+          "bytes": 8711,
+          "sha256": "ca54df204429dad4bf4a635372d69e68d1476433219ad50f313e637bc3174338"
+        },
+        {
+          "name": "cn_7_p.sas7bdat.parquet",
+          "bytes": 12511,
+          "sha256": "1ba9483adef3a0e08bf634444d4bb87e5d940f3783aabdadd747b2e32e19e350"
+        },
+        {
+          "name": "cn_8_p.sas7bdat.parquet",
+          "bytes": 7241,
+          "sha256": "ef9c7c0c94b9c3afc1e192b9a1b2bede97236d3a28f0bd57b3656a2d6251fb29"
+        },
+        {
+          "name": "condrug.sas7bdat.parquet",
+          "bytes": 121589,
+          "sha256": "4da1ffb3c3129b3af2ab109860f0e48c9e9b5484367f0fb413d00111ed789ba6"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_SanofiU_1998_128",
+      "n_files": 1,
+      "files": [
+        {
+          "name": "sanofi_SR96669_EFC3313_data_definition.xls.parquet",
+          "bytes": 4895,
+          "sha256": "0d57e8e270fe28712b5aaf20b5b812106152c6f61845d50f8bb1a1e7672620b5"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_SanofiU_2002_137",
+      "n_files": 1,
+      "files": [
+        {
+          "name": "sanofi_SR57746A_EFC4972_data_definition.xls.parquet",
+          "bytes": 4775,
+          "sha256": "174004a572fab7f22011adc6e5df211d7433371986ad76c49988e7415d9cb7a3"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_SanofiU_2005_136",
+      "n_files": 1,
+      "files": [
+        {
+          "name": "sanofi_SR57746A_EFC5505_data_definition.xls.parquet",
+          "bytes": 4771,
+          "sha256": "9a18dca162f28de9b8c0024973c012e64cca43b9b63da1b79bb91adc73fb0dc8"
+        }
+      ]
+    },
+    {
+      "caslib": "Colorec_SanofiU_2007_131",
+      "n_files": 1,
+      "files": [
+        {
+          "name": "Sanofi_AVE0005_EFC10262_data_discriptors.xlsx.parquet",
+          "bytes": 5133,
+          "sha256": "921e3c291f9599350725b7a6312882207fa9e6eb86380220a04c06fe0107fe6d"
+        }
+      ]
+    }
+  ],
+  "note": "Patient-level parquet NOT committed. Rebuild via PDS-MCP bulk_extract_crc_caslibs.py",
+  "NOT_8D04_unblock": true
+}

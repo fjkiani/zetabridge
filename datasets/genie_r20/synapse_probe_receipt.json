@@ -1,0 +1,10 @@
+{
+  "probe_utc": "2026-08-04T23:03:36.527246+00:00",
+  "auth": "OK",
+  "ownerId": "REDACTED",
+  "userName": "REDACTED",
+  "anonymous": false,
+  "download_ok_count": 7,
+  "auth_status": "OK_non_anonymous",
+  "secrets": "REDACTED"
+}

@@ -1,0 +1,22 @@
+{
+  "source": "genie_r20_public_native",
+  "release": "20.0-public",
+  "parent_syn": "syn76285058",
+  "n_rows": 24109,
+  "n_crc": 24109,
+  "n_patients": 22782,
+  "tmb_missing": 0,
+  "msi_available": false,
+  "tmb_bin_distribution": {
+    "Mid (2-16)": 15188,
+    "High (>16)": 6259,
+    "Low (<2)": 2662
+  },
+  "sha256_csv": "61fed244a497a7ad0fe5be91f2879a8f04a6eaec0f57938f5082e8ef02fb95b6",
+  "sha256_parquet": "308f4325a59a102e307a66e9213b59593c869c1d139ef65564d4509256f03121",
+  "raw_dir": "/Users/fahadkiani/Desktop/development/zetabridge/backend/data/features/genie_crc/raw/r20_public",
+  "qc_receipt": "/Users/fahadkiani/Desktop/development/zetabridge/backend/data/features/genie_crc/crc_tmb_msi_qc_receipt.json",
+  "built_utc": "2026-08-04T23:07:40.609886+00:00",
+  "NOT_8D04_unblock": true,
+  "NOT_guardant_ptmb": true
+}
