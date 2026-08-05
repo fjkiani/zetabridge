@@ -16,6 +16,7 @@ Prior agents rewrote this file after a Synapse download attempt; header/body hav
 | Ground truth | Whatever you measure under the paths in **Hunt map** |
 | Docs | Hints only until your receipt confirms or refutes |
 | Virgin agent | Start at `engagements/brenus/genie_synapse/GENIE_HARD_AGENT_BRIEF.md` (discovery mandate) |
+| Winners strategy | Same brief → section **WINNERS STRATEGY (design + prove)** (W0–W4); MoA candidacy ≠ predictive winners; no 8D-04 soft-unblock |
 | Re-download | Only after you prove local files missing or corrupt |
 | 8D-04 | Never soft-unblocked by GENIE work alone |
 
