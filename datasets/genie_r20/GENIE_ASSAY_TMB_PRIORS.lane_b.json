@@ -1,0 +1,230 @@
+{
+  "built_utc": "2026-08-05T00:27:43.093159+00:00",
+  "builder": "scripts/s14/parallel_lane_b_genie_assay_tmb_priors.py",
+  "source_parquet": "/Users/fahadkiani/Desktop/development/zetabridge/datasets/genie_r20/crc_tmb_msi_matrix.parquet",
+  "sha256_parquet": "308f4325a59a102e307a66e9213b59593c869c1d139ef65564d4509256f03121",
+  "n_crc": 24109,
+  "msi_available": false,
+  "assay_strata_n_ge_100": [
+    {
+      "SEQ_ASSAY_ID": "MSK-IMPACT505",
+      "n": 4427,
+      "n_tmb_high": 639,
+      "tmb_high_rate": 0.14434154054664558,
+      "median_tmb_mut_per_mb": 5.5518543193426595
+    },
+    {
+      "SEQ_ASSAY_ID": "MSK-IMPACT468",
+      "n": 3458,
+      "n_tmb_high": 406,
+      "tmb_high_rate": 0.11740890688259109,
+      "median_tmb_mut_per_mb": 5.97750068741258
+    },
+    {
+      "SEQ_ASSAY_ID": "DFCI-ONCOPANEL-3.1",
+      "n": 2885,
+      "n_tmb_high": 242,
+      "tmb_high_rate": 0.08388214904679377,
+      "median_tmb_mut_per_mb": 5.0785091343912
+    },
+    {
+      "SEQ_ASSAY_ID": "PROV-TSO500HT-V2",
+      "n": 2277,
+      "n_tmb_high": 328,
+      "tmb_high_rate": 0.14404918752744839,
+      "median_tmb_mut_per_mb": 8.94922923271695
+    },
+    {
+      "SEQ_ASSAY_ID": "JHU-50GP",
+      "n": 1186,
+      "n_tmb_high": 1089,
+      "tmb_high_rate": 0.918212478920742,
+      "median_tmb_mut_per_mb": 89.9523252676082
+    },
+    {
+      "SEQ_ASSAY_ID": "MSK-IMPACT410",
+      "n": 937,
+      "n_tmb_high": 97,
+      "tmb_high_rate": 0.10352187833511206,
+      "median_tmb_mut_per_mb": 6.63293346220175
+    },
+    {
+      "SEQ_ASSAY_ID": "COLU-CSTP-V2",
+      "n": 792,
+      "n_tmb_high": 604,
+      "tmb_high_rate": 0.7626262626262627,
+      "median_tmb_mut_per_mb": 51.8510836876491
+    },
+    {
+      "SEQ_ASSAY_ID": "DFCI-ONCOPANEL-3",
+      "n": 788,
+      "n_tmb_high": 69,
+      "tmb_high_rate": 0.08756345177664974,
+      "median_tmb_mut_per_mb": 5.5401917829722205
+    },
+    {
+      "SEQ_ASSAY_ID": "DFCI-ONCOPANEL-2",
+      "n": 737,
+      "n_tmb_high": 91,
+      "tmb_high_rate": 0.12347354138398914,
+      "median_tmb_mut_per_mb": 7.81378194860094
+    },
+    {
+      "SEQ_ASSAY_ID": "COLU-CSTP-V1",
+      "n": 492,
+      "n_tmb_high": 132,
+      "tmb_high_rate": 0.2682926829268293,
+      "median_tmb_mut_per_mb": 0.0
+    },
+    {
+      "SEQ_ASSAY_ID": "DUKE-F1-DX1",
+      "n": 440,
+      "n_tmb_high": 44,
+      "tmb_high_rate": 0.1,
+      "median_tmb_mut_per_mb": 10.3282311871269
+    },
+    {
+      "SEQ_ASSAY_ID": "VHIO-300",
+      "n": 407,
+      "n_tmb_high": 0,
+      "tmb_high_rate": 0.0,
+      "median_tmb_mut_per_mb": 0.29906390753960804
+    },
+    {
+      "SEQ_ASSAY_ID": "MDA-50-V1",
+      "n": 308,
+      "n_tmb_high": 294,
+      "tmb_high_rate": 0.9545454545454546,
+      "median_tmb_mut_per_mb": 89.9523252676082
+    },
+    {
+      "SEQ_ASSAY_ID": "NKI-CHPV2-SOCV2-NGS",
+      "n": 301,
+      "n_tmb_high": 287,
+      "tmb_high_rate": 0.9534883720930233,
+      "median_tmb_mut_per_mb": 53.3788833137611
+    },
+    {
+      "SEQ_ASSAY_ID": "NKI-TSACP-MISEQ-NGS",
+      "n": 285,
+      "n_tmb_high": 262,
+      "tmb_high_rate": 0.9192982456140351,
+      "median_tmb_mut_per_mb": 55.5185431934266
+    },
+    {
+      "SEQ_ASSAY_ID": "MDA-46-V1",
+      "n": 259,
+      "n_tmb_high": 232,
+      "tmb_high_rate": 0.8957528957528957,
+      "median_tmb_mut_per_mb": 145.3488372093
+    },
+    {
+      "SEQ_ASSAY_ID": "JHU-500STP",
+      "n": 255,
+      "n_tmb_high": 0,
+      "tmb_high_rate": 0.0,
+      "median_tmb_mut_per_mb": 0.552268331718869
+    },
+    {
+      "SEQ_ASSAY_ID": "UHN-48-V1",
+      "n": 243,
+      "n_tmb_high": 231,
+      "tmb_high_rate": 0.9506172839506173,
+      "median_tmb_mut_per_mb": 83.2778147901399
+    },
+    {
+      "SEQ_ASSAY_ID": "UCSF-IDTV5-TO",
+      "n": 242,
+      "n_tmb_high": 21,
+      "tmb_high_rate": 0.08677685950413223,
+      "median_tmb_mut_per_mb": 5.5969639433705805
+    },
+    {
+      "SEQ_ASSAY_ID": "VHIO-COLORECTAL-V01",
+      "n": 234,
+      "n_tmb_high": 228,
+      "tmb_high_rate": 0.9743589743589743,
+      "median_tmb_mut_per_mb": 146.0280373831
+    },
+    {
+      "SEQ_ASSAY_ID": "MSK-IMPACT341",
+      "n": 218,
+      "n_tmb_high": 19,
+      "tmb_high_rate": 0.0871559633027523,
+      "median_tmb_mut_per_mb": 6.4415488489489
+    },
+    {
+      "SEQ_ASSAY_ID": "VICC-01-T7",
+      "n": 218,
+      "n_tmb_high": 14,
+      "tmb_high_rate": 0.06422018348623854,
+      "median_tmb_mut_per_mb": 8.097002084978039
+    },
+    {
+      "SEQ_ASSAY_ID": "COLU-TSACP-V1",
+      "n": 186,
+      "n_tmb_high": 0,
+      "tmb_high_rate": 0.0,
+      "median_tmb_mut_per_mb": 0.0
+    },
+    {
+      "SEQ_ASSAY_ID": "DFCI-ONCOPANEL-1",
+      "n": 184,
+      "n_tmb_high": 15,
+      "tmb_high_rate": 0.08152173913043478,
+      "median_tmb_mut_per_mb": 6.8467626061125895
+    },
+    {
+      "SEQ_ASSAY_ID": "YALE-OCP-V3",
+      "n": 145,
+      "n_tmb_high": 15,
+      "tmb_high_rate": 0.10344827586206896,
+      "median_tmb_mut_per_mb": 8.58592652164083
+    },
+    {
+      "SEQ_ASSAY_ID": "PROV-FOCUS-V1",
+      "n": 142,
+      "n_tmb_high": 77,
+      "tmb_high_rate": 0.5422535211267606,
+      "median_tmb_mut_per_mb": 46.2149921434513
+    },
+    {
+      "SEQ_ASSAY_ID": "DUKE-F1-T7",
+      "n": 135,
+      "n_tmb_high": 11,
+      "tmb_high_rate": 0.08148148148148149,
+      "median_tmb_mut_per_mb": 7.42225191122987
+    },
+    {
+      "SEQ_ASSAY_ID": "WAKE-CLINICAL-DX1",
+      "n": 124,
+      "n_tmb_high": 121,
+      "tmb_high_rate": 0.9758064516129032,
+      "median_tmb_mut_per_mb": 1108.8365745479
+    },
+    {
+      "SEQ_ASSAY_ID": "VICC-01-SOLIDTUMOR",
+      "n": 123,
+      "n_tmb_high": 85,
+      "tmb_high_rate": 0.6910569105691057,
+      "median_tmb_mut_per_mb": 51.9777535214928
+    },
+    {
+      "SEQ_ASSAY_ID": "WAKE-CLINICAL-T7",
+      "n": 117,
+      "n_tmb_high": 106,
+      "tmb_high_rate": 0.905982905982906,
+      "median_tmb_mut_per_mb": 1752.8483786151999
+    },
+    {
+      "SEQ_ASSAY_ID": "SCI-PMP68-V1",
+      "n": 109,
+      "n_tmb_high": 93,
+      "tmb_high_rate": 0.8532110091743119,
+      "median_tmb_mut_per_mb": 44.198243856444094
+    }
+  ],
+  "assay_bias_note": "TMB-high rate varies by SEQ_ASSAY_ID \u2014 do not pool as universal enrichment biomarker without assay stratification",
+  "NOT_8D04_unblock": true,
+  "NOT_patient_join_to_PDS": true
+}
