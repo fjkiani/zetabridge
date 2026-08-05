@@ -1,6 +1,7 @@
 # METRICS — genie-winners-mcp
 
-**Branch:** `agent/genie-winners-mcp-break-track`
+**Branch:** `agent/genie-winners-mcp-break-track`  
+**Schema:** `genie-winners-mcp/0.1.1`
 
 ## Canonical ledger (Brenus)
 
@@ -9,6 +10,8 @@ Alpha tracks every tool call / deliverable here:
 `Brenus-repo/engagements/brenus/genie_synapse/agent_break_track/METRICS_LEDGER.md`
 
 Also: `BREAK_LOG.md`, `RUN_PROTOCOL.md`, `SCOREBOARD_PATHS.md`, `AGENT_PASTE.md` in that folder.
+
+**Void:** claiming a tool or W0–W4 gate done without a ledger row + `receipt_sha` is invalid.
 
 ## Local receipts (this package)
 

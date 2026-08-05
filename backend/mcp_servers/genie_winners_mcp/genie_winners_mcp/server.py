@@ -1,6 +1,7 @@
 """GENIE + Winners MCP — FastMCP stdio server.
 
 Stubs fail loud until implemented. See GENIE_WINNERS_MCP_BUILD.md.
+Break-track: Brenus agent_break_track/METRICS_LEDGER.md — every call gets a row.
 """
 
 from __future__ import annotations
@@ -23,6 +24,28 @@ def genie_list_assets(root_paths: Optional[list[str]] = None) -> str:
     """Inventory paths/sizes under datasets/genie_r20 + optional raw dirs (measured)."""
     _ = root_paths
     return dumps(not_implemented("genie.list_assets"))
+
+
+@mcp.tool(name="genie.diff_doc_claims")
+def genie_diff_doc_claims(
+    doc_paths: list[str],
+    assets_receipt_path: Optional[str] = None,
+    assets_json: Optional[str] = None,
+) -> str:
+    """Diff doc claims vs list_assets output — MATCH/CONTRADICT/UNVERIFIABLE only.
+
+    Never asserts which side is true. Agent decides after reading the table.
+    """
+    for p in doc_paths or []:
+        blocked = refuse_poison_path(p)
+        if blocked:
+            return dumps(blocked)
+    if assets_receipt_path:
+        blocked = refuse_poison_path(assets_receipt_path)
+        if blocked:
+            return dumps(blocked)
+    _ = assets_json
+    return dumps(not_implemented("genie.diff_doc_claims"))
 
 
 @mcp.tool(name="genie.matrix_summary")
@@ -51,13 +74,32 @@ def genie_stream_mutation_flags(
     genes: list[str],
     out_path: str,
 ) -> str:
-    """DuckDB/stream filter by SAMPLE_ID set + gene list → flags table + receipt."""
+    """DuckDB/stream filter by SAMPLE_ID set + gene list → flags table + receipt.
+
+    Completeness: report genes requested vs genes observed in envelope data.
+    """
     for p in (mutation_path, out_path):
         blocked = refuse_poison_path(p)
         if blocked:
             return dumps(blocked)
     _ = sample_ids, genes
     return dumps(not_implemented("genie.stream_mutation_flags"))
+
+
+@mcp.tool(name="genie.stream_cna")
+def genie_stream_cna(
+    cna_path: str,
+    sample_ids: list[str],
+    out_path: str,
+    genes: Optional[list[str]] = None,
+) -> str:
+    """Stream/filter CNA table by SAMPLE_ID set (stub OK until impl)."""
+    for p in (cna_path, out_path):
+        blocked = refuse_poison_path(p)
+        if blocked:
+            return dumps(blocked)
+    _ = sample_ids, genes
+    return dumps(not_implemented("genie.stream_cna"))
 
 
 @mcp.tool(name="genie.assay_tmb_strata")
@@ -72,6 +114,21 @@ def genie_assay_tmb_strata(
         return dumps(blocked)
     _ = tmb_col, assay_col
     return dumps(not_implemented("genie.assay_tmb_strata"))
+
+
+@mcp.tool(name="genie.tmb_outlier_report")
+def genie_tmb_outlier_report(
+    matrix_path: str,
+    tmb_col: Optional[str] = None,
+    assay_col: Optional[str] = None,
+    method: Optional[str] = None,
+) -> str:
+    """First-class TMB outlier report (method recorded in envelope — no gospel cutoffs)."""
+    blocked = refuse_poison_path(matrix_path)
+    if blocked:
+        return dumps(blocked)
+    _ = tmb_col, assay_col, method
+    return dumps(not_implemented("genie.tmb_outlier_report"))
 
 
 @mcp.tool(name="genie.refuse_poison")
@@ -90,6 +147,32 @@ def genie_refuse_poison(path: str) -> str:
     return dumps(body)
 
 
+@mcp.tool(name="genie.probe_consumer_wiring")
+def genie_probe_consumer_wiring(
+    repo_roots: list[str],
+    patterns: Optional[list[str]] = None,
+) -> str:
+    """Grep/repo probe: who imports enrichment feeds / matrix builders."""
+    for p in repo_roots or []:
+        blocked = refuse_poison_path(p)
+        if blocked:
+            return dumps(blocked)
+    _ = patterns
+    return dumps(not_implemented("genie.probe_consumer_wiring"))
+
+
+# ─── MoA probe ───────────────────────────────────────────────────────────────
+
+
+@mcp.tool(name="moa.probe_schema")
+def moa_probe_schema(moa_path: str) -> str:
+    """Open MoA/REBUILT JSON; report schema keys + entry count (no biology narration)."""
+    blocked = refuse_poison_path(moa_path)
+    if blocked:
+        return dumps(blocked)
+    return dumps(not_implemented("moa.probe_schema"))
+
+
 # ─── Winners plane ───────────────────────────────────────────────────────────
 
 
@@ -99,7 +182,7 @@ def winners_define(
     definition_path: Optional[str] = None,
     force: bool = False,
 ) -> str:
-    """Write/validate WINNER_DEFINITION.yaml (pre-reg schema)."""
+    """Write/validate WINNER_DEFINITION.yaml (pre-reg schema). Ledger row required."""
     _ = definition, definition_path, force
     return dumps(not_implemented("winners.define"))
 
@@ -161,7 +244,7 @@ def ids_intersect(
     id_col_b: Optional[str] = None,
     allow_fuzzy: bool = False,
 ) -> str:
-    """Generic ID intersection receipt (exact match default)."""
+    """Generic ID intersection receipt (exact match default). Join-test for GENIE ∩ PDS."""
     for p in (set_a_path, set_b_path):
         blocked = refuse_poison_path(p)
         if blocked:
