@@ -1,0 +1,14 @@
+{
+  "_note": "Example only. Copy into local Cursor mcp.json. NEVER commit real tokens. GENIE_R20_ROOT / BRENUS_GENIE_SYNAPSE are optional path hints for implementers.",
+  "mcpServers": {
+    "genie-winners": {
+      "command": "python3",
+      "args": ["-m", "genie_winners_mcp"],
+      "cwd": "/absolute/path/to/zetabridge/backend/mcp_servers/genie_winners_mcp",
+      "env": {
+        "GENIE_R20_ROOT": "/absolute/path/to/zetabridge/datasets/genie_r20",
+        "BRENUS_GENIE_SYNAPSE": "/absolute/path/to/Brenus-repo/engagements/brenus/genie_synapse"
+      }
+    }
+  }
+}
