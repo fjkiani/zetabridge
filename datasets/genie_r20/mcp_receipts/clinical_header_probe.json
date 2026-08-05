@@ -1,0 +1,52 @@
+{
+  "generated": "2026-08-05T02:55:04Z",
+  "probes": [
+    {
+      "path": "crc_tmb_msi_matrix.parquet",
+      "n_cols": 37,
+      "columns": [
+        "SAMPLE_ID",
+        "PATIENT_ID",
+        "tmb",
+        "tmb_mut_per_mb",
+        "tmb_bin",
+        "TMB_ASSAY_TYPE",
+        "IS_GUARDANT_PTMB",
+        "MSI_STATUS",
+        "MSI_AVAILABLE",
+        "ONCOTREE_CODE",
+        "CANCER_TYPE",
+        "CANCER_TYPE_DETAILED",
+        "SAMPLE_TYPE",
+        "SAMPLE_TYPE_DETAILED",
+        "SAMPLE_CLASS",
+        "SEQ_ASSAY_ID",
+        "SEQ_YEAR",
+        "AGE_AT_SEQ_REPORT",
+        "AGE_AT_SEQ_REPORT_DAYS",
+        "SEX",
+        "PRIMARY_RACE",
+        "ETHNICITY",
+        "BIRTH_YEAR",
+        "CENTER",
+        "DEAD",
+        "YEAR_CONTACT",
+        "YEAR_DEATH",
+        "INT_CONTACT",
+        "INT_DOD",
+        "GENIE_RELEASE",
+        "SOURCE",
+        "number_of_genes",
+        "platform",
+        "alteration_types",
+        "SECONDARY_RACE",
+        "TERTIARY_RACE",
+        "CENTER_assay"
+      ],
+      "clinical_name_hits": [
+        "YEAR_DEATH"
+      ],
+      "has_treatment_or_response": true
+    }
+  ]
+}

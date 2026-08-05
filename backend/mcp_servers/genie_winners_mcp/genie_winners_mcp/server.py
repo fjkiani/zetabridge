@@ -1,18 +1,34 @@
 """GENIE + Winners MCP — FastMCP stdio server.
 
-Stubs fail loud until implemented. See GENIE_WINNERS_MCP_BUILD.md.
-"""
+Tool bodies delegate to logic.py (IO/orchestration) + stats.py (analysis engine).
+Every file-reader is poison-gated; every tool returns the uniform envelope.
+Winner numbers are RE-DERIVED from the IPD backbone; no answer-key file is ever read.
+See GENIE_WINNERS_MCP_BUILD.md.
 
-from __future__ import annotations
+NOTE: do NOT add `from __future__ import annotations` here — it stringifies parameter
+annotations, which defeats FastMCP 1.12.x's get_origin() generic-skip guard and makes
+tool registration raise TypeError on list[str]/Optional[...] params.
+"""
 
 from typing import Any, Optional
 
 from mcp.server.fastmcp import FastMCP
 
 from . import SCHEMA_VERSION, TOOL_IDS
-from .envelope import dumps, envelope, not_implemented, refuse_poison_path, sha256_text
+from . import logic as L
+from .envelope import dumps, envelope, refuse_poison_path, sha256_text
 
 mcp = FastMCP("genie-winners")
+
+
+def _gate(*paths) -> Optional[str]:
+    """Return a dumped poison-refusal envelope if any path is poison, else None."""
+    for p in paths:
+        if p:
+            blocked = refuse_poison_path(p)
+            if blocked:
+                return dumps(blocked)
+    return None
 
 
 # ─── GENIE substrate ─────────────────────────────────────────────────────────
@@ -20,28 +36,27 @@ mcp = FastMCP("genie-winners")
 
 @mcp.tool(name="genie.list_assets")
 def genie_list_assets(root_paths: Optional[list[str]] = None) -> str:
-    """Inventory paths/sizes under datasets/genie_r20 + optional raw dirs (measured)."""
-    _ = root_paths
-    return dumps(not_implemented("genie.list_assets"))
+    """Inventory paths/sizes/mtimes under datasets/genie_r20 + optional roots (measured;
+    poison files are LISTED with is_poison=true but never loaded)."""
+    return dumps(L.list_assets(root_paths))
 
 
 @mcp.tool(name="genie.matrix_summary")
 def genie_matrix_summary(matrix_path: str) -> str:
-    """Schema, n, key column stats from parquet/csv (computed live)."""
-    blocked = refuse_poison_path(matrix_path)
-    if blocked:
-        return dumps(blocked)
-    return dumps(not_implemented("genie.matrix_summary"))
+    """Schema, n, null rates, TMB/assay/MSI stats from parquet/csv (computed live)."""
+    g = _gate(matrix_path)
+    if g:
+        return g
+    return dumps(L.matrix_summary(matrix_path))
 
 
 @mcp.tool(name="genie.clinical_header_probe")
 def genie_clinical_header_probe(paths: list[str]) -> str:
-    """Header-only probe of clinical files."""
-    for p in paths or []:
-        blocked = refuse_poison_path(p)
-        if blocked:
-            return dumps(blocked)
-    return dumps(not_implemented("genie.clinical_header_probe"))
+    """Header-only probe for OS/PFS/treatment/response column names (no row reads)."""
+    g = _gate(*(paths or []))
+    if g:
+        return g
+    return dumps(L.clinical_header_probe(paths))
 
 
 @mcp.tool(name="genie.stream_mutation_flags")
@@ -51,13 +66,12 @@ def genie_stream_mutation_flags(
     genes: list[str],
     out_path: str,
 ) -> str:
-    """DuckDB/stream filter by SAMPLE_ID set + gene list → flags table + receipt."""
-    for p in (mutation_path, out_path):
-        blocked = refuse_poison_path(p)
-        if blocked:
-            return dumps(blocked)
-    _ = sample_ids, genes
-    return dumps(not_implemented("genie.stream_mutation_flags"))
+    """Stream-filter a mutations/MAF file by SAMPLE_ID set + gene list → flags table + receipt
+    (v1 local-file only; FILE_NOT_FOUND if absent — no Synapse re-download)."""
+    g = _gate(mutation_path, out_path)
+    if g:
+        return g
+    return dumps(L.stream_mutation_flags(mutation_path, sample_ids, genes, out_path))
 
 
 @mcp.tool(name="genie.assay_tmb_strata")
@@ -66,17 +80,16 @@ def genie_assay_tmb_strata(
     tmb_col: Optional[str] = None,
     assay_col: Optional[str] = None,
 ) -> str:
-    """TMB by SEQ_ASSAY_ID (or assay column found on matrix)."""
-    blocked = refuse_poison_path(matrix_path)
-    if blocked:
-        return dumps(blocked)
-    _ = tmb_col, assay_col
-    return dumps(not_implemented("genie.assay_tmb_strata"))
+    """TMB summary stratified by SEQ_ASSAY_ID (panel heterogeneity flagged, not corrected)."""
+    g = _gate(matrix_path)
+    if g:
+        return g
+    return dumps(L.assay_tmb_strata(matrix_path, tmb_col, assay_col))
 
 
 @mcp.tool(name="genie.refuse_poison")
 def genie_refuse_poison(path: str) -> str:
-    """Hard fail if path matches QUARANTINE/poison; else ok pass."""
+    """Hard fail if path matches QUARANTINE/poison; else ok pass (guard self-test)."""
     blocked = refuse_poison_path(path)
     if blocked:
         return dumps(blocked)
@@ -98,17 +111,27 @@ def winners_define(
     definition: Optional[dict[str, Any]] = None,
     definition_path: Optional[str] = None,
     force: bool = False,
+    out_dir: Optional[str] = None,
 ) -> str:
-    """Write/validate WINNER_DEFINITION.yaml (pre-reg schema)."""
-    _ = definition, definition_path, force
-    return dumps(not_implemented("winners.define"))
+    """Validate + write the pre-registered WINNER_DEFINITION.yaml (schema-checked, seeded)."""
+    g = _gate(definition_path)
+    if g:
+        return g
+    return dumps(L.winners_define(definition, definition_path, force, out_dir))
 
 
 @mcp.tool(name="winners.hypotheses_draft")
-def winners_hypotheses_draft(hypotheses: list[dict[str, Any]]) -> str:
-    """Scaffold ≤5 hypotheses; tool validates schema (agent fills biology)."""
-    _ = hypotheses
-    return dumps(not_implemented("winners.hypotheses_draft"))
+def winners_hypotheses_draft(
+    hypotheses: list[dict[str, Any]],
+    backbone_path: Optional[str] = None,
+    matrix_path: Optional[str] = None,
+    out_dir: Optional[str] = None,
+) -> str:
+    """Validate ≤5 hypotheses; annotate each with on-disk field existence + typed counts."""
+    g = _gate(backbone_path, matrix_path)
+    if g:
+        return g
+    return dumps(L.winners_hypotheses_draft(hypotheses, backbone_path, matrix_path, out_dir))
 
 
 @mcp.tool(name="winners.kill_tests")
@@ -117,14 +140,20 @@ def winners_kill_tests(
     definition_path: str,
     matrix_path: Optional[str] = None,
     outcomes_manifest_path: Optional[str] = None,
+    backbone_path: Optional[str] = None,
+    out_dir: Optional[str] = None,
 ) -> str:
-    """Adversarial battery; compute metrics if labels exist — never assert prior numbers."""
-    for p in (hypotheses_path, definition_path, matrix_path, outcomes_manifest_path):
-        if p:
-            blocked = refuse_poison_path(p)
-            if blocked:
-                return dumps(blocked)
-    return dumps(not_implemented("winners.kill_tests"))
+    """Adversarial kill battery + secondary evaluation loop; every metric RE-DERIVED from IPD,
+    labels-absent legs return BLOCKED (never asserts prior numbers)."""
+    g = _gate(hypotheses_path, definition_path, matrix_path, outcomes_manifest_path, backbone_path)
+    if g:
+        return g
+    return dumps(
+        L.run_kill_battery(
+            hypotheses_path, definition_path, matrix_path,
+            outcomes_manifest_path, backbone_path, out_dir,
+        )
+    )
 
 
 @mcp.tool(name="winners.scoreboard")
@@ -132,22 +161,22 @@ def winners_scoreboard(
     definition_path: str,
     hypotheses_path: str,
     kills_path: str,
+    out_dir: Optional[str] = None,
 ) -> str:
-    """Emit WINNERS_SCOREBOARD.md/json from tool outputs only."""
-    for p in (definition_path, hypotheses_path, kills_path):
-        blocked = refuse_poison_path(p)
-        if blocked:
-            return dumps(blocked)
-    return dumps(not_implemented("winners.scoreboard"))
+    """Emit WINNERS_SCOREBOARD.md/json with rows built ONLY from prior tool artifacts."""
+    g = _gate(definition_path, hypotheses_path, kills_path)
+    if g:
+        return g
+    return dumps(L.winners_scoreboard(definition_path, hypotheses_path, kills_path, out_dir))
 
 
 @mcp.tool(name="winners.pick")
-def winners_pick(scoreboard_path: str) -> str:
-    """ADVANCE-only shortlist + required DAR/IPD gaps (structured)."""
-    blocked = refuse_poison_path(scoreboard_path)
-    if blocked:
-        return dumps(blocked)
-    return dumps(not_implemented("winners.pick"))
+def winners_pick(scoreboard_path: str, out_dir: Optional[str] = None) -> str:
+    """ADVANCE-only shortlist + explicit DAR/IPD gaps + 8D-04-still-locked note."""
+    g = _gate(scoreboard_path)
+    if g:
+        return g
+    return dumps(L.winners_pick(scoreboard_path, out_dir))
 
 
 # ─── Bridge ──────────────────────────────────────────────────────────────────
@@ -161,11 +190,10 @@ def ids_intersect(
     id_col_b: Optional[str] = None,
     allow_fuzzy: bool = False,
 ) -> str:
-    """Generic ID intersection receipt (exact match default)."""
-    for p in (set_a_path, set_b_path):
-        blocked = refuse_poison_path(p)
-        if blocked:
-            return dumps(blocked)
+    """Exact-match ID-set intersection + receipt (fuzzy stays gated behind explicit protocol)."""
+    g = _gate(set_a_path, set_b_path)
+    if g:
+        return g
     if allow_fuzzy:
         return dumps(
             envelope(
@@ -175,22 +203,21 @@ def ids_intersect(
                 error="FUZZY_REQUIRES_EXPLICIT_PROTOCOL: set allow_fuzzy only with Alpha-approved protocol",
             )
         )
-    _ = id_col_a, id_col_b
-    return dumps(not_implemented("ids.intersect"))
+    return dumps(L.ids_intersect(set_a_path, set_b_path, id_col_a, id_col_b))
 
 
 @mcp.tool(name="pds.outcomes_manifest_read")
 def pds_outcomes_manifest_read(manifest_path: str) -> str:
-    """Read local PDS outcomes manifest (no CAS login — use PDS-MCP for CAS)."""
-    blocked = refuse_poison_path(manifest_path)
-    if blocked:
-        return dumps(blocked)
-    return dumps(not_implemented("pds.outcomes_manifest_read"))
+    """Read the local PDS outcomes manifest (no CAS login — use PDS-MCP for CAS)."""
+    g = _gate(manifest_path)
+    if g:
+        return g
+    return dumps(L.pds_outcomes_manifest_read(manifest_path))
 
 
 @mcp.tool(name="genie_winners.list_tool_ids")
 def list_tool_ids() -> str:
-    """Smoke helper: return registered tool contract IDs."""
+    """Smoke helper: return registered tool contract IDs + schema version."""
     body = envelope(
         ok=True,
         tool="genie_winners.list_tool_ids",

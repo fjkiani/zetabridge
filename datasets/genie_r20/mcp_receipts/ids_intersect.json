@@ -1,0 +1,19 @@
+{
+  "generated": "2026-08-05T02:55:08Z",
+  "col_a": "PATIENT_ID",
+  "col_b": "subjid",
+  "n_a": 22782,
+  "n_b": 5879,
+  "n_intersection": 0,
+  "examples_a": [
+    "GENIE-COLU-00079",
+    "GENIE-COLU-00086",
+    "GENIE-COLU-00100"
+  ],
+  "examples_b": [
+    "1.0",
+    "10.0",
+    "100.0"
+  ],
+  "verdict": "JOIN_IMPOSSIBLE"
+}

@@ -1,0 +1,116 @@
+{
+  "generated": "2026-08-05T02:55:03Z",
+  "roots": [
+    "/workspace/zetabridge/datasets/genie_r20"
+  ],
+  "files": [
+    {
+      "path": "datasets/genie_r20/ENRICHMENT_MODEL_V2_RECEIPT.md",
+      "bytes": 1844,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/RECEIPT.md",
+      "bytes": 2012,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/access_status.json",
+      "bytes": 3917,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/bayesian_prior_enrichment_feed_v3_psm.json",
+      "bytes": 2758,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/crc_tmb_msi_matrix.csv",
+      "bytes": 10560560,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/crc_tmb_msi_matrix.parquet",
+      "bytes": 964087,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/crc_tmb_msi_provenance.json",
+      "bytes": 830,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/crc_tmb_msi_qc_receipt.json",
+      "bytes": 3423,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/enrichment_model_v1_feed.json",
+      "bytes": 2416,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/enrichment_model_v2_feed.json",
+      "bytes": 3871,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/mcp_receipts/assay_tmb_strata.json",
+      "bytes": 12224,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/mcp_receipts/clinical_header_probe.json",
+      "bytes": 1130,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/mcp_receipts/ids_intersect.json",
+      "bytes": 325,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/mcp_receipts/list_assets.json",
+      "bytes": 2897,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/mcp_receipts/matrix_summary.json",
+      "bytes": 3009,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/quarantine_notes/POISON_QUARANTINE.md",
+      "bytes": 441,
+      "mtime": "2026-08-05",
+      "is_poison": true
+    },
+    {
+      "path": "datasets/genie_r20/r20_download_receipt.SCRUBBED.json",
+      "bytes": 4027,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    },
+    {
+      "path": "datasets/genie_r20/synapse_probe_receipt.json",
+      "bytes": 231,
+      "mtime": "2026-08-05",
+      "is_poison": false
+    }
+  ]
+}

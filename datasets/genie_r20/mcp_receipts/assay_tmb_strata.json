@@ -1,0 +1,623 @@
+{
+  "generated": "2026-08-05T02:55:04Z",
+  "tmb_col": "tmb_mut_per_mb",
+  "assay_col": "SEQ_ASSAY_ID",
+  "strata": [
+    {
+      "assay": "MSK-IMPACT505",
+      "n": 4427,
+      "tmb_mean": 14.762,
+      "tmb_median": 5.552,
+      "tmb_std": 31.138
+    },
+    {
+      "assay": "MSK-IMPACT468",
+      "n": 3458,
+      "tmb_mean": 12.64,
+      "tmb_median": 5.978,
+      "tmb_std": 24.871
+    },
+    {
+      "assay": "DFCI-ONCOPANEL-3.1",
+      "n": 2885,
+      "tmb_mean": 8.568,
+      "tmb_median": 5.079,
+      "tmb_std": 15.9
+    },
+    {
+      "assay": "PROV-TSO500HT-V2",
+      "n": 2277,
+      "tmb_mean": 15.579,
+      "tmb_median": 8.949,
+      "tmb_std": 23.3
+    },
+    {
+      "assay": "JHU-50GP",
+      "n": 1186,
+      "tmb_mean": 121.466,
+      "tmb_median": 89.952,
+      "tmb_std": 134.585
+    },
+    {
+      "assay": "MSK-IMPACT410",
+      "n": 937,
+      "tmb_mean": 12.248,
+      "tmb_median": 6.633,
+      "tmb_std": 26.336
+    },
+    {
+      "assay": "COLU-CSTP-V2",
+      "n": 792,
+      "tmb_mean": 102.589,
+      "tmb_median": 51.851,
+      "tmb_std": 201.664
+    },
+    {
+      "assay": "DFCI-ONCOPANEL-3",
+      "n": 788,
+      "tmb_mean": 9.0,
+      "tmb_median": 5.54,
+      "tmb_std": 16.749
+    },
+    {
+      "assay": "DFCI-ONCOPANEL-2",
+      "n": 737,
+      "tmb_mean": 12.911,
+      "tmb_median": 7.814,
+      "tmb_std": 21.083
+    },
+    {
+      "assay": "COLU-CSTP-V1",
+      "n": 492,
+      "tmb_mean": 52.301,
+      "tmb_median": 0.0,
+      "tmb_std": 139.746
+    },
+    {
+      "assay": "DUKE-F1-DX1",
+      "n": 440,
+      "tmb_mean": 13.066,
+      "tmb_median": 10.328,
+      "tmb_std": 14.74
+    },
+    {
+      "assay": "VHIO-300",
+      "n": 407,
+      "tmb_mean": 0.434,
+      "tmb_median": 0.299,
+      "tmb_std": 0.8
+    },
+    {
+      "assay": "MDA-50-V1",
+      "n": 308,
+      "tmb_mean": 109.228,
+      "tmb_median": 89.952,
+      "tmb_std": 65.717
+    },
+    {
+      "assay": "NKI-CHPV2-SOCV2-NGS",
+      "n": 301,
+      "tmb_mean": 62.6,
+      "tmb_median": 53.379,
+      "tmb_std": 32.545
+    },
+    {
+      "assay": "NKI-TSACP-MISEQ-NGS",
+      "n": 285,
+      "tmb_mean": 65.648,
+      "tmb_median": 55.519,
+      "tmb_std": 36.464
+    },
+    {
+      "assay": "MDA-46-V1",
+      "n": 259,
+      "tmb_mean": 138.895,
+      "tmb_median": 145.349,
+      "tmb_std": 84.034
+    },
+    {
+      "assay": "JHU-500STP",
+      "n": 255,
+      "tmb_mean": 0.583,
+      "tmb_median": 0.552,
+      "tmb_std": 0.372
+    },
+    {
+      "assay": "UHN-48-V1",
+      "n": 243,
+      "tmb_mean": 76.881,
+      "tmb_median": 83.278,
+      "tmb_std": 45.463
+    },
+    {
+      "assay": "UCSF-IDTV5-TO",
+      "n": 242,
+      "tmb_mean": 8.782,
+      "tmb_median": 5.597,
+      "tmb_std": 12.084
+    },
+    {
+      "assay": "VHIO-COLORECTAL-V01",
+      "n": 234,
+      "tmb_mean": 123.77,
+      "tmb_median": 146.028,
+      "tmb_std": 57.935
+    },
+    {
+      "assay": "MSK-IMPACT341",
+      "n": 218,
+      "tmb_mean": 11.494,
+      "tmb_median": 6.442,
+      "tmb_std": 24.541
+    },
+    {
+      "assay": "VICC-01-T7",
+      "n": 218,
+      "tmb_mean": 11.601,
+      "tmb_median": 8.097,
+      "tmb_std": 28.484
+    },
+    {
+      "assay": "COLU-TSACP-V1",
+      "n": 186,
+      "tmb_mean": 0.0,
+      "tmb_median": 0.0,
+      "tmb_std": 0.0
+    },
+    {
+      "assay": "DFCI-ONCOPANEL-1",
+      "n": 184,
+      "tmb_mean": 9.749,
+      "tmb_median": 6.847,
+      "tmb_std": 13.577
+    },
+    {
+      "assay": "YALE-OCP-V3",
+      "n": 145,
+      "tmb_mean": 11.724,
+      "tmb_median": 8.586,
+      "tmb_std": 23.188
+    },
+    {
+      "assay": "PROV-FOCUS-V1",
+      "n": 142,
+      "tmb_mean": 27.989,
+      "tmb_median": 46.215,
+      "tmb_std": 29.619
+    },
+    {
+      "assay": "DUKE-F1-T7",
+      "n": 135,
+      "tmb_mean": 10.231,
+      "tmb_median": 7.422,
+      "tmb_std": 9.619
+    },
+    {
+      "assay": "WAKE-CLINICAL-DX1",
+      "n": 124,
+      "tmb_mean": 2023.696,
+      "tmb_median": 1108.837,
+      "tmb_std": 4659.247
+    },
+    {
+      "assay": "VICC-01-SOLIDTUMOR",
+      "n": 123,
+      "tmb_mean": 51.555,
+      "tmb_median": 51.978,
+      "tmb_std": 44.889
+    },
+    {
+      "assay": "WAKE-CLINICAL-T7",
+      "n": 117,
+      "tmb_mean": 3033.776,
+      "tmb_median": 1752.848,
+      "tmb_std": 3564.77
+    },
+    {
+      "assay": "SCI-PMP68-V1",
+      "n": 109,
+      "tmb_mean": 56.498,
+      "tmb_median": 44.198,
+      "tmb_std": 66.116
+    },
+    {
+      "assay": "UCSF-NIMV4-TN",
+      "n": 92,
+      "tmb_mean": 5.492,
+      "tmb_median": 3.096,
+      "tmb_std": 19.532
+    },
+    {
+      "assay": "UHN-TSO500-V1",
+      "n": 92,
+      "tmb_mean": 2.703,
+      "tmb_median": 2.391,
+      "tmb_std": 2.671
+    },
+    {
+      "assay": "VICC-02-XTV4",
+      "n": 83,
+      "tmb_mean": 7.945,
+      "tmb_median": 6.118,
+      "tmb_std": 15.228
+    },
+    {
+      "assay": "UHN-OCA-V3",
+      "n": 79,
+      "tmb_mean": 6.014,
+      "tmb_median": 5.724,
+      "tmb_std": 3.597
+    },
+    {
+      "assay": "UCHI-ONCOSCREEN50-V1",
+      "n": 75,
+      "tmb_mean": 195.358,
+      "tmb_median": 179.228,
+      "tmb_std": 80.572
+    },
+    {
+      "assay": "MDA-409-V1",
+      "n": 73,
+      "tmb_mean": 0.0,
+      "tmb_median": 0.0,
+      "tmb_std": 0.0
+    },
+    {
+      "assay": "PROV-FOUNDATIONONELIQUIDCDX",
+      "n": 72,
+      "tmb_mean": 8.434,
+      "tmb_median": 5.789,
+      "tmb_std": 11.338
+    },
+    {
+      "assay": "UCHI-ONCOPLUS147-V1",
+      "n": 64,
+      "tmb_mean": 30.18,
+      "tmb_median": 28.798,
+      "tmb_std": 11.474
+    },
+    {
+      "assay": "GRCC-MOSC3",
+      "n": 61,
+      "tmb_mean": 21.37,
+      "tmb_median": 21.606,
+      "tmb_std": 13.081
+    },
+    {
+      "assay": "UHN-555-PAN-GI-V1",
+      "n": 53,
+      "tmb_mean": 8.576,
+      "tmb_median": 5.99,
+      "tmb_std": 10.376
+    },
+    {
+      "assay": "PROV-TST170-V1",
+      "n": 51,
+      "tmb_mean": 12.094,
+      "tmb_median": 4.359,
+      "tmb_std": 16.491
+    },
+    {
+      "assay": "UCSF-IDTV5-TN",
+      "n": 48,
+      "tmb_mean": 8.629,
+      "tmb_median": 3.292,
+      "tmb_std": 19.777
+    },
+    {
+      "assay": "VICC-01-T5A",
+      "n": 47,
+      "tmb_mean": 10.308,
+      "tmb_median": 8.434,
+      "tmb_std": 7.145
+    },
+    {
+      "assay": "PROV-TRISEQ-V2",
+      "n": 41,
+      "tmb_mean": 3.915,
+      "tmb_median": 4.063,
+      "tmb_std": 2.006
+    },
+    {
+      "assay": "YALE-HSM-V1",
+      "n": 40,
+      "tmb_mean": 113.565,
+      "tmb_median": 89.952,
+      "tmb_std": 61.1
+    },
+    {
+      "assay": "DUKE-F1-T5A",
+      "n": 37,
+      "tmb_mean": 11.321,
+      "tmb_median": 8.434,
+      "tmb_std": 12.383
+    },
+    {
+      "assay": "UHN-555-V1",
+      "n": 32,
+      "tmb_mean": 7.245,
+      "tmb_median": 6.46,
+      "tmb_std": 3.36
+    },
+    {
+      "assay": "PROV-TEMPUS-XT",
+      "n": 30,
+      "tmb_mean": 0.0,
+      "tmb_median": 0.0,
+      "tmb_std": 0.0
+    },
+    {
+      "assay": "UCHI-ONCOPLUS119-V1",
+      "n": 27,
+      "tmb_mean": 36.922,
+      "tmb_median": 31.92,
+      "tmb_std": 16.237
+    },
+    {
+      "assay": "PROV-CARIS-MIP",
+      "n": 27,
+      "tmb_mean": 0.018,
+      "tmb_median": 0.021,
+      "tmb_std": 0.016
+    },
+    {
+      "assay": "COLU-CCCP-V1",
+      "n": 23,
+      "tmb_mean": 0.377,
+      "tmb_median": 0.0,
+      "tmb_std": 1.809
+    },
+    {
+      "assay": "UMIAMI-GD-360",
+      "n": 23,
+      "tmb_mean": 0.0,
+      "tmb_median": 0.0,
+      "tmb_std": 0.0
+    },
+    {
+      "assay": "PROV-GUARDANT360-V1",
+      "n": 22,
+      "tmb_mean": 0.0,
+      "tmb_median": 0.0,
+      "tmb_std": 0.0
+    },
+    {
+      "assay": "UCSF-NIMV4-TO",
+      "n": 19,
+      "tmb_mean": 14.438,
+      "tmb_median": 5.715,
+      "tmb_std": 37.203
+    },
+    {
+      "assay": "VICC-01-DX1",
+      "n": 18,
+      "tmb_mean": 10.38,
+      "tmb_median": 9.389,
+      "tmb_std": 4.18
+    },
+    {
+      "assay": "NKI-CHPV2-NGS",
+      "n": 18,
+      "tmb_mean": 65.473,
+      "tmb_median": 62.027,
+      "tmb_std": 25.814
+    },
+    {
+      "assay": "NKI-CHP-V2-PLUS",
+      "n": 18,
+      "tmb_mean": 60.793,
+      "tmb_median": 53.379,
+      "tmb_std": 25.576
+    },
+    {
+      "assay": "PROV-GUARDANT360-CDX",
+      "n": 16,
+      "tmb_mean": 0.0,
+      "tmb_median": 0.0,
+      "tmb_std": 0.0
+    },
+    {
+      "assay": "UHN-50-V2",
+      "n": 15,
+      "tmb_mean": 0.0,
+      "tmb_median": 0.0,
+      "tmb_std": 0.0
+    },
+    {
+      "assay": "DFCI-F1-AB1",
+      "n": 13,
+      "tmb_mean": 13.162,
+      "tmb_median": 11.579,
+      "tmb_std": 11.883
+    },
+    {
+      "assay": "VICC-02-XTV3",
+      "n": 13,
+      "tmb_mean": 11.839,
+      "tmb_median": 5.152,
+      "tmb_std": 20.15
+    },
+    {
+      "assay": "UMIAMI-FD-F1CDX",
+      "n": 13,
+      "tmb_mean": 0.0,
+      "tmb_median": 0.0,
+      "tmb_std": 0.0
+    },
+    {
+      "assay": "GRCC-OCAV3",
+      "n": 12,
+      "tmb_mean": 8.586,
+      "tmb_median": 8.586,
+      "tmb_std": 4.726
+    },
+    {
+      "assay": "GRCC-CHP2",
+      "n": 12,
+      "tmb_mean": 123.684,
+      "tmb_median": 112.44,
+      "tmb_std": 69.479
+    },
+    {
+      "assay": "UCHI-ONCOPLUS154-V1",
+      "n": 11,
+      "tmb_mean": 27.373,
+      "tmb_median": 26.095,
+      "tmb_std": 11.114
+    },
+    {
+      "assay": "WAKE-CLINICAL-DX2",
+      "n": 11,
+      "tmb_mean": 15755.475,
+      "tmb_median": 6354.708,
+      "tmb_std": 24067.447
+    },
+    {
+      "assay": "WAKE-CA-NGSQ3",
+      "n": 9,
+      "tmb_mean": 1876.981,
+      "tmb_median": 1107.726,
+      "tmb_std": 1733.743
+    },
+    {
+      "assay": "UMIAMI-CA-HYBRID-WES",
+      "n": 8,
+      "tmb_mean": 10.155,
+      "tmb_median": 9.92,
+      "tmb_std": 1.095
+    },
+    {
+      "assay": "GRCC-CP1",
+      "n": 7,
+      "tmb_mean": 102.251,
+      "tmb_median": 44.735,
+      "tmb_std": 88.398
+    },
+    {
+      "assay": "GRCC-MOSC4",
+      "n": 6,
+      "tmb_mean": 24.096,
+      "tmb_median": 15.218,
+      "tmb_std": 29.437
+    },
+    {
+      "assay": "UCHI-ONCOHEME55-V1",
+      "n": 6,
+      "tmb_mean": 189.065,
+      "tmb_median": 193.826,
+      "tmb_std": 40.533
+    },
+    {
+      "assay": "WAKE-CLINICAL-AB1",
+      "n": 6,
+      "tmb_mean": 16575.84,
+      "tmb_median": 17029.973,
+      "tmb_std": 14116.878
+    },
+    {
+      "assay": "WAKE-CLINICAL-CF3",
+      "n": 6,
+      "tmb_mean": 166666.667,
+      "tmb_median": 117647.059,
+      "tmb_std": 180029.473
+    },
+    {
+      "assay": "VHIO-GENERAL-V01",
+      "n": 6,
+      "tmb_mean": 222.777,
+      "tmb_median": 222.777,
+      "tmb_std": 48.808
+    },
+    {
+      "assay": "NKI-PATH-NGS",
+      "n": 4,
+      "tmb_mean": 54.959,
+      "tmb_median": 54.959,
+      "tmb_std": 22.437
+    },
+    {
+      "assay": "WAKE-CLINICAL-T5A",
+      "n": 4,
+      "tmb_mean": 81730.769,
+      "tmb_median": 81730.769,
+      "tmb_std": 20016.019
+    },
+    {
+      "assay": "VICC-02-XTV2",
+      "n": 2,
+      "tmb_mean": 15.86,
+      "tmb_median": 15.86,
+      "tmb_std": 6.978
+    },
+    {
+      "assay": "DFCI-F1-CF2",
+      "n": 1,
+      "tmb_mean": 13.18,
+      "tmb_median": 13.18,
+      "tmb_std": null
+    },
+    {
+      "assay": "DFCI-F1-CF3",
+      "n": 1,
+      "tmb_mean": 39.539,
+      "tmb_median": 39.539,
+      "tmb_std": null
+    },
+    {
+      "assay": "GRCC-SAFIR02",
+      "n": 1,
+      "tmb_mean": 15.671,
+      "tmb_median": 15.671,
+      "tmb_std": null
+    },
+    {
+      "assay": "COLU-CCCP-V2",
+      "n": 1,
+      "tmb_mean": 21.556,
+      "tmb_median": 21.556,
+      "tmb_std": null
+    },
+    {
+      "assay": "PROV-GUARDANT360-V2",
+      "n": 1,
+      "tmb_mean": 0.0,
+      "tmb_median": 0.0,
+      "tmb_std": null
+    },
+    {
+      "assay": "MSK-IMPACT-HEME-468",
+      "n": 1,
+      "tmb_mean": 2.323,
+      "tmb_median": 2.323,
+      "tmb_std": null
+    },
+    {
+      "assay": "UHN-CST-3",
+      "n": 1,
+      "tmb_mean": 24.045,
+      "tmb_median": 24.045,
+      "tmb_std": null
+    },
+    {
+      "assay": "WAKE-CA-01",
+      "n": 1,
+      "tmb_mean": 11111.111,
+      "tmb_median": 11111.111,
+      "tmb_std": null
+    },
+    {
+      "assay": "WAKE-CLINICAL-D2",
+      "n": 1,
+      "tmb_mean": 191489.362,
+      "tmb_median": 191489.362,
+      "tmb_std": null
+    },
+    {
+      "assay": "YALE-OCP-V2",
+      "n": 1,
+      "tmb_mean": 20.043,
+      "tmb_median": 20.043,
+      "tmb_std": null
+    }
+  ]
+}
