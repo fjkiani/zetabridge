@@ -1,0 +1,192 @@
+{
+  "anchors": {
+    "adjuvantKrasWtDfsHr": 1.18,
+    "albertsKrasWtDfsHr": 1.21,
+    "confThreshold": 0.85,
+    "interactionHrRatio": 1.43,
+    "pacceOsHr": 1.43,
+    "pacceePfsHr": 1.27,
+    "selectionHrRasMut": 1.046,
+    "selectionHrRasWt": 0.732,
+    "strongThreshold": 0.2
+  },
+  "artifact": "modelRouter.payload",
+  "cases": [
+    {
+      "expected": {
+        "action": "DOWNGRADE_ANTI_EGFR_ADJUVANT",
+        "efficacyScore": 0.0,
+        "requiredReasonCodes": [
+          "POOLED_FALLBACK",
+          "ADJUVANT_ANTI_EGFR_NO_BENEFIT"
+        ],
+        "tier": "POOR",
+        "usedPooledFallback": true
+      },
+      "name": "adjuvant_kraswt",
+      "profile": {
+        "antiEgfr": true,
+        "bev": false,
+        "ras": "WT",
+        "setting": "ADJUVANT"
+      }
+    },
+    {
+      "expected": {
+        "action": "DOWNGRADE_ANTI_EGFR_ADJUVANT",
+        "efficacyScore": 0.0,
+        "requiredReasonCodes": [
+          "POOLED_FALLBACK",
+          "ADJUVANT_ANTI_EGFR_NO_BENEFIT"
+        ],
+        "tier": "POOR",
+        "usedPooledFallback": true
+      },
+      "name": "adjuvant_krasmut",
+      "profile": {
+        "antiEgfr": true,
+        "bev": false,
+        "ras": "MUT",
+        "setting": "ADJUVANT"
+      }
+    },
+    {
+      "expected": {
+        "action": "DOWNGRADE_ANTI_EGFR_ADJUVANT",
+        "efficacyScore": 0.0,
+        "requiredReasonCodes": [
+          "POOLED_FALLBACK",
+          "ADJUVANT_ANTI_EGFR_NO_BENEFIT"
+        ],
+        "tier": "POOR",
+        "usedPooledFallback": true
+      },
+      "name": "stage3_kraswt",
+      "profile": {
+        "antiEgfr": true,
+        "bev": false,
+        "ras": "WT",
+        "setting": "STAGE_III"
+      }
+    },
+    {
+      "expected": {
+        "action": "PREFER_ANTI_EGFR",
+        "efficacyScore": 0.268,
+        "requiredReasonCodes": [
+          "METASTATIC_RAS_WT_ANTI_EGFR_BENEFIT"
+        ],
+        "tier": "STRONG",
+        "usedPooledFallback": false
+      },
+      "name": "metastatic_kraswt",
+      "profile": {
+        "antiEgfr": true,
+        "bev": false,
+        "confidence": 0.95,
+        "ras": "WT",
+        "setting": "METASTATIC"
+      }
+    },
+    {
+      "expected": {
+        "action": "AVOID_ANTI_EGFR_RAS_MUT",
+        "efficacyScore": 0.0,
+        "requiredReasonCodes": [
+          "METASTATIC_RAS_MUT_NO_BENEFIT"
+        ],
+        "tier": "POOR",
+        "usedPooledFallback": false
+      },
+      "name": "metastatic_krasmut",
+      "profile": {
+        "antiEgfr": true,
+        "bev": false,
+        "confidence": 0.95,
+        "ras": "MUT",
+        "setting": "METASTATIC"
+      }
+    },
+    {
+      "expected": {
+        "action": "BLOCK_REGIMEN",
+        "efficacyScore": 0.0,
+        "requiredReasonCodes": [
+          "POOLED_FALLBACK",
+          "ANTI_EGFR_PLUS_BEV_HARD_BLOCK"
+        ],
+        "tier": "HARD_BLOCK",
+        "usedPooledFallback": true
+      },
+      "name": "antiegfr_bev_block",
+      "profile": {
+        "antiEgfr": true,
+        "bev": true,
+        "ras": "WT",
+        "setting": "METASTATIC"
+      }
+    },
+    {
+      "expected": {
+        "action": "PREFER_ANTI_EGFR",
+        "efficacyScore": 0.268,
+        "requiredReasonCodes": [
+          "POOLED_FALLBACK",
+          "METASTATIC_RAS_WT_ANTI_EGFR_BENEFIT"
+        ],
+        "tier": "STRONG",
+        "usedPooledFallback": true
+      },
+      "name": "lowconf_kraswt",
+      "profile": {
+        "antiEgfr": true,
+        "bev": false,
+        "confidence": 0.7,
+        "ras": "WT",
+        "setting": "METASTATIC"
+      }
+    },
+    {
+      "expected": {
+        "action": "REQUIRE_RAS_TESTING",
+        "efficacyScore": 0.0,
+        "requiredReasonCodes": [
+          "RAS_STATUS_REQUIRED"
+        ],
+        "tier": "INDETERMINATE",
+        "usedPooledFallback": false
+      },
+      "name": "ras_unknown",
+      "profile": {
+        "antiEgfr": true,
+        "bev": false,
+        "confidence": 0.95,
+        "ras": "UNKNOWN",
+        "setting": "METASTATIC"
+      }
+    },
+    {
+      "expected": {
+        "action": "ANTI_EGFR_NOT_IN_REGIMEN",
+        "efficacyScore": 0.0,
+        "requiredReasonCodes": [
+          "POOLED_FALLBACK",
+          "ANTI_EGFR_NOT_IN_REGIMEN"
+        ],
+        "tier": "NOT_APPLICABLE",
+        "usedPooledFallback": true
+      },
+      "name": "break_no_antiegfr",
+      "profile": {
+        "antiEgfr": false,
+        "bev": true,
+        "ras": "MUT",
+        "setting": "METASTATIC"
+      }
+    }
+  ],
+  "integrity_note": "Adjuvant downgrade to 0.0/POOR is anchored on the DIRECT N0147/Alberts no-benefit finding, NOT on the null treatment x RAS interaction.",
+  "policyVersion": "1.0.0",
+  "purpose": "cross-language concordance record for @workspace/route-policy (Directive 2)",
+  "ruo": "RUO - research use only. Evidence-anchored routing logic, not medical advice."
+}
