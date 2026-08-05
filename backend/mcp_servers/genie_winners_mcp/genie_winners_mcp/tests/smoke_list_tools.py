@@ -26,12 +26,18 @@ def main() -> int:
     for tid in TOOL_IDS:
         print(f"  - {tid}")
 
-    assert len(TOOL_IDS) >= 13
+    assert len(TOOL_IDS) >= 18
+    assert "genie.diff_doc_claims" in TOOL_IDS
+    assert "genie.stream_cna" in TOOL_IDS
+    assert "genie.tmb_outlier_report" in TOOL_IDS
+    assert "moa.probe_schema" in TOOL_IDS
+    assert "genie.probe_consumer_wiring" in TOOL_IDS
     assert is_poison_path("foo.QUARANTINED.csv") is True
     assert is_poison_path("crc_tmb_msi_matrix.parquet") is False
     assert refuse_poison_path("x.poison.csv")["ok"] is False
     assert not_implemented("genie.list_assets")["error"].startswith("NOT_IMPLEMENTED:")
-
+    assert not_implemented("genie.diff_doc_claims")["error"].startswith("NOT_IMPLEMENTED:")
+    assert not_implemented("moa.probe_schema")["error"].startswith("NOT_IMPLEMENTED:")
     body = envelope(
         ok=True,
         tool="genie_winners.list_tool_ids",

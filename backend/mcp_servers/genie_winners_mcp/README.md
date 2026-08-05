@@ -1,13 +1,16 @@
 # genie-winners-mcp
 
-FastMCP stdio server: **GENIE data plane** + **Winners decision plane**.
+FastMCP stdio server: **GENIE data plane** + **probe plane** + **Winners decision plane**.
 
 Build orders (doctrine): Brenus-repo  
 `engagements/brenus/genie_synapse/GENIE_WINNERS_MCP_BUILD.md`
 
+**Branch:** `agent/genie-winners-mcp-break-track`  
+**Void rule:** no `receipt_sha` + `METRICS_LEDGER` row = claim invalid.
+
 ## Status
 
-v0.1.0 scaffold — tools are registered stubs that **fail loud** (`ok=false`, `NOT_IMPLEMENTED:`) until implemented. Implement per build orders; then call your own tools to produce W0–W4 artifacts.
+v0.1.1 scaffold — tools are registered stubs that **fail loud** (`ok=false`, `NOT_IMPLEMENTED:`) until implemented. `genie.refuse_poison` is live (refuse only). Implement per build orders; then call your own tools to produce W0–W4 artifacts.
 
 ## Install
 
@@ -26,6 +29,8 @@ python3 -m genie_winners_mcp
 ```
 
 ## Cursor `mcp.json` (example — no secrets)
+
+See [`mcp.json.example`](./mcp.json.example). Copy into local Cursor config only.
 
 ```json
 {
@@ -52,25 +57,30 @@ cd backend/mcp_servers/genie_winners_mcp
 python3 -m genie_winners_mcp.tests.smoke_list_tools
 ```
 
-Expect a printed list of tool IDs including `genie.*`, `winners.*`, `ids.intersect`, `pds.outcomes_manifest_read`.
+Expect ≥18 tool IDs including new: `genie.diff_doc_claims`, `genie.stream_cna`, `genie.tmb_outlier_report`, `moa.probe_schema`, `genie.probe_consumer_wiring`.
 
 ## Tool IDs
 
 | ID | Plane |
 |----|-------|
 | `genie.list_assets` | GENIE |
+| `genie.diff_doc_claims` | GENIE (contradiction detect only) |
 | `genie.matrix_summary` | GENIE |
 | `genie.clinical_header_probe` | GENIE |
 | `genie.stream_mutation_flags` | GENIE |
+| `genie.stream_cna` | GENIE |
 | `genie.assay_tmb_strata` | GENIE |
-| `genie.refuse_poison` | GENIE |
+| `genie.tmb_outlier_report` | GENIE |
+| `genie.refuse_poison` | GENIE (implemented) |
+| `genie.probe_consumer_wiring` | GENIE / probe |
+| `moa.probe_schema` | MoA probe |
 | `winners.define` | Winners |
 | `winners.hypotheses_draft` | Winners |
 | `winners.kill_tests` | Winners |
 | `winners.scoreboard` | Winners |
 | `winners.pick` | Winners |
-| `ids.intersect` | Bridge |
-| `pds.outcomes_manifest_read` | Bridge (local files) |
+| `ids.intersect` | Bridge (join-test) |
+| `pds.outcomes_manifest_read` | Bridge (local files; no re-auth) |
 
 ## Bans
 
@@ -79,5 +89,10 @@ Expect a printed list of tool IDs including `genie.*`, `winners.*`, `ids.interse
 - No loading QUARANTINE/poison paths
 - No inventing MSI / plasma pTMB without source columns
 - No multi-GB GENIE raw commits
+- No “done” without ledger row
 
 **RUO:** Research Use Only. Not clinical care.
+
+## Metrics / break-track
+
+See [`METRICS.md`](./METRICS.md) and Brenus `agent_break_track/` on branch `agent/genie-winners-mcp-break-track`.

@@ -82,3 +82,19 @@ def refuse_poison_path(path: str | Path) -> Optional[dict[str, Any]]:
 
 def dumps(obj: dict[str, Any]) -> str:
     return json.dumps(obj, indent=2, default=str)
+
+
+def write_receipt(tool_id: str, body: dict[str, Any], receipts_dir: Optional[Path] = None) -> Path:
+    """Write envelope JSON under package receipts/ (best-effort local audit).
+
+    Agent must still append Brenus METRICS_LEDGER.md. Does not commit secrets.
+    """
+    import time
+
+    root = receipts_dir or Path(__file__).resolve().parents[1] / "receipts"
+    root.mkdir(parents=True, exist_ok=True)
+    safe = tool_id.replace(".", "_")
+    ts = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    out = root / f"{safe}.{ts}.envelope.json"
+    out.write_text(json.dumps(body, indent=2, default=str) + "\n", encoding="utf-8")
+    return out
