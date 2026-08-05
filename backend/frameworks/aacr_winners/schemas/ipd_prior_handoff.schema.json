@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ipd_prior_handoff/0.1.0",
+  "title": "IPD Prior Handoff from AACR GENIE Winners Framework",
+  "type": "object",
+  "required": [
+    "schema_id",
+    "built_utc",
+    "n_crc",
+    "tmb_label",
+    "IS_GUARDANT_PTMB",
+    "msi_available",
+    "NOT_8D04_unblock",
+    "NOT_genie_pds_join",
+    "assay_strata_n_ge_100"
+  ],
+  "properties": {
+    "schema_id": { "const": "ipd_prior_handoff/0.1.0" },
+    "built_utc": { "type": "string" },
+    "source": { "type": "string" },
+    "matrix_path": { "type": "string" },
+    "sha256_parquet": { "type": "string" },
+    "n_crc": { "type": "integer" },
+    "tmb_label": { "const": "tissue_panel_TMB" },
+    "IS_GUARDANT_PTMB": { "const": false },
+    "msi_available": { "type": "boolean" },
+    "msi_non_null": { "type": "integer" },
+    "NOT_8D04_unblock": { "const": true },
+    "NOT_genie_pds_join": { "const": true },
+    "assay_strata_n_ge_100": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["SEQ_ASSAY_ID", "n", "n_tmb_high", "tmb_high_rate"],
+        "properties": {
+          "SEQ_ASSAY_ID": { "type": "string" },
+          "n": { "type": "integer" },
+          "n_tmb_high": { "type": "integer" },
+          "tmb_high_rate": { "type": ["number", "null"] },
+          "median_tmb_mut_per_mb": { "type": ["number", "null"] }
+        }
+      }
+    },
+    "tmb_high_rate_span_ge_min": { "type": ["number", "null"] },
+    "receipt_sha": { "type": "string" },
+    "usage": { "type": "string" }
+  },
+  "additionalProperties": true
+}
