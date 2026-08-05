@@ -81,3 +81,7 @@ Expect a printed list of tool IDs including `genie.*`, `winners.*`, `ids.interse
 - No multi-GB GENIE raw commits
 
 **RUO:** Research Use Only. Not clinical care.
+
+## Metrics / break-track
+
+See [`METRICS.md`](./METRICS.md) and Brenus `agent_break_track/` on branch `agent/genie-winners-mcp-break-track`.
